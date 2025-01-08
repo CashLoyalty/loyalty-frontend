@@ -26,6 +26,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(routes)/home/index" />
         <Stack.Screen name="(routes)/loginPinCode/index" />
         <Stack.Screen name="(routes)/terms/index" />
+        <Stack.Screen name="(routes)/spinWheels/index" />
       </Stack>
     </ToastProvider>
   );
