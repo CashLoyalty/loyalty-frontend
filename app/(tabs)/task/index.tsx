@@ -3,6 +3,9 @@ import { View, StyleSheet, Image, Text, FlatList, ListRenderItem } from 'react-n
 import Colors from '@/constants/Colors';
 import Header from '@/components/header/header';
 import HeaderSecond from '@/components/headerSecond/headerSecond';
+import { screenDimensions } from '@/constants/constans';
+
+const { width, height } = screenDimensions;
 
 
 interface TaskItem {
@@ -100,14 +103,11 @@ const styles = StyleSheet.create({
     bottom: 0, 
   },
   emptyImage: {
-    width: 255, 
-    height: 291, 
-    position: 'absolute', 
+    width: width / 100 * 62.5, 
+    height: height / 100 * 41,  
     opacity: 0.5,
   },
   text: {
-    position: 'absolute',
-    top: 480,
     color: '#0E0E96',
     fontFamily: 'Inter',
     fontWeight: '600',

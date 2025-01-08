@@ -3,6 +3,9 @@ import { View, Image, Text, StyleSheet, ListRenderItem, FlatList, TouchableOpaci
 import Colors from '@/constants/Colors';
 import Header from '@/components/header/header';
 import HeaderSecond from '@/components/headerSecond/headerSecond';
+import { screenDimensions } from '@/constants/constans';
+
+const { width, height } = screenDimensions;
 
 interface AwardItem {
   id: string;
@@ -19,6 +22,9 @@ const AwardInfoData: AwardItem[] = [
 ];
 
 const Award: React.FC = () => {
+
+  console.log("width : " + width + " height : " + height);
+
   const renderItem: ListRenderItem<AwardItem> = ({ item }) => (
     <View style={styles.awardItem}>
       <View style={styles.awardRowContainer}>
@@ -54,11 +60,8 @@ const Award: React.FC = () => {
         </View>  
       </View>
       <View style={styles.emptyImageContainer}>
-        <Image
-          source={require('@/assets/images/emptyAward.png')}
-          style={styles.emptyImage}
-        />
-        <Text style={styles.text}>Шагнал олдсонгүй</Text> 
+        <Image source={require('@/assets/images/emptyAward.png')} style={styles.emptyImage}/>
+        <Text style={styles.text}>Шагнал олдсонгүй</Text>  
       </View>
       {/* Uncomment if you want to display the award list */}
       {/*<FlatList
@@ -102,14 +105,11 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   emptyImage: {
-    width: 255, 
-    height: 291, 
-    position: 'absolute', 
+    width: width / 100 * 62.5, 
+    height: height / 100 * 41,  
     opacity: 0.5,
   },
   text: {
-    position: 'absolute',
-    top: 480,
     color: '#0E0E96',
     fontFamily: 'Inter',
     fontWeight: '600',

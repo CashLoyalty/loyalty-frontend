@@ -6,27 +6,29 @@ import { useToast } from 'react-native-toast-notifications';
 import { SERVER_URI } from '@/utils/uri';
 import { Feather } from "@expo/vector-icons";
 import Colors from '@/constants/Colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { screenDimensions } from '@/constants/constans';
+import { StatusBar } from 'expo-status-bar';
+
+const { width, height } = screenDimensions;
 
 export default function LoginScreen() {
-
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const requiredLength = 8;
     const toast = useToast();
 
     useEffect(() => {
-        if (phoneNumber?.length === 8) {
+        if (phoneNumber.length === requiredLength) {
             Keyboard.dismiss();
         }
     }, [phoneNumber]);
-    
-    const handleSignIn = async () => {
 
-        const numericValue = phoneNumber.replace(/[^0-9]/g, '');
-
-        Keyboard.dismiss();
+    const handleLogin = async () => {
+        const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, '');
         
-        if (numericValue.length === 0) {
+        if (verifiedPhoneNumber.length === 0) {
             toast.show(`Утасны дугаар оруулна уу...`, {
                 type: 'danger',
                 placement: 'top',
@@ -36,7 +38,7 @@ export default function LoginScreen() {
             return;
         }
 
-        if (numericValue.length !== requiredLength) {
+        if (verifiedPhoneNumber.length !== requiredLength) {
             toast.show(`Утасны дугаар буруу...`, {
                 type: 'danger',
                 placement: 'top',
@@ -50,7 +52,7 @@ export default function LoginScreen() {
 
         try {
             const response = await axios.post(`${SERVER_URI}/api/user/getOtp`, {
-                phoneNumber: numericValue,
+                phoneNumber: verifiedPhoneNumber,
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,12 +61,10 @@ export default function LoginScreen() {
 
             const data = response.data;
         
-            if (data.title === 'Success') {
-
-                router.push(`/verifyOtp?phoneNumber=${encodeURIComponent(numericValue)}`);
-
-            } else if (data.title === 'Phone number Duplicated') { 
-                router.push(`/loginPinCode?phoneNumber=${encodeURIComponent(numericValue)}`);
+            if (data.title === 'Success') { 
+                router.push(`/verifyOtp?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`);
+            } else if (data.title === 'Phone number Duplicated') {
+                router.push(`/loginPinCode?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`);
             } else {
                 toast.show(`Алдаа: ${data.title}`, {
                     type: 'danger',
@@ -74,34 +74,31 @@ export default function LoginScreen() {
                 });
             }
         } catch (error) {
-            let errorMessage = 'Unknown error occurred';
-
             if (axios.isAxiosError(error)) {
-                errorMessage = error.response?.data?.message || error.message;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            } else if (typeof error === 'string') {
-                errorMessage = error;
-            } else if (error && typeof error === 'object' && 'message' in error) {
-                errorMessage = (error as { message?: string }).message || 'Unknown error occurred';
+                toast.show(`Алдаа гарлаа (axios): ${error.response?.data?.message || error.message}`, {
+                    type: 'danger',
+                    placement: 'top',
+                    duration: 4000,
+                    animationType: 'slide-in',
+                });
+            } else {
+                toast.show(`Алдаа гарлаа: ${String(error)}`, {
+                    type: 'danger',
+                    placement: 'top',
+                    duration: 4000,
+                    animationType: 'slide-in',
+                });
             }
-
-            toast.show(`Алдаа гарлаа: ${errorMessage}`, {
-                type: 'danger',
-                placement: 'top',
-                duration: 4000,
-                animationType: 'slide-in',
-            });
-
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar style="light" backgroundColor="black" />
             <Image
-                style={styles.signInImage}
+                style={styles.loginImage}
                 source={require('@/assets/sign-in/sign_in.png')}
             />
             <View style={styles.inputContainer}>
@@ -128,7 +125,7 @@ export default function LoginScreen() {
                         }} 
                     />  
                 </View>
-                <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonSignText}>Нэвтрэх</Text>
                 </TouchableOpacity>
             </View>
@@ -137,13 +134,18 @@ export default function LoginScreen() {
             </View>
             {loading && (
                 <View style={styles.loaderContainer}>
+                    <BlurView
+                        intensity={0}
+                        style={styles.loaderBackground}
+                        tint="dark"
+                    />
                     <Image 
                         source={require('@/assets/images/loading2.gif')} 
                         style={styles.loaderImage}
                     />
                 </View>
             )}
-        </View>   
+        </SafeAreaView>   
     );
 }
 
@@ -151,27 +153,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.black,
+        alignItems: 'center',
     },
-    signInImage: {
-        position: 'absolute',
-        top: 29,
-        left: 8,
-        width: 385,
-        height: 355,
+    loginImage: {
+        width: width * 1, 
+        height: height * 0.4, 
         borderRadius: 120, 
+        marginBottom: 20, 
     },
     inputContainer: {
-        top: 392,
+        width: '100%', 
+        alignItems: 'center',
     },
     labelText: {
+        width: '90%',
         color: Colors.white,
         fontSize: 14,
         fontFamily: 'Inter',
-        left: 16,
+        marginBottom: 10,
     },
     inputWrapper: {
-        marginTop: 20,
-        marginHorizontal: 16,
+        width: '90%', 
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
@@ -185,7 +187,6 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         color: Colors.black,
-        paddingLeft: 0,
     },
     icon: {
         marginRight: 10, 
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: Colors.primaryColor,
         marginTop: 20,
-        marginHorizontal: 16,
+        width: '90%', 
     },
     buttonSignText: {
         color: '#EFF6FF',
@@ -211,12 +212,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
     },
     footer: {
-        position: 'absolute',
-        top: 796,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        alignItems: 'center'
+        marginTop: height / 100 * 23,
+        alignItems: 'center',
     },
     footerText: {
         color: '#EFF6FF',
@@ -228,10 +225,19 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
+    },
+    loaderBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: Colors.black,
+        opacity: 1, 
     },
     loaderImage: {
         width: 300, 

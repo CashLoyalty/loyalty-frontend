@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, TextInput, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, TextInput, ActivityIndicator, ScrollView, Platform, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '@/constants/Colors';
 import { router } from 'expo-router';
@@ -9,53 +9,148 @@ import useFetchUser from '@/hooks/useFetchUser';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { SERVER_URI } from '@/utils/uri';
 import { useToast } from 'react-native-toast-notifications';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import axios from 'axios';
+
+interface ImageType {
+    uri: string;
+    type?: string;
+    fileName: string;
+}
 
 export default function InformationScreen() {
     const [token, setToken] = useState<string>('');
     const [userData, setUserData] = useState<UserResponse | null>(null);
-    const [userError, setUserError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [lastName, setLastName] = useState('');
     const [firstName, setFirstName] = useState('');
     const [email, setEmail] = useState('');
     const [birthOfDate, setBirthOfDate] = useState('');
     const [sex, setSex] = useState('');
-    const [gender, setGender] = useState('male'); 
+    const [gender, setGender] = useState('male');
+    const [errorLastName, setErrorLastName] = useState('');
+    const [errorFirstName, setErrorFirstName] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+    const [errorBirthOfDate, setErrorBirthOfDate] = useState('');
     const [genderTextColor, setGenderTextColor] = useState(Colors.primaryColor);
     const toast = useToast();
-    const [buttonSpinner, setButtonSpinner] = useState(false); 
-    
+    const [buttonSpinner, setButtonSpinner] = useState(false);
+    const [image, setImage] = useState<ImageType | null>(null);
+    const [profileImage, setProfileImage] = useState<string>('');
 
     useEffect(() => {
-        const fetchToken = async () => {
-            try {
-                const storedToken = await AsyncStorage.getItem('token');
-                if (storedToken) {
-                    setToken(storedToken);
-                } else {
-                    console.warn("No token found in AsyncStorage");
-                }
-            } catch (error) {
-                console.error("Failed to fetch token: ", error);
-            } finally {
-                setLoading(false);
+        const getToken = async () => {
+            const storedToken = await AsyncStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
+            } else {
+                console.warn("No token found in AsyncStorage");
             }
         };
-
-        fetchToken();
+        getToken();
     }, []);
 
-    const { data, loading: userLoading, error: userErrorFetched } = useFetchUser(`${SERVER_URI}/api/user`, token);
+    const { data, error: userErrorFetched } = useFetchUser(`${SERVER_URI}/api/user`, token);
 
     useEffect(() => {
         if (data) {
             setUserData(data);
         }
         if (userErrorFetched) {
-            setUserError(userErrorFetched);
+            console.error(userErrorFetched);
         }
     }, [data, userErrorFetched]);
+
+    useEffect(() => {
+        if (userData?.lastName) {
+            setLastName(userData.lastName);
+        }
+        if (userData?.firstName) {
+            setFirstName(userData.firstName);
+        }
+        if (userData?.email) {
+            setEmail(userData.email);
+        }
+        if (userData?.birthOfDate) {
+            const date = new Date(userData.birthOfDate);
+            const formattedDate = date.toISOString().split('T')[0]; 
+            setBirthOfDate(formattedDate);
+        }
+        if (userData?.sex) {
+            setSex(userData.sex);
+            setGender(userData.sex.toLowerCase());
+        }
+        if (userData?.imageUrl) {
+            console.log("imageUrl : " + userData.imageUrl);
+            checkImageUrl(userData.imageUrl);
+            setProfileImage(userData.imageUrl);
+        }
+    }, [userData]);
+
+    React.useEffect(() => {
+        requestPermission();
+    }, []);
+
+    const requestPermission = async () => {
+        if (Platform.OS !== 'web') {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission required', 'We need permission to access your photo library.');
+            }
+        }
+    };
+    
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets.length > 0) {
+            const asset = result.assets[0];
+            const image: ImageType = {
+                uri: asset.uri,
+                type: asset.type || 'image/jpeg',  
+                fileName: asset.fileName || 'image.jpg',  
+            };
+            setImage(image);
+            setProfileImage(image.uri);
+        }
+    };
+
+    const compressImage = async (uri: string) => {
+        try {
+            const result = await ImageManipulator.manipulateAsync(uri, [], {
+                compress: 0.1,  
+                format: ImageManipulator.SaveFormat.JPEG,
+            });
+            return result.uri;
+        } catch (error) {
+            console.error("Error compressing image:", error);
+            return uri;  
+        }
+    };
+
+    const checkImageUrl = async (url: string) => {
+        try {
+          const response = await axios.head(url);
+          if (response.status === 200) {
+            console.log('Image is accessible');
+          } else {
+            console.log('Image is not accessible');
+          }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+              setProfileImage('');
+            } else {
+              console.error('Unknown error occurred');
+            }
+        }
+    };
 
     const handleBackPress = () => {
         router.back();
@@ -81,31 +176,64 @@ export default function InformationScreen() {
     };
 
     const handleConfirm = (date: Date) => {
-        /*const formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;*/
         const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
         setBirthOfDate(formattedDate);
         hideDatePicker();
     };
-
+        
     const handleSave = async () => {
-        // Construct the user data object
+        
         setButtonSpinner(true);
+        
+        if (image) {
+
+            const compressedUri = await compressImage(image.uri);
+            const { type, fileName} = image;
+            const formData = new FormData();
+        
+            formData.append('image', {
+                uri: compressedUri, 
+                type,
+                name: fileName,
+            } as unknown as Blob);
+            
+            try {
+                const response = await fetch(`${SERVER_URI}/api/user/image`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    console.error("Failed to upload image. Response status:", response.status);
+                    const errorText = await response.text(); 
+                    console.error("Error details:", errorText);
+                    throw new Error(`Upload failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log("Image upload result:", result);
+
+            } catch (error) {
+                console.error("Error during image upload:", error);
+            } 
+        } else {
+            console.log("No image selected");
+        }
+    
         const userDataToUpdate = {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            birthOfDate: birthOfDate, // Ensure this is in the correct format
-            sex: gender.toUpperCase(), // Assuming your API expects "MALE" or "FEMALE"
+            firstName,
+            lastName,
+            email,
+            birthOfDate,
+            sex: gender.toUpperCase(),
         };
-        console.log(
-            "LastName : " + userDataToUpdate.lastName,
-            "FirstName : " + userDataToUpdate.firstName,
-            "Email : " + userDataToUpdate.email,
-            "BirthOfDate : " + userDataToUpdate.birthOfDate,
-            "Sex : " + userDataToUpdate.sex
-        );
+    
         try {
-            const response = await fetch(`${SERVER_URI}/api/user`, {
+            const userResponse = await fetch(`${SERVER_URI}/api/user`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,35 +241,61 @@ export default function InformationScreen() {
                 },
                 body: JSON.stringify(userDataToUpdate),
             });
-            
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+    
+            if (!userResponse.ok) {
+                throw new Error(`User update failed: ${userResponse.statusText}`);
             }
     
-            const result = await response.json();
-            console.log('User data updated successfully:', result);
+            const result = await userResponse.json();
+            if (result.code === 400) {
 
-            if(result.code === 0 && result.title === "Success") {
-                toast.show(`Мэдээлэл амжилттай шинэчлэгдлээ`, {
+                handleValidationErrors(result);
+
+                toast.show('Амжилтгүй', {
+                    type: 'danger',
+                    placement: 'top',
+                    duration: 4000,
+                });
+            } else if (result.code === 0 && result.title === "Success") {
+                toast.show('Мэдээлэл амжилттай шинэчлэгдлээ', {
                     type: 'success',
                     placement: 'top',
                     duration: 4000,
-                    animationType: 'slide-in',
                 });
+                clearFormErrors();
             }
-            // Optionally navigate or show a success message here
-    
         } catch (error) {
-            console.error('Failed to update user data:', error);
-            // Handle error (e.g., show an alert or a message to the user)
+            console.error('Error saving user data:', error);
         } finally {
             setButtonSpinner(false);
         }
     };
+    
+    const handleValidationErrors = (result: { title: any; }) => {
+        const validationError = result.title;
+        if (validationError.includes('lastName')) {
+            setErrorLastName('Таны овог талбар буруу байна');
+        }
+        if (validationError.includes('firstName')) {
+            setErrorFirstName('Таны нэр талбар буруу байна');
+        }
+        if (validationError.includes('email')) {
+            setErrorEmail('И-Мэйл талбар буруу байна');
+        }
+        if (validationError.includes('birthOfDate')) {
+            setErrorBirthOfDate('Төрсөн өдөр талбар буруу байна');
+        }
+    };
+
+    const clearFormErrors = () => {
+        setErrorLastName('');
+        setErrorFirstName('');
+        setErrorEmail('');
+        setErrorBirthOfDate('');
+    };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+        <SafeAreaView style={styles.container}>
             <View style={styles.back}>
                 <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
                     <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
@@ -154,14 +308,11 @@ export default function InformationScreen() {
                 <View style={styles.content}>
                     <View style={styles.profileColumnContainer}>
                         <View style={styles.profileContainer}>
-                            <Image
-                                source={require("@/assets/icons/profile.png")}
-                                style={styles.profileImage}
-                            />
+                            <Image source={profileImage ? { uri: profileImage } : require('@/assets/icons/profile.png')} style={styles.profileImage} />
                         </View>
                         <View style={styles.editImage}>
                             <Ionicons name="camera" size={18} color={Colors.white} />
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={ pickImage }>
                                 <Text style={{ fontFamily: 'Inter', fontSize: 14, color: Colors.white, marginLeft: 5 }}>Зураг солих</Text>
                             </TouchableOpacity>
                         </View>
@@ -169,103 +320,125 @@ export default function InformationScreen() {
                 </View>
             </View>
             <View style={styles.profileEdit}>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Таны овог
-                        <Text style={styles.asterisk}>*</Text>
-                    </Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder=""
-                        placeholderTextColor="transparent"
-                        value={lastName}
-                        onChangeText={setLastName}
-                    />
-                    <View style={styles.iconContainer}>
-                        <Image source={require("@/assets/icons/editUser.png")} style={styles.icon} />
-                    </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Таны нэр
-                        <Text style={styles.asterisk}>*</Text>
-                    </Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder=""
-                        placeholderTextColor="transparent"
-                        value={firstName}
-                        onChangeText={setFirstName}
-                    />
-                    <View style={styles.iconContainer}>
-                        <Image source={require("@/assets/icons/editUser.png")} style={styles.icon} />
-                    </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Утас
-                        <Text style={styles.asterisk}>*</Text>
-                    </Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder=""
-                        placeholderTextColor="transparent"
-                    />
-                    <View style={styles.iconContainer}>
-                        <Image source={require("@/assets/icons/editPhone.png")} style={styles.icon} />
-                    </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>И-Mэйл
-                        <Text style={styles.asterisk}>*</Text>
-                    </Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder=""
-                        placeholderTextColor="transparent"
-                        value={email}
-                        onChangeText={setEmail}
-                    />
-                    <TouchableOpacity style={styles.iconContainer}>
-                        <Image source={require("@/assets/icons/editEmail.png")} style={styles.icon} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>
-                        Төрсөн өдөр
-                    </Text>
-                    <TouchableOpacity onPress={handleBirthday} style={[styles.input, styles.dateInput]}>
-                        <Text style={{ color: birthOfDate ? Colors.black : '#808080', textAlign: 'center' }}>
-                            {birthOfDate || "MM/DD/YYYY"}
+                <ScrollView style={{ marginBottom: 30 }}>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Таны овог
+                            <Text style={styles.asterisk}>*</Text>
                         </Text>
-                    </TouchableOpacity>
-                    <View style={styles.iconContainer}>
-                        <Image source={require("@/assets/icons/editBirthday.png")} style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder=""
+                            placeholderTextColor="transparent"
+                            value={lastName}
+                            onChangeText={setLastName}
+                        />
+                        <View style={styles.iconContainer}>
+                            <Image source={require("@/assets/icons/editUser.png")} style={styles.icon} />
+                        </View>
                     </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Хүйс
-                        <Text style={styles.asterisk}>*</Text>
-                    </Text>
-                    <View style={styles.genderContainer}>
-                        <TouchableOpacity
-                            style={[styles.genderButton, gender === 'male' && styles.selectedGender]}
-                            onPress={() => handleGender('male')}>
-                            <Text style={[styles.genderText, { color: gender === 'male' ? Colors.white : Colors.primaryColor }]}>Эрэгтэй</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.genderButton, gender === 'female' && styles.selectedGender]}
-                            onPress={() => handleGender('female')}>
-                            <Text style={[styles.genderText, { color: gender === 'female' ? Colors.white : Colors.primaryColor }]}>Эмэгтэй</Text>
+                    {errorLastName ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorLastName}</Text>
+                        </View>
+                    ) : null}
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Таны нэр
+                            <Text style={styles.asterisk}>*</Text>
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder=""
+                            placeholderTextColor="transparent"
+                            value={firstName}
+                            onChangeText={setFirstName}
+                        />
+                        <View style={styles.iconContainer}>
+                            <Image source={require("@/assets/icons/editUser.png")} style={styles.icon} />
+                        </View>
+                    </View>
+                    {errorFirstName ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorFirstName}</Text>
+                        </View>
+                    ) : null}
+                    {/*<View style={styles.inputContainer}>
+                        <Text style={styles.label}>Утас
+                            <Text style={styles.asterisk}>*</Text>
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder=""
+                            placeholderTextColor="transparent"
+                        />
+                        <View style={styles.iconContainer}>
+                            <Image source={require("@/assets/icons/editPhone.png")} style={styles.icon} />
+                        </View>
+                    </View>*/}
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>И-Mэйл
+                            <Text style={styles.asterisk}>*</Text>
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder=""
+                            placeholderTextColor="transparent"
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+                        <TouchableOpacity style={styles.iconContainer}>
+                            <Image source={require("@/assets/icons/editEmail.png")} style={styles.icon} />
                         </TouchableOpacity>
                     </View>
-                </View>
-                <View>
-                    <TouchableOpacity style={styles.save} onPress={handleSave}>
-                        {buttonSpinner ? (
-                            <ActivityIndicator size="small" color={Colors.white} />
-                        ) : (
-                            <Text style={styles.saveText}>ХАДГАЛАХ</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
+                    {errorEmail ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorEmail}</Text>
+                        </View>
+                    ) : null}    
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>
+                            Төрсөн өдөр
+                        </Text>
+                        <TouchableOpacity onPress={handleBirthday} style={[styles.input, styles.dateInput]}>
+                            <Text style={{ color: birthOfDate ? Colors.black : '#808080', textAlign: 'center' }}>
+                                {birthOfDate || "MM/DD/YYYY"}
+                            </Text>
+                        </TouchableOpacity>
+                        <View style={styles.iconContainer}>
+                            <Image source={require("@/assets/icons/editBirthday.png")} style={styles.icon} />
+                        </View>
+                    </View>
+                    {errorBirthOfDate ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorBirthOfDate}</Text>
+                        </View>
+                    ) : null}
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Хүйс
+                            <Text style={styles.asterisk}>*</Text>
+                        </Text>
+                        <View style={styles.genderContainer}>
+                            <TouchableOpacity
+                                style={[styles.genderButton, gender === 'male' && styles.selectedGender]}
+                                onPress={() => handleGender('male')}>
+                                <Text style={[styles.genderText, { color: gender === 'male' ? Colors.white : Colors.primaryColor }]}>Эрэгтэй</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.genderButton, gender === 'female' && styles.selectedGender]}
+                                onPress={() => handleGender('female')}>
+                                <Text style={[styles.genderText, { color: gender === 'female' ? Colors.white : Colors.primaryColor }]}>Эмэгтэй</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.save} onPress={handleSave}>
+                            {buttonSpinner ? (
+                                <ActivityIndicator size="small" color={Colors.white} />
+                            ) : (
+                                <Text style={styles.saveText}>ХАДГАЛАХ</Text>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </View>
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
@@ -273,14 +446,13 @@ export default function InformationScreen() {
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        top: 50,
         backgroundColor: Colors.backgroundColor,
     },
     backContainer: {
@@ -414,5 +586,14 @@ const styles = StyleSheet.create({
     genderText: {
         fontFamily: 'Inter',
         fontSize: 14,
+    },
+    errorContainer: {
+        marginTop: 5,
+        marginLeft: 15,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        fontFamily: 'Inter',
     },
 });

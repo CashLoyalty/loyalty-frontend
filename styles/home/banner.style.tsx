@@ -7,7 +7,6 @@ import {
 
 export const styles = StyleSheet.create({
   container: {
-    marginTop: 0,
     width: 'auto',
     height: 175,
     marginHorizontal: 10,

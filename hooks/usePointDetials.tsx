@@ -28,7 +28,7 @@ const usePointDetails = (prodUrl: string) => {
                 return;
             }
 
-            const response = await axios.get(`${prodUrl}/api/user/pointDetails`, {
+            const response = await axios.get(`${prodUrl}/api/user/pointDetails?eventCode=COLLECT`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

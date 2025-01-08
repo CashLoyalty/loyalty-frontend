@@ -9,7 +9,7 @@ const useFetchUser = (url: string, token: string) => {
     useEffect(() => {
         if (!token) {
             setLoading(false);
-            return; // Skip fetching if no token
+            return; 
         }
 
         const fetchData = async () => {
@@ -29,8 +29,7 @@ const useFetchUser = (url: string, token: string) => {
                 }
 
                 const result: ApiResponse = await response.json();
-                console.log("API Response:", result); 
-
+                
                 if (result.code === 0) {
                     setData(result.response);
                 } else {

@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, ListRenderItem, FlatList, Image } from 'react-n
 import Colors from '@/constants/Colors';
 import Header from '@/components/header/header';
 import HeaderSecond from '@/components/headerSecond/headerSecond';
+import { screenDimensions } from '@/constants/constans';
+
+const { width, height } = screenDimensions;
 
 interface ResearchItem {
   id: string;
@@ -97,14 +100,11 @@ const styles = StyleSheet.create({
     bottom: 0, 
   },
   emptyImage: {
-    width: 224, 
-    height: 222, 
-    position: 'absolute', 
+    width: width / 100 * 65, 
+    height: height / 100 * 41, 
     opacity: 0.5,
   },
   text: {
-    position: 'absolute',
-    top: 480,
     color: '#0E0E96',
     fontFamily: 'Inter',
     fontWeight: '600',

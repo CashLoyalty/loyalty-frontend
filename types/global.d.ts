@@ -1,5 +1,5 @@
-type BannerDataTypes = {
-    bannerImageUrl: any;
+export interface BannerDataTypes {
+  bannerImageUrl: string;  // Adjust the type based on the data structure you have
 }
 
 export interface UserResponse {
@@ -14,12 +14,13 @@ export interface UserResponse {
     kyc: number;
     point: number;
     lottoCount: number;
+    imageUrl: string;
     createdAt: string;
     updatedAt: string;
-  }
+}
   
-  export interface ApiResponse {
+export interface ApiResponse {
     code: number;
     response: UserResponse;
     title: string;
-  }
+}

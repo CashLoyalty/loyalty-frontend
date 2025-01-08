@@ -15,7 +15,6 @@ export default function HeaderSecond() {
         const fetchToken = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
-                console.log("Fetched Token: ", storedToken);
                 if (storedToken) {
                     setToken(storedToken);
                 } else {

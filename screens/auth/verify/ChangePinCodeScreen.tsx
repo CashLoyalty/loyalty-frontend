@@ -5,6 +5,10 @@ import { router } from "expo-router";
 import { OtpInput } from 'react-native-otp-entry';
 import Colors from "@/constants/Colors";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { screenDimensions } from '@/constants/constans';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width, height } = screenDimensions;
 
 
 export default function ChangePinCodeScreen() {
@@ -28,40 +32,40 @@ export default function ChangePinCodeScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                <Ionicons name="arrow-back" size={24} color={Colors.white} />
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity onPress={handleBack}>
+                <Ionicons name="arrow-back" size={24} color={Colors.white} style={styles.backButton}/>
             </TouchableOpacity>
             <View style={styles.createPinCodeContainer}>
                 <Text style={styles.headerText}>Пин код</Text>
-            </View>
-            <View style={styles.inputContainer}>
-            <OtpInput
-                    numberOfDigits={4}
-                    onTextChange={setPinCode}
-                    focusColor={Colors.primaryColor}
-                    focusStickBlinkingDuration={400}
-                    theme={{
-                        pinCodeContainerStyle: {
-                            backgroundColor: Colors.white,
-                            width: 50,
-                            height: 50,
-                            borderRadius: 10,
-                            borderWidth: 4,
-                        },
-                        filledPinCodeContainerStyle: {
-                            borderColor: Colors.primaryColor,
-                            width: 55,
-                            height: 55,
-                        },
-                        focusedPinCodeContainerStyle: {
-                            width: 50,
-                            height: 50,
-                        },
+                <View style={styles.inputContainer}>
+                    <OtpInput
+                        numberOfDigits={4}
+                        onTextChange={setPinCode}
+                        focusColor={Colors.primaryColor}
+                        focusStickBlinkingDuration={400}
+                        theme={{
+                            pinCodeContainerStyle: {
+                                backgroundColor: Colors.white,
+                                width: width < 400 ? 45 : 55,
+                                height: height < 650 ? 45 : 55,
+                                borderRadius: 10,
+                                borderWidth: 4,
+                            },
+                            filledPinCodeContainerStyle: {
+                                borderColor: Colors.primaryColor,
+                                width: width < 400 ? 50 : 55,
+                                height: height < 650 ? 50 : 55,
+                            },
+                            focusedPinCodeContainerStyle: {
+                                width: width < 400 ? 45 : 55,
+                                height: height < 650 ? 45 : 55,
+                            },
                     }}           
-                />    
+                    />    
+                </View>
             </View> 
-        </View>   
+        </SafeAreaView>   
     );
 };
 
@@ -72,77 +76,22 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 50,
         left: 20,
     },
     createPinCodeContainer: {
-        top: 153,
+        top: height / 100 * 24,
         alignItems: 'center'
     },
     headerText: {
-        fontSize: 32,
+        fontSize: width < 400 ? 24 : 32,
         fontWeight: "bold",
         color: Colors.white,
         marginBottom: 10,
     },
     inputContainer: {
         flexDirection: "row",
-        top: 170,
+        marginTop: 20,
         justifyContent: 'center',
         marginHorizontal: 70,
-    },
-    inputBox: {
-        width: 50,
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#1E1E1E',
-        color: Colors.white,
-        textAlign: "center",
-        marginRight: 10,
-        borderRadius: 10,
-    },
-    inputBoxFilled: {
-        width: 54,
-        height: 54,
-        borderWidth: 2,
-        borderColor: Colors.primaryColor,
-        color: Colors.white,
-        textAlign: "center",
-        marginRight: 10,
-        borderRadius: 10,
-        fontSize: 32,
-    },
-    footer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: '100%',
-        marginTop: '30%',
-        paddingHorizontal: 10,
-    },
-    footerButton: {
-        flex: 1,
-        marginHorizontal: 5,
-        backgroundColor: Colors.primaryColor,
-        padding: 10,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    resendButton: {
-        borderWidth: 1,
-        borderColor: Colors.primaryColor, 
-        backgroundColor: Colors.white
-    },
-    confirmButton: {
-        borderWidth: 1,
-        borderColor: Colors.white, 
-        backgroundColor: Colors.primaryColor
-    },
-    resentButtonText: {
-        color: "#A1A1A1",
-        fontSize: 16,
-    },
-    confirmButtonText: {
-        color: Colors.white,
-        fontSize: 16,
     },
 });

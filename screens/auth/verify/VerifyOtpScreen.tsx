@@ -7,6 +7,12 @@ import { useToast } from 'react-native-toast-notifications';
 import { OtpInput } from 'react-native-otp-entry';
 import Colors from "@/constants/Colors";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { BlurView } from 'expo-blur';
+import { screenDimensions } from '@/constants/constans';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SERVER_URI } from '@/utils/uri';
+
+const { width, height } = screenDimensions;
 
 export default function VerifyOtpScreen() {
 
@@ -54,7 +60,7 @@ export default function VerifyOtpScreen() {
         setLoading(true);
 
         try {
-            const response = await axios.post('https://server-w6thjpmvcq-uc.a.run.app/api/user/checkOtp', {
+            const response = await axios.post(`${SERVER_URI}/api/user/checkOtp`, {
                 phoneNumber,
                 otp: otpCode
             });
@@ -83,9 +89,9 @@ export default function VerifyOtpScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                <Ionicons name="arrow-back" size={24} color={Colors.white} />
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity onPress={handleBack}>
+                <Ionicons name="arrow-back" size={24} color={Colors.white} style={styles.backButton}/>
             </TouchableOpacity>
             <View style={styles.verifyContainer}>
                 <Text style={styles.headerText}>Баталгаажуулалт</Text>
@@ -105,32 +111,37 @@ export default function VerifyOtpScreen() {
                     theme={{
                         pinCodeContainerStyle: {
                             backgroundColor: Colors.white,
-                            width: 50,
-                            height: 50,
+                            width: width < 400 ? 45 : 55,
+                            height: height < 650 ? 45 : 55,
                             borderRadius: 10,
                             borderWidth: 4,
                         },
                         filledPinCodeContainerStyle: {
                             borderColor: Colors.primaryColor,
-                            width: 55,
-                            height: 55,
+                            width: width < 400 ? 50 : 55,
+                            height: height < 650 ? 50 : 55,
                         },
                         focusedPinCodeContainerStyle: {
-                            width: 50,
-                            height: 50,
+                            width: width < 400 ? 45 : 55,
+                            height: height < 650 ? 45 : 55,
                         },
                     }}           
                 />        
             </View>
             {loading && (
                 <View style={styles.loaderContainer}>
+                    <BlurView
+                        intensity={0}
+                        style={styles.loaderBackground}
+                        tint="dark"
+                    />
                     <Image 
                         source={require('@/assets/images/loading2.gif')} 
                         style={styles.loaderImage}
                     />
                 </View>
             )}
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -141,16 +152,15 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 50,
         left: 20,
     },
     verifyContainer: {
-        top: 153,
+        top: height / 100 * 24,
         alignItems: 'center'
     },
     headerText: {
         color: Colors.white,
-        fontSize: 32,
+        fontSize: width < 400 ? 24 : 32,
         fontFamily: 'Inter',
     },
     subText: {
@@ -167,8 +177,9 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: "row",
-        top: 170,
+        top: height / 100 * 24,
         justifyContent: 'center',
+        marginTop: 20,
         marginHorizontal: 20,
     },
     loaderContainer: {
@@ -177,10 +188,19 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
+    },
+    loaderBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: Colors.black,
+        opacity: 1, 
     },
     loaderImage: {
         width: 300, 

@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "PepsiLoyaltyApp",
-    "slug": "Pepsi-Loyalty-App",
-    "version": "1.0.0",
+    "slug": "pepsi-loyalty-app",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -28,10 +28,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-font"
-    ],
+    "plugins": ["expo-router", "expo-font"],
     "experiments": {
       "typedRoutes": true
     },
@@ -40,14 +37,15 @@
         "origin": false
       },
       "eas": {
-        "projectId": "7e1c0508-c2c2-4cd2-ab22-3f1a2296f48f"
+        "projectId": "79d27cdc-5d1b-4106-b07d-d43e47570505"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/7e1c0508-c2c2-4cd2-ab22-3f1a2296f48f"
-    }
+      "url": "https://u.expo.dev/79d27cdc-5d1b-4106-b07d-d43e47570505"
+    },
+    "newArchEnabled": true
   }
 }

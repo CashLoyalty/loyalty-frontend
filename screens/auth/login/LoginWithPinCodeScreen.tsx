@@ -10,6 +10,11 @@ import { useToast } from 'react-native-toast-notifications';
 import { SERVER_URI } from '@/utils/uri';
 import { Ionicons } from "@expo/vector-icons";
 import Colors from '@/constants/Colors';
+import { BlurView } from 'expo-blur';
+import { screenDimensions } from '@/constants/constans';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width, height } = screenDimensions;
 
 export default function LoginWithPinCodeScreen() {
 
@@ -40,7 +45,7 @@ export default function LoginWithPinCodeScreen() {
     const playSound = async () => {
         if (sound) {
             try {
-                await sound.replayAsync(); // Play the sound
+                await sound.replayAsync(); 
             } catch (error) {
                 console.log('Error playing sound:', error);
             }
@@ -59,7 +64,8 @@ export default function LoginWithPinCodeScreen() {
         navigation.goBack(); 
     };
 
-    const handleLogin = async (phoneNumber: string, pinCode: string) => {
+    const 
+    handleLogin = async (phoneNumber: string, pinCode: string) => {
         Keyboard.dismiss();
         try {
             setLoading(true);
@@ -104,9 +110,9 @@ export default function LoginWithPinCodeScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                <Ionicons name="arrow-back" size={24} color={Colors.white} />
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity onPress={handleBack}>
+                <Ionicons name="arrow-back" size={24} color={Colors.white} style={styles.backButton}/>
             </TouchableOpacity>
             <View style={styles.pinCodeContainer}>
                 <View>
@@ -121,33 +127,39 @@ export default function LoginWithPinCodeScreen() {
                         theme={{
                             pinCodeContainerStyle: {
                                 backgroundColor: Colors.white,
-                                width: 50,
-                                height: 50,
+                                width: width < 400 ? 45 : 55,
+                                height: height < 650 ? 45 : 55,
                                 borderRadius: 10,
                                 borderWidth: 4,
                             },
                             filledPinCodeContainerStyle: {
                                 borderColor: Colors.primaryColor,
-                                width: 55,
-                                height: 55,
+                                width: width < 400 ? 50 : 55,
+                                height: height < 650 ? 50 : 55,
                             },
                             focusedPinCodeContainerStyle: {
-                                width: 50,
-                                height: 50,
+                                width: width < 400 ? 45 : 55,
+                                height: height < 650 ? 45 : 55,
                             },
                         }}           
                     />   
                 </View>    
             </View>
+
             {loading && (
                 <View style={styles.loaderContainer}>
+                    <BlurView
+                        intensity={0}
+                        style={styles.loaderBackground}
+                        tint="dark"
+                    />
                     <Image 
                         source={require('@/assets/images/loading2.gif')} 
                         style={styles.loaderImage}
                     />
                 </View>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -158,16 +170,15 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 50,
-        left: 20,
+        left: 20
     },
     pinCodeContainer: {
-        top: 153,
+        top: height / 100 * 24,
         alignItems: 'center'
     },
     title: {
         color: Colors.white,
-        fontSize: 32,
+        fontSize: width < 400 ? 24 : 32,
         fontFamily: 'Inter',
     },
     inputContainer: {
@@ -181,10 +192,19 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
+    },
+    loaderBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: Colors.black,
+        opacity: 1, 
     },
     loaderImage: {
         width: 300, 

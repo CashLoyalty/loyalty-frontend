@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, StatusBar } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '@/constants/Colors';
 import { router } from 'expo-router';
@@ -7,6 +7,11 @@ import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserResponse } from '@/types/global';
 import useFetchUser from '@/hooks/useFetchUser';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { SERVER_URI } from '@/utils/uri';
+import axios from 'axios';
+
 
 interface ProgressBarProps {
     progress: number;
@@ -35,12 +40,12 @@ export default function ProfileScreen() {
     const [userData, setUserData] = useState<UserResponse | null>(null);
     const [userError, setUserError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [profileImage, setProfileImage] = useState<string>('');
 
     useEffect(() => {
         const fetchToken = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
-                console.log("Fetched Token: ", storedToken);
                 if (storedToken) {
                     setToken(storedToken);
                 } else {
@@ -56,11 +61,10 @@ export default function ProfileScreen() {
         fetchToken();
     }, []);
 
-    const { data, loading: userLoading, error: userErrorFetched } = useFetchUser('https://server-w6thjpmvcq-uc.a.run.app/api/user', token);
+    const { data, loading: userLoading, error: userErrorFetched } = useFetchUser(SERVER_URI + '/api/user', token);
 
     useEffect(() => {
         if (data) {
-            console.log("User Data:", data);
             setUserData(data);
         }
         if (userErrorFetched) {
@@ -68,6 +72,31 @@ export default function ProfileScreen() {
             setUserError(userErrorFetched);
         }
     }, [data, userErrorFetched]);
+
+    useEffect(() => {
+        if (userData?.imageUrl)
+        {
+            checkImageUrl(userData.imageUrl);
+            setProfileImage(userData.imageUrl);
+        }
+    }, [userData]);
+
+    const checkImageUrl = async (url: string) => {
+            try {
+              const response = await axios.head(url);
+              if (response.status === 200) {
+                console.log('Image is accessible');
+              } else {
+                console.log('Image is not accessible');
+              }
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                  setProfileImage('');
+                } else {
+                  console.error('Unknown error occurred');
+                }
+            }
+    };
 
     const handleBackPress = () => {
         router.back();
@@ -85,18 +114,20 @@ export default function ProfileScreen() {
     };
     
     const handleInformation = () => {
-        console.log("handleInformation");
         router.navigate("/(routes)/information");
     };
 
     const handleChangePinCode = () => {
-        console.log("handleChangePinCode");
         router.navigate("/(routes)/changePinCode");
     };
 
+    const handleTermsScreen = () => {
+        router.navigate("/(routes)/terms");
+    };
+
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+        <SafeAreaView style={styles.container}>
+            <StatusBar style="dark"/>
             <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
                     <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
             </TouchableOpacity>    
@@ -105,7 +136,7 @@ export default function ProfileScreen() {
                     <View style={styles.profileRowContainer}>
                         <View style={styles.profileContainer}>
                             <Image 
-                                source={require("@/assets/icons/profile.png")}
+                                source={profileImage?{uri: profileImage} : require("@/assets/icons/profile.png")}
                                 style={styles.profileImage}
                             />
                         </View>
@@ -166,58 +197,59 @@ export default function ProfileScreen() {
                     </View>
                 </View>
             </View>
-            <View style={styles.menu}>
-                <TouchableOpacity style={styles.menuItem} onPress={handleInformation}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="person" size={26} color={Colors.primaryColor} />
-                        <Text style={styles.menuItemText}>Миний мэдээлэл</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.primaryColor} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem} onPress={handleChangePinCode}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="lock-closed" size={26} color={Colors.primaryColor} />
-                        <Text style={styles.menuItemText}>Пин код өөрчлөх</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.primaryColor} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="pricetags" size={26} color={Colors.primaryColor} />
-                        <Text style={styles.menuItemText}>Миний хөнгөлөлт</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.primaryColor} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="help-circle" size={26} color={Colors.primaryColor} />
-                        <Text style={styles.menuItemText}>Асуулт, хариулт</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.primaryColor} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="alert-circle" size={26} color={Colors.primaryColor} />
-                        <Text style={styles.menuItemText}>Үйлчилгээний нөхцөл</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.primaryColor} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-                    <View style={styles.menuItemContent}>
-                        <Ionicons name="log-out" size={26} color={Colors.red} />
-                        <Text style={styles.menuItemLogoutText}>Системээс гарах</Text>
-                    </View>
-                    <AntDesign name="right" size={20} color={Colors.red} />
-                </TouchableOpacity>
+           <View style={styles.menu}>
+                <ScrollView>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleInformation}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="person" size={26} color={Colors.primaryColor} />
+                            <Text style={styles.menuItemText}>Миний мэдээлэл</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.primaryColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleChangePinCode}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="lock-closed" size={26} color={Colors.primaryColor} />
+                            <Text style={styles.menuItemText}>Пин код өөрчлөх</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.primaryColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="pricetags" size={26} color={Colors.primaryColor} />
+                            <Text style={styles.menuItemText}>Миний хөнгөлөлт</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.primaryColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="help-circle" size={26} color={Colors.primaryColor} />
+                            <Text style={styles.menuItemText}>Асуулт, хариулт</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.primaryColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleTermsScreen}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="alert-circle" size={26} color={Colors.primaryColor} />
+                            <Text style={styles.menuItemText}>Үйлчилгээний нөхцөл</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.primaryColor} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+                        <View style={styles.menuItemContent}>
+                            <Ionicons name="log-out" size={26} color={Colors.red} />
+                            <Text style={styles.menuItemLogoutText}>Системээс гарах</Text>
+                        </View>
+                        <AntDesign name="right" size={20} color={Colors.red} />
+                    </TouchableOpacity>
+                </ScrollView>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        top: 50,
         backgroundColor: Colors.backgroundColor,
     },
     backContainer: {
@@ -338,13 +370,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: Colors.black,
         fontWeight: 'bold',
-    },
+    }, 
     menu: {
+        flex: 1,
         backgroundColor: Colors.white,
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
         marginTop: 10,
-        height: '100%',
         padding: 30,
     },
     menuItem: {
