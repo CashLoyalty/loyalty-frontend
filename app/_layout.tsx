@@ -1,7 +1,10 @@
-import React from 'react';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
-import { ToastProvider } from 'react-native-toast-notifications';
+import React from "react";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { Stack } from "expo-router";
+import { ToastProvider } from "react-native-toast-notifications";
 
 export default function RootLayout() {
   return (
@@ -12,7 +15,6 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  
   return (
     <ToastProvider>
       <Stack screenOptions={{ headerShown: false }}>

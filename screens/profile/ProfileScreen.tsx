@@ -107,7 +107,7 @@ export default function ProfileScreen() {
   };
 
   const handleBackPress = () => {
-    router.back();
+    router.navigate("/(tabs)");
   };
 
   const handleLogout = async () => {
@@ -134,7 +134,7 @@ export default function ProfileScreen() {
   };
 
   const handleWheel = () => {
-    router.navigate("/(routes)/spinWheels");
+    //router.navigate("/(routes)/spinWheels");
   };
 
   return (
