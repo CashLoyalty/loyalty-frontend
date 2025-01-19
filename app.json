@@ -46,6 +46,7 @@
     "updates": {
       "url": "https://u.expo.dev/79d27cdc-5d1b-4106-b07d-d43e47570505"
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "owner": "bat-orgil"
   }
 }

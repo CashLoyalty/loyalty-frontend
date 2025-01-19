@@ -1,12 +1,18 @@
-import React from 'react';
-import { View, StyleSheet, Image, Text, FlatList, ListRenderItem } from 'react-native';
-import Colors from '@/constants/Colors';
-import Header from '@/components/header/header';
-import HeaderSecond from '@/components/headerSecond/headerSecond';
-import { screenDimensions } from '@/constants/constans';
+import React from "react";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  FlatList,
+  ListRenderItem,
+} from "react-native";
+import Colors from "@/constants/Colors";
+import Header from "@/components/header/header";
+import HeaderSecond from "@/components/headerSecond/headerSecond";
+import { screenDimensions } from "@/constants/constans";
 
 const { width, height } = screenDimensions;
-
 
 interface TaskItem {
   id: string;
@@ -17,49 +23,91 @@ interface TaskItem {
 }
 
 const TaskInfoData: TaskItem[] = [
-  { id: '1', imgUrl: require('@/assets/icons/taskItem1.png'), taskTitle: 'Найзаар урих', score: '+300', date: '2024-07-17' },
-  { id: '2', imgUrl: require('@/assets/icons/taskItem2.png'), taskTitle: 'Хүслийн жагсаалт', score: '+200', date: '2024-08-25' },
-  { id: '3', imgUrl: require('@/assets/icons/taskItem1.png'), taskTitle: 'Найзаар урих', score: '+100', date: '2024-09-27'},
-]
+  {
+    id: "1",
+    imgUrl: require("@/assets/icons/taskItem1.png"),
+    taskTitle: "Найзаар урих",
+    score: "+300",
+    date: "2024-07-17",
+  },
+  {
+    id: "2",
+    imgUrl: require("@/assets/icons/taskItem2.png"),
+    taskTitle: "Хүслийн жагсаалт",
+    score: "+200",
+    date: "2024-08-25",
+  },
+  {
+    id: "3",
+    imgUrl: require("@/assets/icons/taskItem1.png"),
+    taskTitle: "Найзаар урих",
+    score: "+100",
+    date: "2024-09-27",
+  },
+];
 
 const Task: React.FC = () => {
-
-    const RenderItem: ListRenderItem<TaskItem> = ({ item }) => (
-      <View>
-        <View style={styles.taskItem}>
+  const RenderItem: ListRenderItem<TaskItem> = ({ item }) => (
+    <View>
+      <View style={styles.taskItem}>
+        <View>
+          <Image source={item.imgUrl} />
+        </View>
+        <View style={styles.taskInfo}>
           <View>
-            <Image source={item.imgUrl}/>
+            <Text style={styles.taskTitleStyle}>{item.taskTitle}</Text>
           </View>
-          <View style={styles.taskInfo}>
-            <View>
-              <Text style={styles.taskTitleStyle}>{item.taskTitle}</Text>
-            </View>
-            <View style={styles.taskScoreRowContainer}>
-              <Image source={require("@/assets/icons/score.png")} style={{width:23, height:23}}></Image>
-              <Text style={{fontSize: 14, color: Colors.primaryColor, marginLeft: 10}}>{item.score}</Text>
-            </View>
-            <View style={styles.taskDateRowContainer}>
-              <Image source={require("@/assets/icons/date.png")} style={{width:23, height:23}}></Image>
-              <Text style={{fontSize: 14, color: Colors.primaryColor, marginLeft: 10}}>{item.date}</Text>
-            </View>
+          <View style={styles.taskScoreRowContainer}>
+            <Image
+              source={require("@/assets/icons/score.png")}
+              style={{ width: 23, height: 23 }}
+            ></Image>
+            <Text
+              style={{
+                fontSize: 14,
+                color: Colors.primaryColor,
+                marginLeft: 10,
+              }}
+            >
+              {item.score}
+            </Text>
+          </View>
+          <View style={styles.taskDateRowContainer}>
+            <Image
+              source={require("@/assets/icons/date.png")}
+              style={{ width: 23, height: 23 }}
+            ></Image>
+            <Text
+              style={{
+                fontSize: 14,
+                color: Colors.primaryColor,
+                marginLeft: 10,
+              }}
+            >
+              {item.date}
+            </Text>
           </View>
         </View>
-      </View>  
-    );
-    return (
-      <View style={styles.container}>
-        <Header/>
-        <HeaderSecond/>
-        <View style={styles.rowContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.titleText}>Даалгаврууд</Text>
-          </View>  
+      </View>
+    </View>
+  );
+  return (
+    <View style={styles.container}>
+      <Header />
+      <HeaderSecond />
+      <View style={styles.rowContainer}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>Даалгаврууд</Text>
         </View>
-        <View style={styles.emptyImageContainer}>
-            <Image source={require('@/assets/images/emptyTask.png')} style={styles.emptyImage}/>
-            <Text style={styles.text}>Даалгавар олдсонгүй</Text>
-        </View>
-        {/*<View style={styles.flatListContainer}>
+      </View>
+      <View style={styles.emptyImageContainer}>
+        <Image
+          source={require("@/assets/images/emptyTask.png")}
+          style={styles.emptyImage}
+        />
+        <Text style={styles.text}>Даалгавар олдсонгүй</Text>
+      </View>
+      {/*<View style={styles.flatListContainer}>
           <FlatList
             numColumns={2}
             data={TaskInfoData}
@@ -67,9 +115,9 @@ const Task: React.FC = () => {
             keyExtractor={(item) => item.id}
           />
         </View>*/}
-      </View>  
-    );
-}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -77,42 +125,44 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundColor,
   },
   rowContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 10,
     marginHorizontal: 10,
   },
   titleContainer: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   titleText: {
     color: Colors.primaryColor,
     fontSize: 20,
-    fontFamily: 'Inter',
+    fontFamily: "Inter",
   },
   emptyImageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0, 
+    bottom: 0,
   },
   emptyImage: {
-    width: width / 100 * 62.5, 
-    height: height / 100 * 41,  
+    //width: width / 100 * 62.5,
+    //height: height / 100 * 41,
+    width: 261,
+    height: 233,
     opacity: 0.5,
   },
   text: {
-    color: '#0E0E96',
-    fontFamily: 'Inter',
-    fontWeight: '600',
+    color: "#0E0E96",
+    fontFamily: "Inter",
+    fontWeight: "600",
     fontSize: 14,
-    opacity: 0.5, 
+    opacity: 0.5,
   },
   taskItem: {
     width: 177,
@@ -124,13 +174,13 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flex: 1,
-    justifyContent: 'center',  
-    alignItems: 'center',      
+    justifyContent: "center",
+    alignItems: "center",
   },
   taskScoreRowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
     marginTop: 20,
     marginBottom: 5,
   },
@@ -138,13 +188,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   taskDateRowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   taskTitleStyle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 
