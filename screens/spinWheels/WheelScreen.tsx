@@ -76,9 +76,7 @@ export default function WheelScreen() {
     }
   };
 
-  useEffect(() => {
-    checkLotto();
-  }, []);
+  checkLotto();
 
   const handleSpin = async (): Promise<void> => {
     if (isSpinning) return;
@@ -87,6 +85,7 @@ export default function WheelScreen() {
     setIsSpinning(true);
 
     const access_token = await AsyncStorage.getItem("token");
+
     if (access_token) {
       try {
         if (lottoCount === 0) {
@@ -95,38 +94,36 @@ export default function WheelScreen() {
           setLoader(false);
           setIsSpinning(false);
           return;
+        } else if (lottoCount > 0) {
+          const spinResponse = await axios.post(
+            `${SERVER_URI}/api/gift/spin`,
+            {},
+            { headers: { Authorization: `Bearer ${access_token}` } }
+          );
+          if (spinResponse && spinResponse.data && spinResponse.data.response) {
+            const giftName = spinResponse.data.response.name;
+            const prizeDetails = getPrizeDetails(giftName);
+            const prizeDeg = prizeDetails.deg;
+
+            spinValue.setValue(0);
+
+            Animated.timing(spinValue, {
+              toValue: 360 + prizeDeg, // Calculate the target value directly
+              duration: 4500,
+              useNativeDriver: true,
+            }).start();
+
+            setPrize(prizeDetails.prizeName);
+            setPrizeImage(spinResponse.data.response.image);
+
+            setTimeout(() => {
+              setIsSpinning(false);
+              setModal(true);
+            }, 5000);
+          } else {
+            throw new Error("Invalid response from server");
+          }
         }
-
-        const spinResponse = await axios.post(
-          `${SERVER_URI}/api/gift/spin`,
-          {},
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
-
-        if (spinResponse && spinResponse.data && spinResponse.data.response) {
-          const giftName = spinResponse.data.response.name;
-          const prizeDetails = getPrizeDetails(giftName);
-          const prizeDeg = prizeDetails.deg;
-
-          spinValue.setValue(0);
-
-          Animated.timing(spinValue, {
-            toValue: spinValue._value + 360 + prizeDeg,
-            duration: 4500,
-            useNativeDriver: true,
-          }).start();
-
-          setPrize(prizeDetails.prizeName);
-          setPrizeImage(spinResponse.data.response.image);
-
-          setTimeout(() => {
-            setIsSpinning(false);
-            setModal(true);
-          }, 5000);
-        } else {
-          throw new Error("Invalid response from server");
-        }
-
         setLoader(false);
       } catch (error: any) {
         setIsSpinning(false);
@@ -257,7 +254,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     top: -50,
-    left: -100,
+    left: -85,
     zIndex: 1,
   },
   choket: {
@@ -287,7 +284,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     width: "80%",
-    maxWidth:300
+    maxWidth: 300,
   },
   modalTitle: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
   modalPrize: { fontSize: 18, marginVertical: 10, color: Colors.black },
