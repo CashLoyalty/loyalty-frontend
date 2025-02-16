@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   const [userError, setUserError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [profileImage, setProfileImage] = useState<string>("");
-
+  
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -113,7 +113,6 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("token");
-      console.log("Token removed successfully");
     } catch (error) {
       console.error("Failed to remove token: ", error);
     } finally {
@@ -139,7 +138,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="dark"/>
       <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
         <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
       </TouchableOpacity>

@@ -17,13 +17,9 @@ export default function HeaderSecond() {
                 const storedToken = await AsyncStorage.getItem('token');
                 if (storedToken) {
                     setToken(storedToken);
-                } else {
-                    console.warn("No token found in AsyncStorage");
                 }
             } catch (error) {
                 console.error("Failed to fetch token: ", error);
-            } finally {
-                
             }
         };
 
@@ -58,7 +54,7 @@ export default function HeaderSecond() {
                     </Text>
                 </View>
                 <View style={styles.section2}>
-                    <Image source={require("@/assets/icons/comment.png")} style={styles.icon} />
+                    <Image source={require("@/assets/icons/gift.png")} style={styles.icon} />
                     <Image source={require("@/assets/icons/notification.png")} style={styles.icon} />
                 </View>
             </View>

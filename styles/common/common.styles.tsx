@@ -11,18 +11,18 @@ import {
 export const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    height: hp('30%'), // Adjust based on your needs
-    marginHorizontal: wp('4%'), // Adjust based on your needs
+    height: hp('30%'),
+    marginHorizontal: wp('4%'),
   },
   swiper: {
-    flex: 1, // Make sure Swiper takes full space within container
+    flex: 1,
   },
   slide: {
     flex: 1,
   },
   background: {
     width: '100%',
-    height: '100%', // Adjust based on your needs
+    height: '100%',
     resizeMode: 'stretch',
     zIndex: 1,
   },

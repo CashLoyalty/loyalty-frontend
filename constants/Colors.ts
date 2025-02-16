@@ -1,5 +1,5 @@
 export default {
-  primaryColor: "#0E0E96",
+  primaryColor: "#0025FF",
   black: "#000000",
   white: "#FFFFFF",
   red: "#FF0000",

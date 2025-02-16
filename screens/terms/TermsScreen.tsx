@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   },
   back: {
     flexDirection: 'row',
+    paddingVertical: 20
   },
   saveAreaView: {
     flex: 1,

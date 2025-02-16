@@ -64,30 +64,28 @@ export default function InformationScreen() {
     }, [data, userErrorFetched]);
 
     useEffect(() => {
-        if (userData?.lastName) {
-            setLastName(userData.lastName);
+        if (!userData) return;
+    
+        const { lastName, firstName, email, birthOfDate, sex, imageUrl } = userData;
+    
+        lastName && setLastName(lastName);
+        firstName && setFirstName(firstName);
+        email && setEmail(email);
+        
+        birthOfDate && setBirthOfDate(new Date(birthOfDate).toISOString().split('T')[0]);
+        
+        if (sex) {
+            setSex(sex);
+            setGender(sex.toLowerCase());
         }
-        if (userData?.firstName) {
-            setFirstName(userData.firstName);
-        }
-        if (userData?.email) {
-            setEmail(userData.email);
-        }
-        if (userData?.birthOfDate) {
-            const date = new Date(userData.birthOfDate);
-            const formattedDate = date.toISOString().split('T')[0]; 
-            setBirthOfDate(formattedDate);
-        }
-        if (userData?.sex) {
-            setSex(userData.sex);
-            setGender(userData.sex.toLowerCase());
-        }
-        if (userData?.imageUrl) {
-            console.log("imageUrl : " + userData.imageUrl);
-            checkImageUrl(userData.imageUrl);
-            setProfileImage(userData.imageUrl);
+    
+        if (imageUrl) {
+            console.log("imageUrl : " + imageUrl);
+            checkImageUrl(imageUrl);
+            setProfileImage(imageUrl);
         }
     }, [userData]);
+    
 
     React.useEffect(() => {
         requestPermission();
@@ -208,9 +206,7 @@ export default function InformationScreen() {
                 });
 
                 if (!response.ok) {
-                    console.error("Failed to upload image. Response status:", response.status);
                     const errorText = await response.text(); 
-                    console.error("Error details:", errorText);
                     throw new Error(`Upload failed with status: ${response.status}`);
                 }
 
@@ -224,13 +220,7 @@ export default function InformationScreen() {
             console.log("No image selected");
         }
     
-        const userDataToUpdate = {
-            firstName,
-            lastName,
-            email,
-            birthOfDate,
-            sex: gender.toUpperCase(),
-        };
+        const userDataToUpdate = { firstName, lastName, email, birthOfDate, sex: gender.toUpperCase() };
     
         try {
             const userResponse = await fetch(`${SERVER_URI}/api/user`, {
@@ -248,9 +238,7 @@ export default function InformationScreen() {
     
             const result = await userResponse.json();
             if (result.code === 400) {
-
                 handleValidationErrors(result);
-
                 toast.show('Амжилтгүй', {
                     type: 'danger',
                     placement: 'top',
@@ -270,22 +258,19 @@ export default function InformationScreen() {
             setButtonSpinner(false);
         }
     };
+
+    const handleValidationErrors = (result: { title: string }) => {
+        const errors: Record<string, (message: string) => void> = {
+            lastName: setErrorLastName,
+            firstName: setErrorFirstName,
+            email: setErrorEmail,
+            birthOfDate: setErrorBirthOfDate
+        };
     
-    const handleValidationErrors = (result: { title: any; }) => {
-        const validationError = result.title;
-        if (validationError.includes('lastName')) {
-            setErrorLastName('Таны овог талбар буруу байна');
-        }
-        if (validationError.includes('firstName')) {
-            setErrorFirstName('Таны нэр талбар буруу байна');
-        }
-        if (validationError.includes('email')) {
-            setErrorEmail('И-Мэйл талбар буруу байна');
-        }
-        if (validationError.includes('birthOfDate')) {
-            setErrorBirthOfDate('Төрсөн өдөр талбар буруу байна');
-        }
-    };
+        (Object.keys(errors) as Array<keyof typeof errors>).forEach(key => {
+            if (result.title.includes(key)) errors[key](`Таны ${key} талбар буруу байна`);
+        });
+    };    
 
     const clearFormErrors = () => {
         setErrorLastName('');
