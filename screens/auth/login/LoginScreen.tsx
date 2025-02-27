@@ -126,7 +126,7 @@ export default function LoginScreen() {
       >
         <Image
           style={styles.loginImage}
-          source={require("@/assets/sign-in/sign_in1.png")}
+          source={require("@/assets/images/icon.png")}
         />
       </View>
       <View style={styles.inputContainer}>
