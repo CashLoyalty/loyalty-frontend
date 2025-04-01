@@ -42,6 +42,10 @@ export default function HeaderSecond() {
     router.navigate("/(routes)/gift");
   };
 
+  const handleWheel = () => {
+    router.navigate("/(routes)/spinWheels");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.rowContainer}>
@@ -52,16 +56,26 @@ export default function HeaderSecond() {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Text style={styles.helloTextStyle}>Сайн байна уу</Text>
-          <Image
-            source={require("@/assets/icons/hello.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.userTextStyle}>
-            {userData?.phoneNumber || ""}
-          </Text>
+          <View style={styles.column}>
+            <View style={styles.row}>
+              <Text style={styles.helloTextStyle}>Сайн байна уу</Text>
+              <Image
+                source={require("@/assets/icons/hello.png")}
+                style={{ width: 15, height: 15 }}
+              />
+            </View>
+            <Text style={styles.userTextStyle}>
+              {userData?.phoneNumber || ""}
+            </Text>
+          </View>
         </View>
         <View style={styles.section2}>
+          <TouchableOpacity onPress={handleWheel}>
+            <Image
+              source={require("@/assets/icons/wheelIcon.png")}
+              style={{ width: 60, height: 60 }}
+            />
+          </TouchableOpacity>
           <TouchableOpacity onPress={handleGift}>
             <Image
               source={require("@/assets/icons/gift.png")}
@@ -107,17 +121,25 @@ const styles = StyleSheet.create({
   helloTextStyle: {
     fontWeight: "600",
     fontSize: 13,
-    marginHorizontal: 5,
   },
   userTextStyle: {
     fontWeight: "600",
     color: Colors.primaryColor,
-    fontSize: 15,
-    marginHorizontal: 5,
+    fontSize: 13,
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 25,
+    height: 25,
     marginHorizontal: 5,
+  },
+  column: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
 });

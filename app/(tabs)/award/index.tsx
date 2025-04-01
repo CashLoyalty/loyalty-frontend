@@ -12,6 +12,7 @@ import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
+import { router } from "expo-router";
 
 const { width, height } = screenDimensions;
 
@@ -47,8 +48,18 @@ const AwardInfoData: AwardItem[] = [
   },
 ];
 
+const products = [
+  { id: "1", image: require("@/assets/icons/airСondition.png") },
+  { id: "2", image: require("@/assets/icons/phone.png") },
+  { id: "3", image: require("@/assets/icons/iwatch.png") },
+  { id: "4", image: require("@/assets/icons/headPhone.png") },
+];
+
 const Award: React.FC = () => {
   console.log("width : " + width + " height : " + height);
+  const handleBackPress = () => {
+    router.navigate("/(tabs)");
+  };
 
   const renderItem: ListRenderItem<AwardItem> = ({ item }) => (
     <View style={styles.awardItem}>
@@ -94,19 +105,38 @@ const Award: React.FC = () => {
     <View style={styles.container}>
       <Header />
       <HeaderSecond />
-
       <View style={styles.rowContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Шагнал</Text>
-        </View>
+        <TouchableOpacity onPress={handleBackPress}>
+          <Image source={require("@/assets/icons/back.png")} />
+        </TouchableOpacity>
+        <Text style={styles.titleText}>Шагнал</Text>
       </View>
-      <View style={styles.emptyImageContainer}>
+      <View style={styles.container2}>
+        <Text style={styles.wheelTitle}>Азын хүрд шагнал</Text>
+      </View>
+      <View style={styles.container3}>
+        <FlatList
+          data={products}
+          horizontal
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View style={styles.circle}>
+              <Image source={item.image} style={styles.image} />
+            </View>
+          )}
+        />
+      </View>
+      <View style={styles.container2}>
+        <Text style={styles.wheelTitle}>Point Market</Text>
+      </View>
+      {/* <View style={styles.emptyImageContainer}>
         <Image
           source={require("@/assets/images/emptyAward.png")}
           style={styles.emptyImage}
         />
         <Text style={styles.text}>Шагнал олдсонгүй</Text>
-      </View>
+      </View> */}
       {/* Uncomment if you want to display the award list */}
       {/*<FlatList
         data={AwardInfoData}
@@ -122,11 +152,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundColor,
   },
+  container2: {
+    marginTop: 10,
+    marginLeft: 10,
+  },
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 10,
-    marginHorizontal: 10,
+    marginLeft: 10,
   },
   titleContainer: {
     flex: 1,
@@ -134,9 +168,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleText: {
-    color: Colors.primaryColor,
     fontSize: 20,
-    fontFamily: "Inter",
+    color: "#0E0E96",
+    marginLeft: (width / 100) * 32.3,
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
   },
   emptyImageContainer: {
     flex: 1,
@@ -211,6 +248,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
+  },
+  wheelTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.giftBackgroundColor,
+  },
+  container3: { padding: 10 },
+  circle: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    borderWidth: 5,
+    borderColor: "blue",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    resizeMode: "contain",
   },
 });
 

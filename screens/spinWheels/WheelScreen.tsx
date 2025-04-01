@@ -151,7 +151,7 @@ export default function WheelScreen() {
   };
 
   const handleProfile = () => {
-    router.push("/(routes)/profile");
+    router.navigate("/(tabs)");
   };
 
   return (
