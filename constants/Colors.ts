@@ -4,5 +4,7 @@ export default {
   white: "#FFFFFF",
   red: "#FF0000",
   verifyBgColor: "#222227",
-  backgroundColor: "EFF6FF",
+  backgroundColor: "#EFF6FF",
+  giftBackgroundColor: "#0025FF",
+  prizeLabelColor: "#6A6A6A",
 };

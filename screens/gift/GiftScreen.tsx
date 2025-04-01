@@ -1,0 +1,202 @@
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  FlatList,
+  ListRenderItem,
+  TouchableOpacity,
+} from "react-native";
+import Colors from "@/constants/Colors";
+import Header from "@/components/header/header";
+import HeaderSecond from "@/components/headerSecond/headerSecond";
+import { router } from "expo-router";
+const { width, height } = Dimensions.get("window");
+
+interface GiftItem {
+  id: string;
+  imgUrl: any;
+  researchTitle: string;
+  score: string;
+  question: string;
+}
+
+const GiftInfoData: GiftItem[] = [
+  {
+    id: "1",
+    imgUrl: require("@/assets/icons/bur20.png"),
+    researchTitle: "Burger King 20`000₮ эрхийг бичиг",
+    score: "Point market",
+    question: "2025.05.25 хүчинтэй",
+  },
+  {
+    id: "2",
+    imgUrl: require("@/assets/icons/display.png"),
+    researchTitle: "55 inch ухаалаг зурагт OLED",
+    score: "Азын хүрд",
+    question: "2025.05.25 хүчинтэй",
+  },
+  {
+    id: "3",
+    imgUrl: require("@/assets/icons/piano.png"),
+    researchTitle: "Төгөлдөх хуур уламжлалт",
+    score: "Сугалаа",
+    question: "2025.05.25 хүчинтэй",
+  },
+];
+
+export default function GiftScreen() {
+  console.log("width : " + width);
+  const handleBackPress = () => {
+    router.navigate("/(tabs)");
+  };
+
+  const renderItem: ListRenderItem<GiftItem> = ({ item }) => (
+    <TouchableOpacity
+      style={styles.giftItem}
+      onPress={() => handleItemPress(item)}
+    >
+      <View style={styles.giftRowContainer}>
+        <View style={styles.giftImgContainer}>
+          <Image source={item.imgUrl} style={styles.image} />
+        </View>
+        <View style={styles.giftInfoContainer}>
+          <View>
+            <Text style={styles.giftInfoTitle}>{item.researchTitle}</Text>
+            <View style={styles.scoreContainer}>
+              <Image source={require("@/assets/icons/git-merge.png")} />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: Colors.white,
+                  marginLeft: 10,
+                }}
+              >
+                {item.score}
+              </Text>
+            </View>
+            <View style={styles.questionContainer}>
+              <Image source={require("@/assets/icons/clock.png")} />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: Colors.white,
+                  marginLeft: 10,
+                }}
+              >
+                {item.question}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+  const handleItemPress = (item: GiftItem) => {
+    if (item.id === "1") {
+      console.log("asdf");
+      router.navigate("/(routes)/giftDetail1");
+    } else {
+      console.log("dasg");
+      router.navigate("/(routes)/giftDetail2");
+    }
+  };
+  return (
+    <View style={styles.container}>
+      <Header />
+      <HeaderSecond />
+      <View style={styles.rowContainer}>
+        <TouchableOpacity onPress={handleBackPress}>
+          <Image source={require("@/assets/icons/back.png")} />
+        </TouchableOpacity>
+        <Text style={styles.titleText}>Бэлэг</Text>
+      </View>
+      <FlatList
+        data={GiftInfoData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  titleText: {
+    fontSize: 20,
+    color: "#0E0E96",
+    marginLeft: (width / 100) * 32.3,
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
+  },
+  giftItem: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  giftRowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  giftImgContainer: {
+    zIndex: 2,
+    width: (width / 100) * 46,
+    height: 126,
+    borderWidth: 1,
+    borderColor: Colors.primaryColor,
+    borderRadius: 10,
+    backgroundColor: Colors.white,
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  giftInfoContainer: {
+    flexDirection: "row",
+    width: (width / 100) * 52.2,
+    marginLeft: -10,
+    height: 120,
+    backgroundColor: Colors.giftBackgroundColor,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.primaryColor,
+    justifyContent: "center",
+    zIndex: 1,
+    paddingTop: 10,
+  },
+  giftInfoTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colors.white,
+    marginLeft: 20,
+  },
+  scoreContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginLeft: 20,
+    marginTop: 25,
+    marginBottom: 10,
+  },
+  questionContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginLeft: 20,
+  },
+  image: {
+    width: (width / 100) * 44.8,
+    height: 100,
+    resizeMode: "contain",
+  },
+});
