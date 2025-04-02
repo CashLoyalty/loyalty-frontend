@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
-import * as RadioButtonRN from 'radio-buttons-react-native';
+import RadioButtonRN from 'radio-buttons-react-native';
 
 
 const { width, height } = screenDimensions;
