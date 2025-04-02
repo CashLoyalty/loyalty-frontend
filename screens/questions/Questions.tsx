@@ -1,30 +1,40 @@
 "use client";
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Keyboard,
+} from "react-native";
 import Slider from "@react-native-community/slider";
-import { RadioButton, Checkbox } from "react-native-paper"; // Import Checkbox from react-native-paper
+import { Checkbox } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
+import RadioButtonRN from "radio-buttons-react-native";
 
 const { width, height } = screenDimensions;
 
 const Questions: React.FC = () => {
   const [step, setStep] = useState(1);
-  const [value, setValue] = useState<string>("");
-  const [ragevalue, setRageValue] = useState(1);
-  const [text, setText] = useState("");
-  const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
-
-  const onChangeText = (inputText: any) => {
-    setText(inputText);
-  };
+  const [formData, setFormData] = useState({
+    value: "",
+    rageValue: 5,
+    text: "",
+    selectedFlavors: [] as string[],
+  });
 
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
     if (step === 5) {
       router.push("/research");
+      console.log(formData);
+    }
+    if (step === 4) {
+      console.log(formData);
     }
   };
 
@@ -32,22 +42,47 @@ const Questions: React.FC = () => {
     setStep((prevStep) => (prevStep > 1 ? prevStep - 1 : prevStep));
   };
 
-  const handleSliderChange = (newValue: any) => {
-    const integerValue = Math.round(newValue);
-    setRageValue(integerValue);
+  const handleSliderChange = (newValue: number) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      rageValue: Math.round(newValue),
+    }));
   };
 
   const toggleCheckbox = (flavor: string) => {
-    setSelectedFlavors((prev) =>
-      prev.includes(flavor)
-        ? prev.filter((item) => item !== flavor)
-        : [...prev, flavor]
-    );
+    setFormData((prevData) => ({
+      ...prevData,
+      selectedFlavors: prevData.selectedFlavors.includes(flavor)
+        ? prevData.selectedFlavors.filter((item) => item !== flavor)
+        : [...prevData.selectedFlavors, flavor],
+    }));
   };
 
   const handleback = () => {
     router.push("/research");
   };
+
+  const onChangeText = (inputText: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      text: inputText,
+    }));
+  };
+
+  const data = [
+    {
+      label: "0-1",
+    },
+    {
+      label: "2-3",
+    },
+    {
+      label: "3-4",
+    },
+    {
+      label: "4-5",
+    },
+  ];
 
   return (
     <SafeAreaView style={{ backgroundColor: Colors.primaryColor }}>
@@ -70,6 +105,7 @@ const Questions: React.FC = () => {
             Хэрэглээний судалгаа
           </Text>
         </View>
+
         {step === 1 && (
           <View
             style={{
@@ -85,52 +121,13 @@ const Questions: React.FC = () => {
             <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
               Та өдөр дунжаар хэдэн ундаа уудаг вэ ?
             </Text>
-            <RadioButton.Group
-              onValueChange={(newValue) => setValue(newValue)}
-              value={value}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: Colors.white,
-                  borderRadius: 16,
-                  padding: 4,
-                  marginTop: 50,
-                }}
-              >
-                <RadioButton color="blue" value="0-1" />
-                <Text>0-1</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: Colors.white,
-                  borderRadius: 16,
-                  padding: 4,
-                  marginTop: 8,
-                }}
-              >
-                <RadioButton color="blue" value="2-3" />
-                <Text>2-3</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: Colors.white,
-                  borderRadius: 16,
-                  padding: 4,
-                  marginTop: 8,
-                }}
-              >
-                <RadioButton color="blue" value="3-4" />
-                <Text>3-4</Text>
-              </View>
-            </RadioButton.Group>
+            <RadioButtonRN
+              data={data} // Your data array
+              selectedBtn={(e) => console.log(e)}
+            />
           </View>
         )}
+
         {step === 2 && (
           <View
             style={{
@@ -158,7 +155,9 @@ const Questions: React.FC = () => {
             >
               <Checkbox
                 status={
-                  selectedFlavors.includes("Дуртай") ? "checked" : "unchecked"
+                  formData.selectedFlavors.includes("Дуртай")
+                    ? "checked"
+                    : "unchecked"
                 }
                 onPress={() => toggleCheckbox("Дуртай")}
               />
@@ -177,7 +176,7 @@ const Questions: React.FC = () => {
             >
               <Checkbox
                 status={
-                  selectedFlavors.includes("Пепси энгийн")
+                  formData.selectedFlavors.includes("Пепси энгийн")
                     ? "checked"
                     : "unchecked"
                 }
@@ -197,7 +196,7 @@ const Questions: React.FC = () => {
             >
               <Checkbox
                 status={
-                  selectedFlavors.includes("Пепси сахаргүй")
+                  formData.selectedFlavors.includes("Пепси сахаргүй")
                     ? "checked"
                     : "unchecked"
                 }
@@ -217,7 +216,7 @@ const Questions: React.FC = () => {
             >
               <Checkbox
                 status={
-                  selectedFlavors.includes("Пепси лайм")
+                  formData.selectedFlavors.includes("Пепси лайм")
                     ? "checked"
                     : "unchecked"
                 }
@@ -227,6 +226,7 @@ const Questions: React.FC = () => {
             </View>
           </View>
         )}
+
         {step === 3 && (
           <View
             style={{
@@ -240,7 +240,7 @@ const Questions: React.FC = () => {
           >
             <Text>Асуулт 3 - 4</Text>
             <Text style={{ fontSize: 20, fontWeight: 600, marginTop: 20 }}>
-              Танд “Пепси сахаргүй амтанд үнэлгээ өгвөл ямар үнэлгээ өгөх вэ ?
+              Танд “Пепси сахаргүй амтанд үнэлгээ өгвөл ямар үнэлгээ өгөх вэ?
               /1-10/
             </Text>
             <View
@@ -280,7 +280,7 @@ const Questions: React.FC = () => {
                   borderRadius: 13,
                 }}
               >
-                {ragevalue}
+                {formData.rageValue}
               </Text>
 
               <View>
@@ -288,7 +288,7 @@ const Questions: React.FC = () => {
                   style={{ width: 300, height: 80 }}
                   minimumValue={1}
                   maximumValue={10}
-                  value={ragevalue}
+                  value={formData.rageValue}
                   onValueChange={handleSliderChange}
                   step={1}
                 />
@@ -296,6 +296,7 @@ const Questions: React.FC = () => {
             </View>
           </View>
         )}
+
         {step === 4 && (
           <View
             style={{
@@ -305,24 +306,20 @@ const Questions: React.FC = () => {
               marginBottom: 12,
               borderRadius: 15,
               height: "80%",
-              flex: 1,
-              alignItems: "center",
             }}
           >
             <Text>Асуулт 4 - 4</Text>
             <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
               Та “Пепси сахаргүй амтны талаар сэтгэгдлээ бичнэ үү ?
             </Text>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, alignItems: "center" }}>
               <TextInput
-                editable
-                multiline
                 numberOfLines={4}
-                maxLength={40}
                 onChangeText={onChangeText}
-                value={text}
+                value={formData.text}
                 placeholder="Та сэтгэгдэл ээ бичнэ үү"
                 placeholderTextColor="rgba(0, 0, 0, 0.5)"
+                onSubmitEditing={Keyboard.dismiss}
                 style={{
                   marginTop: 30,
                   borderWidth: 1,
@@ -330,8 +327,7 @@ const Questions: React.FC = () => {
                   backgroundColor: Colors.white,
                   padding: 16,
                   borderRadius: 16,
-                  width: 300,
-                  height: 200,
+                  width: "100%",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -339,6 +335,7 @@ const Questions: React.FC = () => {
             </View>
           </View>
         )}
+
         {step === 5 && (
           <View
             style={{
@@ -363,6 +360,7 @@ const Questions: React.FC = () => {
             </Text>
           </View>
         )}
+
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <TouchableOpacity
             style={{
