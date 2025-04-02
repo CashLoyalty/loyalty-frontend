@@ -14,7 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
-import RadioButtonRN from "radio-buttons-react-native";
+import * as RadioButtonRN from 'radio-buttons-react-native';
+
 
 const { width, height } = screenDimensions;
 
@@ -71,15 +72,19 @@ const Questions: React.FC = () => {
 
   const data = [
     {
+      value: "0-1",
       label: "0-1",
     },
     {
+      value: "2-3",
       label: "2-3",
     },
     {
+      value: "3-4",
       label: "3-4",
     },
     {
+      value: "4-5",
       label: "4-5",
     },
   ];
@@ -121,10 +126,7 @@ const Questions: React.FC = () => {
             <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
               Та өдөр дунжаар хэдэн ундаа уудаг вэ ?
             </Text>
-            <RadioButtonRN
-              data={data} // Your data array
-              selectedBtn={(e) => console.log(e)}
-            />
+            <RadioButtonRN data={data} />
           </View>
         )}
 
