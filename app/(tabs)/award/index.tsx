@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Image,
@@ -7,6 +7,7 @@ import {
   ListRenderItem,
   FlatList,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
@@ -89,8 +90,101 @@ const prizes: PrizeItem[] = [
   },
 ];
 
+const BottomModal = ({
+  visible,
+  setVisible,
+  item,
+}: {
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  item: PrizeItem | null;
+}) => {
+  return (
+    <Modal
+      visible={visible}
+      //animationType="slide"
+      transparent
+      onRequestClose={() => setVisible(false)}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.modal}>
+          <View style={styles.rowContainer2}>
+            <View>
+              <Text style={{ fontSize: 15, fontWeight: "600" }}>ТАНД</Text>
+            </View>
+            <View style={styles.modalScore}>
+              <Text
+                style={{ fontSize: 15, fontWeight: "600", color: Colors.white }}
+              >
+                45203
+              </Text>
+            </View>
+            <View>
+              <Text style={{ fontSize: 15, fontWeight: "600" }}>
+                ОНОО БАЙНА
+              </Text>
+            </View>
+          </View>
+          <View style={styles.videoContainer}>
+            <View style={styles.modalColumncontainer}>
+              <View>
+                <Image
+                  source={require("@/assets/icons/bur2.png")}
+                  resizeMode="contain"
+                  style={{ width: 300, height: 156 }}
+                />
+              </View>
+              <View>
+                <Text style={{ fontSize: 15, fontWeight: "600" }}>
+                  Burger King 20`000₮ эрхийн бичиг
+                </Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text
+                  style={{ fontSize: 12, fontFamily: "800", color: "#808080" }}
+                >
+                  үлд: 20ш
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.modalColumncontainer2}>
+            <View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "500",
+                  alignItems: "flex-start",
+                }}
+              >
+                Дэлгэрэнгүй
+              </Text>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ fontSize: 12, fontWeight: "600" }}>
+                Та BurgerKing аль ч салбараар 20`000₮ үйлчлүүлэх хөнгөлөлтийн
+                эрхийн бичиг
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setVisible(false)}
+            style={styles.closeButton}
+          >
+            <Text style={styles.buttonText}>Авах</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const Award: React.FC = () => {
   console.log("width : " + width + " height : " + height);
+  const [visible, setVisible] = useState(false); // Modal visibility state
+  const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
+
   const handleBackPress = () => {
     router.navigate("/(tabs)");
   };
@@ -136,8 +230,12 @@ const Award: React.FC = () => {
   );
 
   const handleItemPress = (item: PrizeItem) => {
+    setSelectedItem(item); // Set the item when it's pressed
+    setVisible(true);
     console.log("item TTT : " + item.id);
   };
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -166,7 +264,7 @@ const Award: React.FC = () => {
         />
       </View>
       <View style={styles.container2}>
-        <Text style={styles.wheelTitle}>Point Market</Text>``
+        <Text style={styles.wheelTitle}>Point Market</Text>
       </View>
       <FlatList
         data={prizes}
@@ -193,19 +291,11 @@ const Award: React.FC = () => {
           </TouchableOpacity>
         )}
       />
-      {/* <View style={styles.emptyImageContainer}>
-        <Image
-          source={require("@/assets/images/emptyAward.png")}
-          style={styles.emptyImage}
-        />
-        <Text style={styles.text}>Шагнал олдсонгүй</Text>
-      </View> */}
-      {/* Uncomment if you want to display the award list */}
-      {/*<FlatList
-        data={AwardInfoData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />*/}
+      <BottomModal
+        visible={visible}
+        setVisible={setVisible}
+        item={selectedItem}
+      />
     </View>
   );
 };
@@ -224,6 +314,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginLeft: 10,
+  },
+  rowContainer2: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+    marginHorizontal: 10,
   },
   titleContainer: {
     flex: 1,
@@ -298,6 +395,18 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: "600",
     color: Colors.primaryColor,
+  },
+  videoContainer: {
+    width: "100%",
+    height: 222,
+    marginTop: 10,
+    marginHorizontal: 10,
+    borderWidth: 2,
+    borderColor: "#E5E4E2",
+    borderRadius: 10,
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
   },
   dateContainer: {
     flexDirection: "row",
@@ -409,9 +518,62 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   row: {
-    justifyContent: "space-between", // Spaces columns evenly
-    paddingHorizontal: 10, // Adjust padding
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
     paddingVertical: 10,
+  },
+  container5: { flex: 1, justifyContent: "center", alignItems: "center" },
+  button: {
+    backgroundColor: Colors.giftBackgroundColor,
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalScore: {
+    height: 30,
+    backgroundColor: Colors.giftBackgroundColor,
+    padding: 5,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignContent: "center",
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 25,
+  },
+  overlay: {
+    flex: 1,
+    height: 200,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modal: {
+    backgroundColor: "white",
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: "center",
+  },
+  modalText: { fontSize: 18, marginBottom: 10 },
+  closeButton: {
+    backgroundColor: Colors.giftBackgroundColor,
+    height: 55,
+    width: "90%",
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    justifyContent: "center", // Center the content vertically
+    alignItems: "center",
+  },
+  modalColumncontainer: {
+    flexDirection: "column",
+  },
+  modalColumncontainer2: {
+    flexDirection: "column",
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
 
