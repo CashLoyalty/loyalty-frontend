@@ -168,6 +168,23 @@ const BottomModal = ({
             </View>
           </View>
 
+          <View style={styles.modalTotalScore}>
+            <Text style={styles.totalText}>НИЙТ</Text>
+            <View style={styles.modalAmount}>
+              <Text style={styles.amountText}>40`000</Text>
+              <Image source={require("@/assets/icons/plug2.png")} />
+            </View>
+          </View>
+          <View style={styles.countContainer}>
+            <TouchableOpacity style={styles.countButton}>
+              <Text style={styles.countButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.countText}>2</Text>
+            <TouchableOpacity style={styles.countButton}>
+              <Text style={styles.countButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
             onPress={() => setVisible(false)}
             style={styles.closeButton}
@@ -236,6 +253,7 @@ const Award: React.FC = () => {
   };
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [count, setCount] = useState<number>(0);
 
   return (
     <View style={styles.container}>
@@ -317,7 +335,7 @@ const styles = StyleSheet.create({
   },
   rowContainer2: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
     marginHorizontal: 10,
@@ -400,7 +418,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 222,
     marginTop: 10,
-    marginHorizontal: 10,
     borderWidth: 2,
     borderColor: "#E5E4E2",
     borderRadius: 10,
@@ -543,7 +560,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    height: 200,
     justifyContent: "flex-end",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
@@ -554,17 +570,15 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    alignItems: "center",
   },
   modalText: { fontSize: 18, marginBottom: 10 },
   closeButton: {
     backgroundColor: Colors.giftBackgroundColor,
     height: 55,
-    width: "90%",
     borderRadius: 10,
     marginTop: 10,
     marginBottom: 10,
-    justifyContent: "center", // Center the content vertically
+    justifyContent: "center",
     alignItems: "center",
   },
   modalColumncontainer: {
@@ -574,6 +588,59 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     marginTop: 10,
     marginBottom: 10,
+  },
+  modalTotalScore: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+    marginTop: 20,
+    height: 50,
+  },
+  totalText: {
+    fontSize: 23,
+    fontWeight: "600",
+    paddingTop: 5,
+  },
+  amountText: {
+    fontSize: 23,
+    fontWeight: "600",
+    paddingTop: 5,
+    paddingRight: 5,
+  },
+  modalAmount: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flex: 1,
+    flexShrink: 0,
+  },
+  countContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  countButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "#E5E4E2",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
+  },
+  countButtonText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#E5E4E2",
+    paddingBottom: 5,
+  },
+  countText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginHorizontal: 10,
   },
 });
 
