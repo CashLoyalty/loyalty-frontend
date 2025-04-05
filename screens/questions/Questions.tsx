@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ const Questions: React.FC = () => {
   const [step, setStep] = useState(1);
   const [modal, setModal] = useState(false);
   const [navigationBtn, setNavigationBtn] = useState(true);
+  const [border, setBorder] = useState(true);
   const [formData, setFormData] = useState({
     value: "",
     rageValue: 3,
@@ -96,6 +97,14 @@ const Questions: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      setBorder(true);
+    } else if (Platform.OS === "android") {
+      setBorder(false);
+    }
+  }, []);
+
   return (
     <SafeAreaView style={{ backgroundColor: Colors.primaryColor, flex: 1 }}>
       <KeyboardAvoidingView
@@ -139,15 +148,24 @@ const Questions: React.FC = () => {
                 <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
                   Та өдөр дунжаар хэдэн ундаа уудаг вэ ?
                 </Text>
-                <RadioButtonRN
-                  data={data}
-                  selectedBtn={(e: any) => {
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      value: e.value,
-                    }));
-                  }}
-                />
+                <View style={{ marginTop: 20 }}>
+                  <RadioButtonRN
+                    data={data.map((item) => ({
+                      ...item,
+                      label: (
+                        <Text style={{ fontSize: 20, fontWeight: 600 }}>
+                          {item.label}
+                        </Text>
+                      ),
+                    }))}
+                    selectedBtn={(e: any) => {
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        value: e.value,
+                      }));
+                    }}
+                  />
+                </View>
               </View>
             )}
 
@@ -166,85 +184,68 @@ const Questions: React.FC = () => {
                 <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
                   Та “Пепси” аль амтанд дуртай вэ?
                 </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: Colors.white,
-                    borderRadius: 16,
-                    padding: 8,
-                    marginTop: 20,
-                  }}
-                >
-                  <Checkbox
-                    status={
-                      formData.selectedFlavors.includes("Дуртай")
-                        ? "checked"
-                        : "unchecked"
-                    }
-                    onPress={() => toggleCheckbox("Дуртай")}
-                  />
-                  <Text>Пепси энгийн</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: Colors.white,
-                    borderRadius: 16,
-                    padding: 8,
-                    marginTop: 8,
-                  }}
-                >
-                  <Checkbox
-                    status={
-                      formData.selectedFlavors.includes("Пепси энгийн")
-                        ? "checked"
-                        : "unchecked"
-                    }
-                    onPress={() => toggleCheckbox("Пепси энгийн")}
-                  />
-                  <Text>Пепси энгийн</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: Colors.white,
-                    borderRadius: 16,
-                    padding: 8,
-                    marginTop: 8,
-                  }}
-                >
-                  <Checkbox
-                    status={
-                      formData.selectedFlavors.includes("Пепси сахаргүй")
-                        ? "checked"
-                        : "unchecked"
-                    }
-                    onPress={() => toggleCheckbox("Пепси сахаргүй")}
-                  />
-                  <Text>Пепси сахаргүй</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: Colors.white,
-                    borderRadius: 16,
-                    padding: 8,
-                    marginTop: 8,
-                  }}
-                >
-                  <Checkbox
-                    status={
-                      formData.selectedFlavors.includes("Пепси лайм")
-                        ? "checked"
-                        : "unchecked"
-                    }
-                    onPress={() => toggleCheckbox("Пепси лайм")}
-                  />
-                  <Text>Пепси лайм</Text>
+
+                <View style={{ marginTop: 20 }}>
+                  {[
+                    "Пепси энгийн",
+                    "Пепси сахаргүй",
+                    "Пепси лайм",
+                    "Пепси ванила",
+                  ].map((flavor) => (
+                    <TouchableOpacity
+                      key={flavor}
+                      style={{
+                        flexDirection: "row",
+                        gap: 8,
+                        alignItems: "center",
+                        backgroundColor: Colors.white,
+                        borderRadius: 6,
+                        padding: 8,
+                        marginTop: 15,
+                        borderWidth: 1,
+                        borderColor: formData.selectedFlavors.includes(flavor)
+                          ? Colors.primaryColor
+                          : "#ccc",
+                      }}
+                      onPress={() => toggleCheckbox(flavor)}
+                    >
+                      {border && (
+                        <View
+                          style={{
+                            backgroundColor: formData.selectedFlavors.includes(
+                              flavor
+                            )
+                              ? Colors.primaryColor
+                              : "",
+                            borderColor: formData.selectedFlavors.includes(
+                              flavor
+                            )
+                              ? Colors.primaryColor
+                              : "#C6C9CC",
+                            borderWidth: 1,
+                            padding: 2,
+                            borderRadius: 5,
+                            position: "absolute",
+                            height: 25,
+                            width: 25,
+                            marginLeft: 14,
+                          }}
+                        ></View>
+                      )}
+                      <Checkbox
+                        color="white"
+                        status={
+                          formData.selectedFlavors.includes(flavor)
+                            ? "checked"
+                            : "unchecked"
+                        }
+                        onPress={() => toggleCheckbox(flavor)}
+                      />
+                      <Text style={{ fontSize: 20, fontWeight: 600 }}>
+                        {flavor}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
             )}
@@ -280,7 +281,7 @@ const Questions: React.FC = () => {
                       flex: 1,
                       width: 300,
                       maxHeight: 200,
-                      borderRadius: 16,
+                      borderRadius: 8,
                     }}
                   >
                     <Image
