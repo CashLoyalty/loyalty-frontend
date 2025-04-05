@@ -26,7 +26,7 @@ const Questions: React.FC = () => {
   const [navigationBtn, setNavigationBtn] = useState(true);
   const [formData, setFormData] = useState({
     value: "",
-    rageValue: 5,
+    rageValue: 3,
     text: "",
     selectedFlavors: [] as string[],
   });
@@ -73,8 +73,8 @@ const Questions: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setModal(false); // Close the modal
-    router.push("/research"); // Navigate to the '/research' route
+    setModal(false);
+    router.push("/research");
   };
 
   const data = [
@@ -139,7 +139,15 @@ const Questions: React.FC = () => {
                 <Text style={{ fontSize: 20, fontWeight: 500, marginTop: 20 }}>
                   Та өдөр дунжаар хэдэн ундаа уудаг вэ ?
                 </Text>
-                <RadioButtonRN data={data} />
+                <RadioButtonRN
+                  data={data}
+                  selectedBtn={(e: any) => {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      value: e.value,
+                    }));
+                  }}
+                />
               </View>
             )}
 
@@ -249,7 +257,7 @@ const Questions: React.FC = () => {
                   marginTop: 12,
                   marginBottom: 12,
                   borderRadius: 15,
-                  height: "80%",
+                  height: "90%",
                 }}
               >
                 <Text>Асуулт 3 - 4</Text>
@@ -290,8 +298,9 @@ const Questions: React.FC = () => {
                       fontWeight: 600,
                       justifyContent: "center",
                       alignItems: "center",
-                      padding: 15,
                       borderRadius: 13,
+                      paddingHorizontal: 20,
+                      paddingVertical: 15,
                     }}
                   >
                     {formData.rageValue}
@@ -299,12 +308,15 @@ const Questions: React.FC = () => {
 
                   <View>
                     <Slider
-                      style={{ width: 300, height: 80 }}
-                      minimumValue={1}
+                      style={{ width: 280, height: 80 }}
+                      minimumValue={0}
                       maximumValue={10}
                       value={formData.rageValue}
                       onValueChange={handleSliderChange}
                       step={1}
+                      minimumTrackTintColor={Colors.primaryColor}
+                      maximumTrackTintColor="#BEBEBE"
+                      thumbTintColor={Colors.primaryColor}
                     />
                   </View>
                 </View>
@@ -328,6 +340,7 @@ const Questions: React.FC = () => {
                 </Text>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
+                    multiline
                     numberOfLines={4}
                     onChangeText={onChangeText}
                     value={formData.text}
@@ -342,6 +355,7 @@ const Questions: React.FC = () => {
                       padding: 16,
                       borderRadius: 16,
                       width: "100%",
+                      height: 200,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
