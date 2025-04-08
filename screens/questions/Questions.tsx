@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useToast } from "react-native-toast-notifications";
 import Slider from "@react-native-community/slider";
 import { Checkbox } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,10 +22,12 @@ import RadioButtonRN from "radio-buttons-react-native";
 const { width, height } = screenDimensions;
 
 const Questions: React.FC = () => {
+  const toast = useToast();
   const [step, setStep] = useState(1);
   const [modal, setModal] = useState(false);
-  const [navigationBtn, setNavigationBtn] = useState(true);
   const [border, setBorder] = useState(true);
+  const [navigationBtn, setNavigationBtn] = useState(false);
+  const [navigationFirstBtn, setNavigationFirstBtn] = useState(true);
   const [formData, setFormData] = useState({
     value: "",
     rageValue: 3,
@@ -33,7 +36,39 @@ const Questions: React.FC = () => {
   });
 
   const handleNextStep = () => {
-    setStep((prevStep) => prevStep + 1);
+    // Step 1 Validation
+    if (step === 1 && formData.value === "") {
+      toast.show("Та асуулт 1-г хариулаагүй байна.", {
+        type: "danger",
+        placement: "top",
+        duration: 4000,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    // Step 2 Validation
+    if (step === 2 && formData.selectedFlavors.length === 0) {
+      toast.show("Та амт сонгоогүй байна.", {
+        type: "danger",
+        placement: "top",
+        duration: 4000,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    setStep((prevStep) => {
+      const newStep = prevStep + 1;
+      if (newStep === 1) {
+        setNavigationFirstBtn(true);
+        setNavigationBtn(false);
+      } else {
+        setNavigationFirstBtn(false);
+        setNavigationBtn(true);
+      }
+      return newStep;
+    });
 
     if (step === 4) {
       console.log(formData);
@@ -43,7 +78,17 @@ const Questions: React.FC = () => {
   };
 
   const handlePrevStep = () => {
-    setStep((prevStep) => (prevStep > 1 ? prevStep - 1 : prevStep));
+    setStep((prevStep) => {
+      const newStep = prevStep > 1 ? prevStep - 1 : prevStep;
+      if (newStep === 1) {
+        setNavigationFirstBtn(true);
+        setNavigationBtn(false);
+      } else {
+        setNavigationFirstBtn(false);
+        setNavigationBtn(true);
+      }
+      return newStep;
+    });
   };
 
   const handleSliderChange = (newValue: number) => {
@@ -356,7 +401,7 @@ const Questions: React.FC = () => {
                       padding: 16,
                       borderRadius: 16,
                       width: "100%",
-                      height: 200,
+                      height: 150,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
@@ -476,6 +521,35 @@ const Questions: React.FC = () => {
                 style={{ width: 23, height: 23 }}
               />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: Colors.backgroundColor,
+                height: 50,
+                maxWidth: "100%",
+                borderRadius: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+              }}
+              onPress={handleNextStep}
+            >
+              <Text style={{ maxWidth: "100%", fontWeight: 600 }}>
+                Дараагийнх
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {/* Bottom First Navigation Buttons */}
+        {navigationFirstBtn && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 20,
+              padding: 8,
+            }}
+          >
             <TouchableOpacity
               style={{
                 backgroundColor: Colors.backgroundColor,
