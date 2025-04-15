@@ -158,7 +158,6 @@ const Task: React.FC = () => {
               </Text>
             </View>
             <StepIndicator currentStep={1} totalSteps={4} />
-            {/* <View style={{ height: 20, backgroundColor: "red" }} /> */}
           </View>
           <View style={styles.taskImgWrapper}>
             <View style={styles.taskImgContainer}>

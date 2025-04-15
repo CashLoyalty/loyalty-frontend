@@ -13,7 +13,6 @@ import {
   Keyboard,
   ScrollView,
   Linking,
-  RefreshControl,
 } from "react-native";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -25,8 +24,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import usePointDetails from "@/hooks/usePointDetials";
 import { SERVER_URI } from "@/utils/uri";
 import { format } from "date-fns";
-import { useRoute } from "@react-navigation/native";
 import Checkbox from "expo-checkbox";
+import { useLocalSearchParams, router } from "expo-router";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -39,24 +38,23 @@ const HomeScreen: React.FC = () => {
     loading: loadingPoints,
     fetchPointDetails,
   } = usePointDetails(SERVER_URI);
-  const route = useRoute();
-  const { terms } = route.params as { terms?: string };
+  const { terms } = useLocalSearchParams();
   const [modalVisibleTerms, setModalVisibleTerms] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const showTerms = String(terms).toLowerCase() === "true";
 
   useEffect(() => {
-    if (String(terms) === "'true'") {
-      setModalVisibleTerms(true);
-    }
-  }, [terms]);
+    if (showTerms) setModalVisibleTerms(true);
+  }, [showTerms]);
 
   const toggleModalTerms = () => {
     setModalVisibleTerms(!modalVisibleTerms);
   };
 
   const handleAccept = () => {
-    if (isChecked) toggleModalTerms();
+    if (isChecked) {
+      toggleModalTerms();
+    }
   };
 
   const fetchToken = async () => {
@@ -76,19 +74,17 @@ const HomeScreen: React.FC = () => {
     fetchToken();
   }, []);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
-
   if (inputValue.length === 8) {
     Keyboard.dismiss();
   }
 
   const handleRegLotteryNum = () => {
     setModalVisible(true);
+  };
+
+  const handleQRLotteryNum = () => {
+    console.log("QRCode Reader");
+    router.navigate("/(routes)/qrcodeReader");
   };
 
   const handleModalClose = () => {
@@ -265,7 +261,7 @@ const HomeScreen: React.FC = () => {
         </View>
         <View style={styles.lotteryNumberQr}>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={handleQRLotteryNum}
             accessibilityLabel="Scan Lottery QR Code"
           >
             <Image source={require("@/assets/icons/lotteryNumberQR.png")} />

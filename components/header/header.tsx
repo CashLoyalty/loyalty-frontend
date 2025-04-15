@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image, Platform, Dimensions } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Platform,
+  Dimensions,
+  StatusBar,
+} from "react-native";
+//import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 import {
   SafeAreaView,
@@ -14,9 +21,6 @@ export default function Header() {
 
   useEffect(() => {
     setHasSaveArea(insets.top > 44);
-    console.log("hasSaveArea : " + hasSaveArea);
-    console.log("insets top : " + insets.top);
-    console.log("height : " + height);
   }, [insets.top]);
 
   const styles = StyleSheet.create({
@@ -57,7 +61,7 @@ export default function Header() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#0025FF" />
+      <StatusBar barStyle="light-content" />
       <View style={styles.logoContainerStyle}>
         <Image
           source={require("@/assets/images/header-pepsi-logo.png")}

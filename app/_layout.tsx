@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
 
@@ -32,6 +29,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(routes)/gift/index" />
         <Stack.Screen name="(routes)/giftDetail1/index" />
         <Stack.Screen name="(routes)/giftDetail2/index" />
+        <Stack.Screen name="(routes)/qrcodeReader/index" />
       </Stack>
     </ToastProvider>
   );

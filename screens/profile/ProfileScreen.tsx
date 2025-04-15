@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  StatusBar,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
@@ -15,7 +16,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserResponse } from "@/types/global";
 import useFetchUser from "@/hooks/useFetchUser";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import { SERVER_URI } from "@/utils/uri";
 import axios from "axios";
 
@@ -28,7 +28,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress, total }) => {
   const progressPercent = (progress / total) * 100;
 
   return (
-    <View style={styles.proccessBarcontainer}>
+    <View style={styles.proccessBarContainer}>
       <View style={styles.processBarInfo}>
         <Text style={styles.levelText}>ТҮВШИН 1</Text>
         <Text style={styles.progressText}>{`${progress}/${total}`}</Text>
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   const [userError, setUserError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [profileImage, setProfileImage] = useState<string>("");
-  
+
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -138,7 +138,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark"/>
+      <StatusBar barStyle="dark-content" />
       <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
         <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
       </TouchableOpacity>
@@ -156,15 +156,15 @@ export default function ProfileScreen() {
               />
             </View>
             <View style={styles.infoContainer}>
-              <Text style={styles.memberTypeText}>NEWBIE ГИШҮҮН</Text>
+              <Text style={styles.memberTypeText}>NEWBIE</Text>
               <View style={styles.scoreRowContainer}>
-                <Image
-                  source={require("@/assets/images/header-pepsi-logo.png")}
-                  style={styles.logoImage}
-                />
                 <Text style={styles.scoreText}>
                   {userData?.point !== undefined ? userData.point : "*"}
                 </Text>
+                <Image
+                  source={require("@/assets/icons/profilePepIcon.png")}
+                  style={styles.logoImage}
+                />
               </View>
             </View>
           </View>
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     bottom: 5,
   },
-  proccessBarcontainer: {
+  proccessBarContainer: {
     paddingHorizontal: 10,
   },
   card: {
@@ -348,6 +348,8 @@ const styles = StyleSheet.create({
   logoImage: {
     width: 30,
     height: 30,
+    marginLeft: 5,
+    marginBottom: 10,
   },
   scoreText: {
     color: Colors.white,
