@@ -83,8 +83,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleQRLotteryNum = () => {
-    console.log("QRCode Reader");
-    router.navigate("/(routes)/qrcodeReader");
+    router.push("/qrcodeReader");
   };
 
   const handleModalClose = () => {

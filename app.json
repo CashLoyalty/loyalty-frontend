@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.batorgil.PepsiLoyaltyApp",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes."
       }
     },
     "android": {
@@ -24,14 +25,24 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.batorgil.PepsiLoyaltyApp"
+      "package": "com.batorgil.PepsiLoyaltyApp",
+      "permissions": ["CAMERA"]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "This app requires access to your camera for scanning QR codes."
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },

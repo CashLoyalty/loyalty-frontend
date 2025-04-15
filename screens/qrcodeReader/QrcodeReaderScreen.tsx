@@ -1,51 +1,76 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Button } from "react-native";
+import { View, Text, StyleSheet, Alert, Button } from "react-native";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
-export default function QrcodeReaderScreen() {
+export default function QRCodeReaderScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
-  const [qrData, setQrData] = useState("");
-
-  type BarCodeScannerResult = {
-    type: string;
-    data: string;
-  };
+  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
 
   useEffect(() => {
-    (async () => {
+    // Request camera permission when the component mounts
+    const getCameraPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      console.log("status : " + status);
       setHasPermission(status === "granted");
-    })();
+    };
+
+    getCameraPermissions(); // Request permission when the component mounts
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }: BarCodeScannerResult) => {
+  const handleBarCodeScanned = ({
+    type,
+    data,
+  }: {
+    type: string;
+    data: string;
+  }) => {
     setScanned(true);
-    setQrData(data);
+    Alert.alert(
+      `Bar code with type ${type} and data ${data} has been scanned!`
+    );
   };
 
   if (hasPermission === null) {
-    return <Text>Төхөөрөмжийн эрхийг хүлээн авч байна...</Text>;
+    return (
+      <View style={styles.container}>
+        <Text>Requesting for camera permission</Text>
+      </View>
+    );
   }
+
   if (hasPermission === false) {
-    return <Text>Камераа ашиглах эрхгүй байна. Тохиргоогоо шалгаарай.</Text>;
+    return (
+      <View style={styles.container}>
+        <Text>No access to camera</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>QR код уншигч</Text>
+      <Button
+        title="Flip Camera"
+        onPress={() =>
+          setCameraType(
+            cameraType === Camera.Constants.Type.back
+              ? Camera.Constants.Type.front
+              : Camera.Constants.Type.back
+          )
+        }
+      />
+      <Camera style={styles.camera} type={cameraType}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </Camera>
       {scanned && (
         <Button
-          title={"QR кодыг дахин унших"}
-          onPress={() => setScanned(false)}
+          title="Tap to Scan Again"
+          onPress={() => setScanned(false)} // Reset scanned state
         />
       )}
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
     </View>
   );
 }
@@ -55,9 +80,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
-  text: {
-    fontSize: 20,
-    marginBottom: 20,
+  camera: {
+    flex: 1,
+    width: "100%",
   },
 });

@@ -15,6 +15,7 @@ function RootLayoutNav() {
   return (
     <ToastProvider>
       <Stack screenOptions={{ headerShown: false }}>
+        {/* Define your screens here */}
         <Stack.Screen name="(routes)/login/index" />
         <Stack.Screen name="(routes)/verifyOtp/index" />
         <Stack.Screen name="(routes)/profile/index" />
