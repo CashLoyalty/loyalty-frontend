@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
+import axios from "axios";
+import { SERVER_URI } from "@/utils/uri";
 
 const { width, height } = screenDimensions;
 
@@ -48,10 +50,40 @@ const ResearchInfoData: ResearchItem[] = [
   },
 ];
 
+type Question = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  type: string;
+  createdAt: string;
+};
+
 const Research: React.FC = () => {
-  const handlejump = () => {
-    router.push("/questions");
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  // Handle navigation with the ID of the selected research item
+  const handlejump = (id: string) => {
+    router.push(`/questions/${id}`);
   };
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get(`${SERVER_URI}/api/survey`);
+        console.log(response.data.response);
+
+        if (response.data) {
+          setQuestions(response.data.response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch questions:", error);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
+
   const renderItem: ListRenderItem<ResearchItem> = ({ item }) => (
     <View style={styles.researchItem}>
       <View style={styles.researchRowContainer}>
@@ -103,66 +135,62 @@ const Research: React.FC = () => {
       </View>
     </View>
   );
+
   return (
     <View style={styles.container}>
       <Header />
       <HeaderSecond />
+
+      {/* Mapping over the fetched questions and displaying them */}
       <View style={styles.cardContainer}>
-        <TouchableOpacity onPress={handlejump} style={styles.card}>
-          <View style={styles.cardMini}>
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <Text style={styles.cardText}>хэрэглээний судалгаа </Text>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
+        {questions.length > 0 ? (
+          questions.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => handlejump(item.id)} // Pass the item id when clicked
+              style={styles.card}
             >
-              <View
-                style={{
-                  backgroundColor: "#0025FF",
-                  flex: 1,
-                  flexDirection: "row",
-                  borderRadius: 15,
-                  maxHeight: 30,
-                  maxWidth: 80,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 4,
-                  padding: 8,
-                }}
-              >
-                <Text style={{ color: "#ffffff" }}>1500</Text>
-                <Image
-                  style={{ width: 20, height: 17 }}
-                  source={require("@/assets/icons/coin.png")}
-                ></Image>
+              <View style={styles.cardMini}>
+                <View style={{ flex: 1, flexDirection: "row" }}>
+                  <Text style={styles.cardText}>{item.title}</Text>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: "#0025FF",
+                      flex: 1,
+                      flexDirection: "row",
+                      borderRadius: 15,
+                      maxHeight: 30,
+                      maxWidth: 80,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 4,
+                      padding: 8,
+                    }}
+                  >
+                    <Text style={{ color: "#ffffff" }}>1500</Text>
+                    <Image
+                      style={{ width: 20, height: 17 }}
+                      source={require("@/assets/icons/coin.png")}
+                    ></Image>
+                  </View>
+                  <Text style={{ color: "#4B5563" }}>3-5min</Text>
+                </View>
               </View>
-              <Text style={{ color: "#4B5563" }}>3-5min</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.text}>Судалгаа олдсонгүй</Text>
+        )}
       </View>
-      {/* <View style={styles.rowContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Судалгаанууд</Text>
-        </View>
-      </View>
-      <View style={styles.emptyImageContainer}>
-        <Image
-          source={require("@/assets/images/emptyResearch.png")}
-          style={styles.emptyImage}
-        />
-        <Text style={styles.text}>Судалгаа олдсонгүй</Text>
-      </View> */}
-      {/*<FlatList
-          data={ResearchInfoData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />*/}
     </View>
   );
 };
@@ -176,11 +204,13 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#0025FF",
-    maxWidth: 160,
+    width: 160, 
     height: 167,
     borderRadius: 12,
-    flex: 1,
     justifyContent: "flex-end",
+    marginBottom: 10, 
+    marginRight: 10,
+    marginTop:15
   },
   cardMini: {
     padding: 14,
@@ -190,8 +220,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   cardContainer: {
-    flex: 1,
     flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
     padding: 10,
   },
   container: {
