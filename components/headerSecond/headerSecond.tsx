@@ -45,6 +45,9 @@ export default function HeaderSecond() {
   const handleWheel = () => {
     router.navigate("/(routes)/spinWheels");
   };
+  const handleNotification = () => {
+    router.navigate("/(routes)/notif");
+  };
 
   return (
     <View style={styles.container}>
@@ -82,10 +85,12 @@ export default function HeaderSecond() {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Image
-            source={require("@/assets/icons/notification.png")}
-            style={styles.icon}
-          />
+          <TouchableOpacity onPress={handleNotification}>
+            <Image
+              source={require("@/assets/icons/notification.png")}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
