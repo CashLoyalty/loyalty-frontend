@@ -140,7 +140,19 @@ export default function LoginWithPinCodeScreen() {
                 width: width < 400 ? 45 : 55,
                 height: height < 650 ? 45 : 55,
                 borderRadius: 10,
-                borderWidth: 4,
+                borderWidth: 2,
+                borderColor: Colors.primaryColor, // this adds the blue border
+                justifyContent: "center",
+                alignItems: "center",
+
+                // Shadow for iOS
+                shadowColor: Colors.primaryColor,
+                shadowOffset: { width: 5, height: 5 },
+                shadowOpacity: 0.9,
+                shadowRadius: 10,
+
+                // Shadow for Android
+                elevation: 10,
               },
               filledPinCodeContainerStyle: {
                 borderColor: Colors.primaryColor,
