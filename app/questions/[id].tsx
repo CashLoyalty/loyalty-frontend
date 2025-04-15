@@ -41,6 +41,7 @@ export default function QuestionDetailPage() {
     const fetchToken = async () => {
       const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) setToken(storedToken);
+      console.log(storedToken);
     };
     fetchToken();
   }, []);
@@ -61,7 +62,7 @@ export default function QuestionDetailPage() {
     }
   }, [id]);
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     const currentQuestion = question?.[step - 1];
     if (!currentQuestion) return;
 
@@ -87,8 +88,29 @@ export default function QuestionDetailPage() {
     const isLastQuestion = step === question?.length;
 
     if (isLastQuestion) {
-      setModal(true);
-      Keyboard.dismiss();
+      try {
+        const response = await axios.post(
+          `${SERVER_URI}/api/user/survey/${id}`,
+          {
+            answers: formData, 
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("Survey submitted:", response.data);
+        setModal(true);
+        Keyboard.dismiss();
+      } catch (error) {
+        console.error("Error submitting survey:", error);
+        toast.show("Судалгаа илгээхэд алдаа гарлаа!", {
+          type: "danger",
+          placement: "top",
+        });
+      }
     } else {
       setStep((prev) => prev + 1);
     }
