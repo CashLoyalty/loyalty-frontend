@@ -25,31 +25,6 @@ interface ResearchItem {
   score: string;
   question: string;
 }
-
-const ResearchInfoData: ResearchItem[] = [
-  {
-    id: "1",
-    imgUrl: require("@/assets/icons/researchItem1.png"),
-    researchTitle: "Lipton Tea",
-    score: "+150 оноо",
-    question: "6 асуулт",
-  },
-  {
-    id: "2",
-    imgUrl: require("@/assets/icons/researchItem2.png"),
-    researchTitle: "Pepsi Black",
-    score: "+210 оноо",
-    question: "2 асуулт",
-  },
-  {
-    id: "3",
-    imgUrl: require("@/assets/icons/researchItem3.png"),
-    researchTitle: "Pepsi Vanilla",
-    score: "+100 оноо",
-    question: "5 асуулт",
-  },
-];
-
 type Question = {
   id: string;
   title: string;
@@ -57,22 +32,19 @@ type Question = {
   status: string;
   type: string;
   createdAt: string;
+  minMinutes: string;
+  maxMinutes: string;
+  point: string;
+  pathname: string;
 };
 
 const Research: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  // Handle navigation with the ID of the selected research item
-  const handlejump = (id: string) => {
-    router.push(`/questions/${id}`);
-  };
-
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const response = await axios.get(`${SERVER_URI}/api/survey`);
-        console.log(response.data.response);
-
         if (response.data) {
           setQuestions(response.data.response);
         }
@@ -83,6 +55,10 @@ const Research: React.FC = () => {
 
     fetchQuestions();
   }, []);
+
+  const handleJump = (id: string, point: string) => {
+    router.push(`/questions/${id}?point=${point}`);
+  };
 
   const renderItem: ListRenderItem<ResearchItem> = ({ item }) => (
     <View style={styles.researchItem}>
@@ -147,7 +123,7 @@ const Research: React.FC = () => {
           questions.map((item) => (
             <TouchableOpacity
               key={item.id}
-              onPress={() => handlejump(item.id)} // Pass the item id when clicked
+              onPress={() => handleJump(item.id, item.point)}
               style={styles.card}
             >
               <View style={styles.cardMini}>
@@ -165,24 +141,26 @@ const Research: React.FC = () => {
                   <View
                     style={{
                       backgroundColor: "#0025FF",
-                      flex: 1,
                       flexDirection: "row",
                       borderRadius: 15,
                       maxHeight: 30,
                       maxWidth: 80,
                       alignItems: "center",
                       justifyContent: "center",
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
                       gap: 4,
-                      padding: 8,
                     }}
                   >
-                    <Text style={{ color: "#ffffff" }}>1500</Text>
+                    <Text style={{ color: "#ffffff" }}>{item.point}</Text>
                     <Image
                       style={{ width: 20, height: 17 }}
                       source={require("@/assets/icons/coin.png")}
-                    ></Image>
+                    />
                   </View>
-                  <Text style={{ color: "#4B5563" }}>3-5min</Text>
+                  <Text style={{ color: "#4B5563", fontSize: 13 }}>
+                    {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -204,13 +182,13 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#0025FF",
-    width: 160, 
+    width: 160,
     height: 167,
     borderRadius: 12,
     justifyContent: "flex-end",
-    marginBottom: 10, 
+    marginBottom: 10,
     marginRight: 10,
-    marginTop:15
+    marginTop: 15,
   },
   cardMini: {
     padding: 14,

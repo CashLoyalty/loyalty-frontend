@@ -7,6 +7,7 @@ import { Checkbox } from "react-native-paper";
 import { SERVER_URI } from "@/utils/uri";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Slider from "@react-native-community/slider";
 import {
   View,
   Text,
@@ -26,7 +27,6 @@ type Question = {
   text: string;
   options: string[];
 };
-
 export default function QuestionDetailPage() {
   const toast = useToast();
   const [step, setStep] = useState(1);
@@ -34,17 +34,17 @@ export default function QuestionDetailPage() {
   const [question, setQuestion] = useState<Question[] | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [border, setBorder] = useState(true);
-  const { id } = useLocalSearchParams();
+  const { id, point } = useLocalSearchParams();
   const [token, setToken] = useState("");
 
   useEffect(() => {
     const fetchToken = async () => {
       const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) setToken(storedToken);
-      console.log(storedToken);
     };
     fetchToken();
   }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (id) {
@@ -92,7 +92,7 @@ export default function QuestionDetailPage() {
         const response = await axios.post(
           `${SERVER_URI}/api/user/survey/${id}`,
           {
-            answers: formData, 
+            answers: formData,
           },
           {
             headers: {
@@ -100,8 +100,6 @@ export default function QuestionDetailPage() {
             },
           }
         );
-
-        console.log("Survey submitted:", response.data);
         setModal(true);
         Keyboard.dismiss();
       } catch (error) {
@@ -302,6 +300,88 @@ export default function QuestionDetailPage() {
           </View>
         );
 
+      case "range-choice":
+        return (
+          <View
+            style={{
+              backgroundColor: Colors.backgroundColor,
+              padding: 12,
+              marginTop: 12,
+              marginBottom: 12,
+              borderRadius: 15,
+              height: "90%",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
+              Асуулт {step} - {question?.length}
+            </Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
+              {q.text}
+            </Text>
+
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: Colors.white,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flex: 1,
+                  width: 300,
+                  maxHeight: 200,
+                  borderRadius: 8,
+                }}
+              >
+                <Image
+                  source={require("@/assets/icons/PEPZERO.png")}
+                  style={{ width: 62, height: 146 }}
+                />
+              </View>
+            </View>
+
+            <View style={{ padding: 20, alignItems: "center" }}>
+              <Text
+                style={{
+                  backgroundColor: Colors.white,
+                  fontSize: 30,
+                  fontWeight: "600",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 13,
+                  paddingHorizontal: 20,
+                  paddingVertical: 15,
+                }}
+              >
+                {formData[q.id] ?? 3}
+              </Text>
+
+              <View>
+                <Slider
+                  style={{ width: 280, height: 80 }}
+                  minimumValue={1}
+                  maximumValue={10}
+                  value={formData[q.id] ?? 3}
+                  onValueChange={(newValue) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      [q.id]: Math.round(newValue),
+                    }))
+                  }
+                  step={1}
+                  minimumTrackTintColor={Colors.primaryColor}
+                  maximumTrackTintColor="#BEBEBE"
+                  thumbTintColor={Colors.primaryColor}
+                />
+              </View>
+            </View>
+          </View>
+        );
+
       default:
         return <Text>Unknown question type</Text>;
     }
@@ -388,7 +468,7 @@ export default function QuestionDetailPage() {
       {modal && (
         <View
           style={{
-            position: "absolute", // Ensures the modal covers the screen
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
@@ -401,7 +481,7 @@ export default function QuestionDetailPage() {
         >
           <View
             style={{
-              backgroundColor: Colors.white, // White background for the modal content
+              backgroundColor: Colors.white,
               paddingHorizontal: 50,
               paddingVertical: 70,
               alignItems: "center",
@@ -432,7 +512,7 @@ export default function QuestionDetailPage() {
                   fontWeight: "800",
                 }}
               >
-                1500
+                {point}
               </Text>
               <Image
                 source={require("@/assets/icons/coin1.png")}
