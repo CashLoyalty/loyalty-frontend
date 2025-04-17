@@ -26,6 +26,7 @@ type Question = {
   type: string;
   text: string;
   options: string[];
+  image: string;
 };
 export default function QuestionDetailPage() {
   const toast = useToast();
@@ -53,11 +54,26 @@ export default function QuestionDetailPage() {
           const response = await axios.get(
             `${SERVER_URI}/api/survey/${id}/questions`
           );
-          setQuestion(response.data.response.questions);
+          const allQuestions = response.data.response.questions;
+          console.log(allQuestions);
+
+          const sortedQuestions = [
+            ...allQuestions.filter((q: Question) => q.type === "single-choice"),
+            ...allQuestions.filter(
+              (q: Question) => q.type === "multiple-choice"
+            ),
+            ...allQuestions.filter(
+              (q: Question) =>
+                q.type === "range-choice" || q.type === "text-input"
+            ),
+          ];
+
+          setQuestion(sortedQuestions);
         } catch (err) {
           console.error("Failed to load questions:", err);
         }
       };
+
       fetchQuestionDetails();
     }
   }, [id]);
@@ -77,7 +93,11 @@ export default function QuestionDetailPage() {
         currentQuestion.type === "text-input") &&
       !currentAnswer;
 
-    if (isEmptyMultipleChoice || isEmptySingleOrText) {
+    const isEmptyRangeChoice =
+      currentQuestion.type === "range-choice" && !currentAnswer;
+
+    // Only show the toast for empty multiple-choice or single/text questions
+    if ((isEmptyMultipleChoice || isEmptySingleOrText) && !isEmptyRangeChoice) {
       toast.show("Энэ асуултыг хариулаагүй байна.", {
         type: "danger",
         placement: "top",
@@ -163,9 +183,10 @@ export default function QuestionDetailPage() {
                   </Text>
                 ),
               }))}
-              selectedBtn={(e: any) =>
-                setFormData((prev) => ({ ...prev, [q.id]: e.value }))
-              }
+              selectedBtn={(e: any) => {
+                const value = typeof e === "object" && e?.value ? e.value : e;
+                setFormData((prev) => ({ ...prev, [q.id]: value }));
+              }}
               boxStyle={{
                 borderWidth: 1,
                 borderColor: "#ccc",
@@ -301,6 +322,35 @@ export default function QuestionDetailPage() {
         );
 
       case "range-choice":
+        const min = parseInt(q.options?.[0] ?? "0", 10);
+        const max = parseInt(q.options?.[1] ?? "10", 10);
+        const defaultValue = Math.round((min + max) / 2).toString();
+
+        // Helper to get safe number from formData
+        const getValidSliderValue = (val: any): number => {
+          const num = parseInt(val, 10);
+          if (isNaN(num) || num < min || num > max) {
+            return parseInt(defaultValue, 10);
+          }
+          return num;
+        };
+
+        // Always convert to number for the slider, but store as string
+        const rawValue = formData[q.id];
+        const sliderValue = getValidSliderValue(rawValue);
+
+        // Set default only if missing or invalid
+        if (
+          rawValue === undefined ||
+          rawValue === "" ||
+          isNaN(parseInt(rawValue))
+        ) {
+          setFormData((prev) => ({
+            ...prev,
+            [q.id]: defaultValue,
+          }));
+        }
+
         return (
           <View
             style={{
@@ -319,30 +369,33 @@ export default function QuestionDetailPage() {
               {q.text}
             </Text>
 
-            <View
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            {q.image && (
               <View
                 style={{
-                  backgroundColor: Colors.white,
-                  justifyContent: "center",
-                  alignItems: "center",
                   flex: 1,
-                  width: 300,
-                  maxHeight: 200,
-                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Image
-                  source={require("@/assets/icons/PEPZERO.png")}
-                  style={{ width: 62, height: 146 }}
-                />
+                <View
+                  style={{
+                    backgroundColor: Colors.white,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1,
+                    width: 300,
+                    maxHeight: 200,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Image
+                    source={{ uri: q.image }}
+                    style={{ width: 100, height: 150 }}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
-            </View>
+            )}
 
             <View style={{ padding: 20, alignItems: "center" }}>
               <Text
@@ -350,35 +403,39 @@ export default function QuestionDetailPage() {
                   backgroundColor: Colors.white,
                   fontSize: 30,
                   fontWeight: "600",
-                  justifyContent: "center",
-                  alignItems: "center",
                   borderRadius: 13,
                   paddingHorizontal: 20,
                   paddingVertical: 15,
-                  marginBottom:30
+                  marginBottom: 30,
                 }}
               >
-                {formData[q.id] ?? 7}
+                {sliderValue}
               </Text>
 
-              <View>
-                <Slider
-                  style={{ width: 280, height: 80 }}
-                  minimumValue={1}
-                  maximumValue={10}
-                  value={formData[q.id] ?? 7}
-                  onValueChange={(newValue) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      [q.id]: Math.round(newValue),
-                    }))
-                  }
-                  step={1}
-                  minimumTrackTintColor={Colors.primaryColor}
-                  maximumTrackTintColor="#BEBEBE"
-                  thumbTintColor={Colors.primaryColor}
-                />
-              </View>
+              <Slider
+                style={{ width: 280, height: 80 }}
+                minimumValue={min}
+                maximumValue={max}
+                value={sliderValue}
+                onValueChange={(newValue) => {
+                  const roundedValue = Math.round(newValue).toString();
+                  setFormData((prev) => ({
+                    ...prev,
+                    [q.id]: roundedValue,
+                  }));
+                }}
+                onSlidingComplete={(value) => {
+                  const roundedValue = Math.round(value).toString();
+                  setFormData((prev) => ({
+                    ...prev,
+                    [q.id]: roundedValue,
+                  }));
+                }}
+                step={1}
+                minimumTrackTintColor={Colors.primaryColor}
+                maximumTrackTintColor="#BEBEBE"
+                thumbTintColor={Colors.primaryColor}
+              />
             </View>
           </View>
         );
