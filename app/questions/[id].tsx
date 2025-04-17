@@ -355,9 +355,10 @@ export default function QuestionDetailPage() {
                   borderRadius: 13,
                   paddingHorizontal: 20,
                   paddingVertical: 15,
+                  marginBottom:30
                 }}
               >
-                {formData[q.id] ?? 3}
+                {formData[q.id] ?? 7}
               </Text>
 
               <View>
@@ -365,7 +366,7 @@ export default function QuestionDetailPage() {
                   style={{ width: 280, height: 80 }}
                   minimumValue={1}
                   maximumValue={10}
-                  value={formData[q.id] ?? 3}
+                  value={formData[q.id] ?? 7}
                   onValueChange={(newValue) =>
                     setFormData((prevData) => ({
                       ...prevData,
