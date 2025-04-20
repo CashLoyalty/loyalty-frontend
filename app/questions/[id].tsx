@@ -51,21 +51,13 @@ export default function QuestionDetailPage() {
     if (id) {
       const fetchQuestionDetails = async () => {
         try {
-          const response = await axios.get(
-            `${SERVER_URI}/api/survey/${id}/questions`
-          );
+          const response = await axios.get(`${SERVER_URI}/api/survey/${id}/questions`);
           const allQuestions = response.data.response.questions;
-          console.log(allQuestions);
-
           const sortedQuestions = [
             ...allQuestions.filter((q: Question) => q.type === "single-choice"),
-            ...allQuestions.filter(
-              (q: Question) => q.type === "multiple-choice"
-            ),
-            ...allQuestions.filter(
-              (q: Question) =>
-                q.type === "range-choice" || q.type === "text-input"
-            ),
+            ...allQuestions.filter((q: Question) => q.type === "multiple-choice"),
+            ...allQuestions.filter((q: Question) => q.type === "range-choice"),
+            ...allQuestions.filter((q: Question) => q.type === "text-input"),
           ];
 
           setQuestion(sortedQuestions);
@@ -85,16 +77,12 @@ export default function QuestionDetailPage() {
     const currentAnswer = formData[currentQuestion.id];
 
     const isEmptyMultipleChoice =
-      currentQuestion.type === "multiple-choice" &&
-      (!currentAnswer || currentAnswer.length === 0);
+      currentQuestion.type === "multiple-choice" && (!currentAnswer || currentAnswer.length === 0);
 
     const isEmptySingleOrText =
-      (currentQuestion.type === "single-choice" ||
-        currentQuestion.type === "text-input") &&
-      !currentAnswer;
+      (currentQuestion.type === "single-choice" || currentQuestion.type === "text-input") && !currentAnswer;
 
-    const isEmptyRangeChoice =
-      currentQuestion.type === "range-choice" && !currentAnswer;
+    const isEmptyRangeChoice = currentQuestion.type === "range-choice" && !currentAnswer;
 
     // Only show the toast for empty multiple-choice or single/text questions
     if ((isEmptyMultipleChoice || isEmptySingleOrText) && !isEmptyRangeChoice) {
@@ -120,8 +108,10 @@ export default function QuestionDetailPage() {
             },
           }
         );
-        setModal(true);
-        Keyboard.dismiss();
+        if (response.data.title === "Success") {
+          setModal(true);
+          Keyboard.dismiss();
+        }
       } catch (error) {
         console.error("Error submitting survey:", error);
         toast.show("Судалгаа илгээхэд алдаа гарлаа!", {
@@ -171,17 +161,11 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
               Асуулт {step} - {question?.length}
             </Text>
-            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
-              {q.text}
-            </Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>{q.text}</Text>
             <RadioButtonRN
               data={q.options.map((item) => ({
                 value: item,
-                label: (
-                  <Text style={{ fontSize: 18, fontWeight: "500" }}>
-                    {item}
-                  </Text>
-                ),
+                label: <Text style={{ fontSize: 18, fontWeight: "500" }}>{item}</Text>,
               }))}
               selectedBtn={(e: any) => {
                 const value = typeof e === "object" && e?.value ? e.value : e;
@@ -194,9 +178,7 @@ export default function QuestionDetailPage() {
                 marginTop: 20,
               }}
               activeColor={Colors.primaryColor}
-              initial={
-                formData[q.id] ? q.options.indexOf(formData[q.id]) + 1 : 0
-              }
+              initial={formData[q.id] ? q.options.indexOf(formData[q.id]) + 1 : 0}
             />
           </View>
         );
@@ -216,9 +198,7 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
               Асуулт {step} - {question?.length}
             </Text>
-            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
-              {q.text}
-            </Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>{q.text}</Text>
             {q.options.map((option) => {
               const selected = formData[q.id]?.includes(option);
               return (
@@ -251,9 +231,7 @@ export default function QuestionDetailPage() {
                   {border && (
                     <View
                       style={{
-                        backgroundColor: selected
-                          ? Colors.primaryColor
-                          : Colors.white,
+                        backgroundColor: selected ? Colors.primaryColor : Colors.white,
                         borderColor: selected ? Colors.primaryColor : "#ccc",
                         borderWidth: 1,
                         padding: 2,
@@ -265,13 +243,8 @@ export default function QuestionDetailPage() {
                       }}
                     />
                   )}
-                  <Checkbox
-                    color="white"
-                    status={selected ? "checked" : "unchecked"}
-                  />
-                  <Text style={{ fontSize: 18, fontWeight: "500" }}>
-                    {option}
-                  </Text>
+                  <Checkbox color="white" status={selected ? "checked" : "unchecked"} />
+                  <Text style={{ fontSize: 18, fontWeight: "500" }}>{option}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -293,15 +266,11 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
               Асуулт {step} - {question?.length}
             </Text>
-            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
-              {q.text}
-            </Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>{q.text}</Text>
             <TextInput
               multiline
               numberOfLines={4}
-              onChangeText={(text) =>
-                setFormData((prev) => ({ ...prev, [q.id]: text }))
-              }
+              onChangeText={(text) => setFormData((prev) => ({ ...prev, [q.id]: text }))}
               value={formData[q.id] || ""}
               placeholder="Та сэтгэгдэл ээ бичнэ үү"
               placeholderTextColor="rgba(0, 0, 0, 0.5)"
@@ -340,11 +309,7 @@ export default function QuestionDetailPage() {
         const sliderValue = getValidSliderValue(rawValue);
 
         // Set default only if missing or invalid
-        if (
-          rawValue === undefined ||
-          rawValue === "" ||
-          isNaN(parseInt(rawValue))
-        ) {
+        if (rawValue === undefined || rawValue === "" || isNaN(parseInt(rawValue))) {
           setFormData((prev) => ({
             ...prev,
             [q.id]: defaultValue,
@@ -365,9 +330,7 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
               Асуулт {step} - {question?.length}
             </Text>
-            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
-              {q.text}
-            </Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>{q.text}</Text>
 
             {q.image && (
               <View
@@ -388,11 +351,7 @@ export default function QuestionDetailPage() {
                     borderRadius: 8,
                   }}
                 >
-                  <Image
-                    source={{ uri: q.image }}
-                    style={{ width: 100, height: 150 }}
-                    resizeMode="contain"
-                  />
+                  <Image source={{ uri: q.image }} style={{ width: 100, height: 150 }} resizeMode="contain" />
                 </View>
               </View>
             )}
@@ -447,10 +406,7 @@ export default function QuestionDetailPage() {
 
   return (
     <SafeAreaView style={{ backgroundColor: Colors.primaryColor, flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{ padding: 12 }}>
             {/* Header */}
@@ -468,9 +424,7 @@ export default function QuestionDetailPage() {
               >
                 <Image source={require("@/assets/icons/arrwleft.png")} />
               </TouchableOpacity>
-              <Text style={{ color: "#fff", fontSize: 22 }}>
-                Хэрэглээний судалгаа
-              </Text>
+              <Text style={{ color: "#fff", fontSize: 22 }}>Хэрэглээний судалгаа</Text>
             </View>
 
             {/* Render Question */}
@@ -502,10 +456,7 @@ export default function QuestionDetailPage() {
               }}
               onPress={handlePrevStep}
             >
-              <Image
-                source={require("@/assets/icons/arrow-left.png")}
-                style={{ width: 23, height: 23 }}
-              />
+              <Image source={require("@/assets/icons/arrow-left.png")} style={{ width: 23, height: 23 }} />
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -544,7 +495,6 @@ export default function QuestionDetailPage() {
               paddingVertical: 70,
               alignItems: "center",
               borderRadius: 25,
-              gap: 25,
             }}
           >
             <Text
@@ -572,16 +522,14 @@ export default function QuestionDetailPage() {
               >
                 {point}
               </Text>
-              <Image
-                source={require("@/assets/icons/coin1.png")}
-                style={{ width: 40, height: 40 }}
-              />
+              <Image source={require("@/assets/icons/coin1.png")} style={{ width: 40, height: 40 }} />
             </View>
             <Text
               style={{
                 fontSize: 30,
                 color: Colors.primaryColor,
                 fontWeight: "800",
+                marginBottom: 20,
               }}
             >
               Нэмэгдлээ
@@ -598,9 +546,7 @@ export default function QuestionDetailPage() {
               }}
               onPress={handleCloseModal}
             >
-              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-                Тиймээ 🎉
-              </Text>
+              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>Тиймээ 🎉</Text>
             </TouchableOpacity>
           </View>
         </View>
