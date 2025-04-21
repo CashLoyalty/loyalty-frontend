@@ -4,6 +4,7 @@
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "jsx": "react", // Ensure JSX is properly configured for React Native
     "paths": {
       "@/*": ["./*"]
     }
@@ -11,8 +12,10 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.jsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "declarations.d.ts"
+    "declarations.d.ts",
+    "node_modules/expo-camera"
   ]
 }

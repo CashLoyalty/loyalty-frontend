@@ -37,9 +37,11 @@
       "expo-router",
       "expo-font",
       [
-        "expo-barcode-scanner",
+        "expo-camera",
         {
-          "cameraPermission": "This app requires access to your camera for scanning QR codes."
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ]
     ],

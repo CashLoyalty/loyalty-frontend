@@ -8,7 +8,6 @@ import {
   TextInput,
   ActivityIndicator,
   ScrollView,
-  Platform,
   Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";

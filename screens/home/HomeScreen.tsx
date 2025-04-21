@@ -13,6 +13,7 @@ import {
   Keyboard,
   ScrollView,
   Linking,
+  Alert,
 } from "react-native";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -26,6 +27,7 @@ import { SERVER_URI } from "@/utils/uri";
 import { format } from "date-fns";
 import Checkbox from "expo-checkbox";
 import { useLocalSearchParams, router } from "expo-router";
+import { useCameraPermissions } from "expo-camera";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,6 +44,7 @@ const HomeScreen: React.FC = () => {
   const [modalVisibleTerms, setModalVisibleTerms] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const showTerms = String(terms).toLowerCase() === "true";
+  const [permission, requestPermission] = useCameraPermissions();
 
   useEffect(() => {
     if (showTerms) setModalVisibleTerms(true);
@@ -82,10 +85,29 @@ const HomeScreen: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleQRLotteryNum = () => {
-    router.push("/qrcodeReader");
-  };
+  const handleQRLotteryNum = async () => {
+    console.log("Permission object:", permission);
 
+    if (permission === null) {
+      // Permissions state not yet loaded
+      console.log("Permission not loaded yet");
+      return;
+    }
+
+    if (!permission.granted) {
+      const res = await requestPermission(); // request camera permission
+      if (!res.granted) {
+        console.log("Camera permission denied");
+        Alert.alert(
+          "Permission required",
+          "We need permission to access your camera to scan a QR code."
+        );
+        return;
+      }
+    }
+
+    router.push("/qrcodeReader"); // navigate if permission granted
+  };
   const handleModalClose = () => {
     setModalVisible(false);
     setInputValue("");

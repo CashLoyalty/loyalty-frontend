@@ -1,6 +1,6 @@
 import React from "react";
-import QrcodeReaderScreen from "@/screens/qrcodeReader/QrcodeReaderScreen";
+import QRCodeReaderScreen from "@/screens/qrcodeReader/QrCodeReader";
 
 export default function QrCodeReader() {
-  return <QrcodeReaderScreen />;
+  return <QRCodeReaderScreen />;
 }
