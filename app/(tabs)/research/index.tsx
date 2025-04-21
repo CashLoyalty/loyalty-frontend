@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ListRenderItem,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, ListRenderItem, FlatList, Image, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -80,10 +72,7 @@ const Research: React.FC = () => {
           <View style={styles.infoSection2}>
             <Text style={styles.researchInfoTitle}>{item.researchTitle}</Text>
             <View style={styles.scoureContainer}>
-              <Image
-                source={require("@/assets/icons/score.png")}
-                style={{ width: 23, height: 23 }}
-              />
+              <Image source={require("@/assets/icons/score.png")} style={{ width: 23, height: 23 }} />
               <Text
                 style={{
                   fontSize: 14,
@@ -121,11 +110,7 @@ const Research: React.FC = () => {
       <View style={styles.cardContainer}>
         {questions.length > 0 ? (
           questions.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() => handleJump(item.id, item.point)}
-              style={styles.card}
-            >
+            <TouchableOpacity key={item.id} onPress={() => handleJump(item.id, item.point)} style={styles.card}>
               <View style={styles.cardMini}>
                 <View style={{ flex: 1, flexDirection: "row" }}>
                   <Text style={styles.cardText}>{item.title}</Text>
@@ -153,10 +138,7 @@ const Research: React.FC = () => {
                     }}
                   >
                     <Text style={{ color: "#ffffff" }}>{item.point}</Text>
-                    <Image
-                      style={{ width: 20, height: 17 }}
-                      source={require("@/assets/icons/coin.png")}
-                    />
+                    <Image style={{ width: 20, height: 17 }} source={require("@/assets/icons/coin.png")} />
                   </View>
                   <Text style={{ color: "#4B5563", fontSize: 13 }}>
                     {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
@@ -166,7 +148,18 @@ const Research: React.FC = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.text}>Судалгаа олдсонгүй</Text>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View>
+              <Image source={require("@/assets/images/emptyTask.png")} style={{ width: 260, height: 230 }}></Image>
+              <Text style={{ color: "#0E0E96", fontWeight: 600, textAlign: "center" }}>Судалгаа олдсонгүй</Text>
+            </View>
+          </View>
         )}
       </View>
     </View>
@@ -238,13 +231,6 @@ const styles = StyleSheet.create({
     //height: height / 100 * 41,
     width: 224,
     height: 222,
-    opacity: 0.5,
-  },
-  text: {
-    color: "#0E0E96",
-    fontFamily: "Inter",
-    fontWeight: "600",
-    fontSize: 14,
     opacity: 0.5,
   },
   researchItem: {
