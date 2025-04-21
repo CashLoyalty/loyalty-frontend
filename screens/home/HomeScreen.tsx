@@ -95,7 +95,7 @@ const HomeScreen: React.FC = () => {
     }
 
     if (!permission.granted) {
-      const res = await requestPermission(); // request camera permission
+      const res = await requestPermission();
       if (!res.granted) {
         console.log("Camera permission denied");
         Alert.alert(
