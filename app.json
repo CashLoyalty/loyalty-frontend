@@ -15,18 +15,20 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.batorgil.PepsiLoyaltyApp",
+      "buildNumber": "1.0.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes."
       }
     },
     "android": {
+      "package": "com.batorgil.PepsiLoyaltyApp",
+      "versionCode": 1,
+      "permissions": ["CAMERA"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.batorgil.PepsiLoyaltyApp",
-      "permissions": ["CAMERA"]
+      }
     },
     "web": {
       "bundler": "metro",
@@ -39,9 +41,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ]
     ],
