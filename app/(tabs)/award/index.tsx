@@ -266,10 +266,10 @@ const Award: React.FC = () => {
         </TouchableOpacity>
         <Text style={styles.titleText}>Шагнал</Text>
       </View>
-      {/* <View style={styles.container2}>
+      <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Азын хүрд шагнал</Text>
       </View>
-      <View style={styles.container3}>
+      {/* <View style={styles.container3}>
         <FlatList
           data={products}
           horizontal
