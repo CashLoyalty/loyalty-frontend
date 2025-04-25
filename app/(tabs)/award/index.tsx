@@ -14,6 +14,7 @@ import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
+import Story from "@/components/global";
 
 const { width, height } = screenDimensions;
 
@@ -265,7 +266,7 @@ const Award: React.FC = () => {
         </TouchableOpacity>
         <Text style={styles.titleText}>Шагнал</Text>
       </View>
-      <View style={styles.container2}>
+      {/* <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Азын хүрд шагнал</Text>
       </View>
       <View style={styles.container3}>
@@ -280,7 +281,8 @@ const Award: React.FC = () => {
             </View>
           )}
         />
-      </View>
+      </View> */}
+      <Story/>
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>
