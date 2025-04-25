@@ -7,6 +7,7 @@ import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import axios from "axios";
 import { SERVER_URI } from "@/utils/uri";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = screenDimensions;
 
@@ -36,7 +37,13 @@ const Research: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(`${SERVER_URI}/api/survey`);
+        const storedToken = await AsyncStorage.getItem("token");
+        const response = await axios.get(`${SERVER_URI}/api/user/survey`, {
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (response.data) {
           setQuestions(response.data.response);
         }
