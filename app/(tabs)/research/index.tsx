@@ -3,12 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  ListRenderItem,
-  FlatList,
   Image,
   TouchableOpacity,
-  Platform,
-  Dimensions,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
@@ -21,13 +17,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = screenDimensions;
 
-interface ResearchItem {
-  id: string;
-  imgUrl: any;
-  researchTitle: string;
-  score: string;
-  question: string;
-}
 type Question = {
   id: string;
   title: string;
@@ -40,14 +29,6 @@ type Question = {
   point: string;
   pathname: string;
 };
-
-// 📱 Tablet check and responsive sizes
-const isTablet = Platform.OS === "ios" && (width >= 768 || height >= 768);
-const CARD_WIDTH = isTablet ? 240 : 160;
-const CARD_HEIGHT = isTablet ? 220 : 167;
-const CARD_MINI_WIDTH = isTablet ? 240 : 160;
-const CARD_MINI_HEIGHT = isTablet ? 190 : 140;
-const CARD_PADDING = isTablet ? 20 : 14;
 
 const Research: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -112,10 +93,10 @@ const Research: React.FC = () => {
                       gap: 4,
                     }}
                   >
-                    <Text style={{ color: "#ffffff", fontSize: isTablet ? 18 : 13 }}>{item.point}</Text>
+                    <Text style={{ color: "#ffffff", fontSize: 13 }}>{item.point}</Text>
                     <Image style={{ width: 20, height: 17 }} source={require("@/assets/icons/coin.png")} />
                   </View>
-                  <Text style={{ color: "#4B5563", fontSize: isTablet ? 18 : 13 }}>
+                  <Text style={{ color: "#4B5563", fontSize: 13 }}>
                     {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
                   </Text>
                 </View>
@@ -137,12 +118,11 @@ const Research: React.FC = () => {
 
 const styles = StyleSheet.create({
   cardText: {
-    fontSize: isTablet ? 18 : 14,
+    fontSize: 14,
     color: "#0025FF",
     fontWeight: "600",
     marginTop: 10,
   },
-
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
@@ -151,24 +131,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     padding: 10,
-    justifyContent:"space-between"
+    justifyContent: "space-between",
   },
   card: {
     backgroundColor: "#0025FF",
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
+    width: 160,
+    height: 167,
     borderRadius: 12,
     justifyContent: "flex-end",
-    margin:8
+    margin: 8,
   },
   cardMini: {
-    padding: CARD_PADDING,
+    padding: 12,
     backgroundColor: "#FFFFFF",
-    width: CARD_MINI_WIDTH,
-    height: CARD_MINI_HEIGHT,
+    width: 160,
+    height: 140,
     borderRadius: 12,
   },
-
   researchItem: {
     flex: 1,
   },
