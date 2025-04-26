@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ListRenderItem, FlatList, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ListRenderItem,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Platform,
+  Dimensions,
+} from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -31,6 +41,14 @@ type Question = {
   pathname: string;
 };
 
+// 📱 Tablet check and responsive sizes
+const isTablet = Platform.OS === "ios" && (width >= 768 || height >= 768);
+const CARD_WIDTH = isTablet ? 240 : 160;
+const CARD_HEIGHT = isTablet ? 220 : 167;
+const CARD_MINI_WIDTH = isTablet ? 240 : 160;
+const CARD_MINI_HEIGHT = isTablet ? 190 : 140;
+const CARD_PADDING = isTablet ? 20 : 14;
+
 const Research: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -59,61 +77,11 @@ const Research: React.FC = () => {
     router.push(`/questions/${id}?point=${point}`);
   };
 
-  const renderItem: ListRenderItem<ResearchItem> = ({ item }) => (
-    <View style={styles.researchItem}>
-      <View style={styles.researchRowContainer}>
-        <View style={styles.researchImgContainer}>
-          <Image
-            source={item.imgUrl}
-            style={{
-              width: 155,
-              height: 156,
-              borderWidth: 1,
-              borderColor: Colors.primaryColor,
-              borderRadius: 10,
-            }}
-          />
-        </View>
-        <View style={styles.researchInfoContainer}>
-          <View style={styles.infoSection1} />
-          <View style={styles.infoSection2}>
-            <Text style={styles.researchInfoTitle}>{item.researchTitle}</Text>
-            <View style={styles.scoureContainer}>
-              <Image source={require("@/assets/icons/score.png")} style={{ width: 23, height: 23 }} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.primaryColor,
-                  marginLeft: 10,
-                }}
-              >
-                {item.score}
-              </Text>
-            </View>
-            <View style={styles.questionContainer}>
-              <Image source={require("@/assets/icons/questionIcon.png")} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.primaryColor,
-                  marginLeft: 10,
-                }}
-              >
-                {item.question}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <Header />
       <HeaderSecond />
 
-      {/* Mapping over the fetched questions and displaying them */}
       <View style={styles.cardContainer}>
         {questions.length > 0 ? (
           questions.map((item) => (
@@ -144,10 +112,10 @@ const Research: React.FC = () => {
                       gap: 4,
                     }}
                   >
-                    <Text style={{ color: "#ffffff" }}>{item.point}</Text>
+                    <Text style={{ color: "#ffffff", fontSize: isTablet ? 18 : 13 }}>{item.point}</Text>
                     <Image style={{ width: 20, height: 17 }} source={require("@/assets/icons/coin.png")} />
                   </View>
-                  <Text style={{ color: "#4B5563", fontSize: 13 }}>
+                  <Text style={{ color: "#4B5563", fontSize: isTablet ? 18 : 13 }}>
                     {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
                   </Text>
                 </View>
@@ -155,16 +123,10 @@ const Research: React.FC = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <View>
-              <Image source={require("@/assets/images/emptyTask.png")} style={{ width: 260, height: 230 }}></Image>
-              <Text style={{ color: "#0E0E96", fontWeight: 600, textAlign: "center" }}>Судалгаа олдсонгүй</Text>
+              <Image source={require("@/assets/images/emptyTask.png")} style={{ width: 260, height: 230 }} />
+              <Text style={{ color: "#0E0E96", fontWeight: "600", textAlign: "center" }}>Судалгаа олдсонгүй</Text>
             </View>
           </View>
         )}
@@ -175,15 +137,26 @@ const Research: React.FC = () => {
 
 const styles = StyleSheet.create({
   cardText: {
-    fontSize: 14,
+    fontSize: isTablet ? 18 : 14,
     color: "#0025FF",
-    fontWeight: 600,
+    fontWeight: "600",
     marginTop: 10,
+  },
+
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+  cardContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 10,
+    gap:20
   },
   card: {
     backgroundColor: "#0025FF",
-    width: 160,
-    height: 167,
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
     borderRadius: 12,
     justifyContent: "flex-end",
     marginBottom: 10,
@@ -191,55 +164,13 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   cardMini: {
-    padding: 14,
+    padding: CARD_PADDING,
     backgroundColor: "#FFFFFF",
-    width: 160,
-    height: 140,
+    width: CARD_MINI_WIDTH,
+    height: CARD_MINI_HEIGHT,
     borderRadius: 12,
   },
-  cardContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    padding: 10,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    marginHorizontal: 10,
-  },
-  titleContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  titleText: {
-    color: Colors.primaryColor,
-    fontSize: 20,
-    fontFamily: "Inter",
-  },
-  emptyImageContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  emptyImage: {
-    //width: width / 100 * 65,
-    //height: height / 100 * 41,
-    width: 224,
-    height: 222,
-    opacity: 0.5,
-  },
+
   researchItem: {
     flex: 1,
   },

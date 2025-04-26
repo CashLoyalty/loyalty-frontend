@@ -29,7 +29,7 @@ const products: Product[] = [
   {
     id: "2",
     image: require("@/assets/icons/phone.png"),
-    storyImage: require("@/assets/loyalty/spin.png"),
+    storyImage: require("@/assets/loyalty/story2.png"),
   },
   {
     id: "3",
