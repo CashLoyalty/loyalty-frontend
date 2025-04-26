@@ -19,27 +19,29 @@ type Product = {
   storyImage: ImageSourcePropType;
 };
 
-// Product list with typed images
+const StoryBackground = require("@/assets/loyalty/storyBackground.png");
+
+// Product list
 const products: Product[] = [
   {
     id: "1",
     image: require("@/assets/icons/airСondition.png"),
-    storyImage: require("@/assets/loyalty/story1.png"),
+    storyImage: require("@/assets/loyalty/airCondition.png"),
   },
   {
     id: "2",
     image: require("@/assets/icons/phone.png"),
-    storyImage: require("@/assets/loyalty/story2.png"),
+    storyImage: require("@/assets/loyalty/phone.png"),
   },
   {
     id: "3",
     image: require("@/assets/icons/iwatch.png"),
-    storyImage: require("@/assets/loyalty/red.png"),
+    storyImage: require("@/assets/loyalty/iWatch1.png"),
   },
   {
     id: "4",
     image: require("@/assets/icons/headPhone.png"),
-    storyImage: require("@/assets/loyalty/baruun.png"),
+    storyImage: require("@/assets/loyalty/airPodMax.png"),
   },
 ];
 
@@ -50,6 +52,7 @@ export default function Story() {
   const isAnimating = useRef(false);
 
   const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   const openModal = (index: number) => {
     if (isAnimating.current) return;
@@ -84,12 +87,10 @@ export default function Story() {
     const screenCenter = screenWidth / 2;
     const clickX = event.nativeEvent.locationX;
 
-    console.log("Clicked X:", clickX, "Screen Center:", screenCenter);
-
     if (clickX < screenCenter) {
-      goToPrevious(); // Go to previous story on the left click
+      goToPrevious(); // Left click
     } else {
-      goToNext(); // Go to next story on the right click
+      goToNext(); // Right click
     }
   };
 
@@ -149,7 +150,15 @@ export default function Story() {
             <Animated.View style={[styles.progressBar, { width: progressWidth }]} />
           </View>
 
-          <Image source={products[currentIndex]?.storyImage} style={styles.fullScreenImage} resizeMode="cover" />
+          {/* Story Content with background behind the storyImage */}
+          <View style={styles.storyContainer}>
+            <Image
+              source={StoryBackground}
+              style={[StyleSheet.absoluteFillObject, { zIndex: 0, width: screenWidth, height: screenHeight }]}
+              resizeMode="cover"
+            />
+            <Image source={products[currentIndex]?.storyImage} style={styles.storyImageOverlay} resizeMode="contain" />
+          </View>
         </Pressable>
       </Modal>
     </View>
@@ -176,13 +185,27 @@ const styles = StyleSheet.create({
   },
   fullScreenModal: {
     flex: 1,
-    backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
   },
-  fullScreenImage: {
+  storyContainer: {
+    flex: 1,
     width: "100%",
     height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+    width: "100%",
+    height: "100%",
+  },
+  storyImageOverlay: {
+    width: "80%",
+    height: "80%",
+    zIndex: 1,
   },
   progressBarContainer: {
     width: "100%",

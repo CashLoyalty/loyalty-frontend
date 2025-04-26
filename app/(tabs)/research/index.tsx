@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -36,6 +30,19 @@ const Research: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
+        const cachedData = await AsyncStorage.getItem("questions");
+        const timestamp = await AsyncStorage.getItem("questions_timestamp");
+
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000; // 24 hours
+
+        // If data exists and not expired, use it
+        if (cachedData && timestamp && now - parseInt(timestamp) < oneDay) {
+          setQuestions(JSON.parse(cachedData));
+          return;
+        }
+
+        // Else fetch from API
         const storedToken = await AsyncStorage.getItem("token");
         const response = await axios.get(`${SERVER_URI}/api/user/survey`, {
           headers: {
@@ -43,8 +50,13 @@ const Research: React.FC = () => {
             "Content-Type": "application/json",
           },
         });
-        if (response.data) {
-          setQuestions(response.data.response);
+        console.log(response.data);
+        if (response.data?.response) {
+          const questionsData = response.data.response;
+          setQuestions(questionsData);
+
+          await AsyncStorage.setItem("questions", JSON.stringify(questionsData));
+          await AsyncStorage.setItem("questions_timestamp", now.toString());
         }
       } catch (error) {
         console.error("Failed to fetch questions:", error);
