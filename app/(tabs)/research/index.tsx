@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     padding: 10,
-    gap:20
+    justifyContent:"space-between"
   },
   card: {
     backgroundColor: "#0025FF",
@@ -159,9 +159,7 @@ const styles = StyleSheet.create({
     height: CARD_HEIGHT,
     borderRadius: 12,
     justifyContent: "flex-end",
-    marginBottom: 10,
-    marginRight: 10,
-    marginTop: 15,
+    margin:8
   },
   cardMini: {
     padding: CARD_PADDING,
