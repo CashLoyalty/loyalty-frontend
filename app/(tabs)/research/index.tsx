@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
@@ -43,8 +37,6 @@ const Research: React.FC = () => {
             "Content-Type": "application/json",
           },
         });
-        console.log(response.data);
-
         if (response.data) {
           setQuestions(response.data.response);
         }
