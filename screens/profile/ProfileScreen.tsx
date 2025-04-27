@@ -20,17 +20,22 @@ import { SERVER_URI } from "@/utils/uri";
 import axios from "axios";
 
 interface ProgressBarProps {
+  levelName: string;
   progress: number;
   total: number;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress, total }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  levelName,
+  progress,
+  total,
+}) => {
   const progressPercent = (progress / total) * 100;
 
   return (
     <View style={styles.proccessBarContainer}>
       <View style={styles.processBarInfo}>
-        <Text style={styles.levelText}>ТҮВШИН 1</Text>
+        <Text style={styles.levelText}>{levelName}</Text>
         <Text style={styles.progressText}>{`${progress}/${total}`}</Text>
       </View>
       <View style={styles.progressBar}>
@@ -156,13 +161,16 @@ export default function ProfileScreen() {
               />
             </View>
             <View style={styles.infoContainer}>
-              <Text style={styles.memberTypeText}>NEWBIE</Text>
+              <Text style={styles.memberTypeText}>
+                {" "}
+                {userData?.kyc === 2 ? userData.firstName : "NEWBIE"}
+              </Text>
               <View style={styles.scoreRowContainer}>
                 <Text style={styles.scoreText}>
                   {userData?.point !== undefined ? userData.point : "*"}
                 </Text>
                 <Image
-                  source={require("@/assets/icons/profilePepIcon.png")}
+                  source={require("@/assets/icons/profScore.png")}
                   style={styles.logoImage}
                 />
               </View>
@@ -170,14 +178,20 @@ export default function ProfileScreen() {
           </View>
         </View>
         <View>
-          <ProgressBar progress={3} total={10} />
+          {userData?.level && (
+            <ProgressBar
+              levelName={userData.level.name}
+              progress={userData.level.collectPoint}
+              total={userData.level.levelPoint}
+            />
+          )}
         </View>
       </View>
       <View style={styles.info}>
         <View style={styles.imagesContainer}>
           <View style={styles.imageWithText}>
             <Image
-              source={require("@/assets/icons/stoppleInfo.png")}
+              source={require("@/assets/icons/profPlugCount.png")}
               style={styles.infoImage}
             />
             <Text style={styles.historyText}>Бүртгүүлсэн</Text>
@@ -185,7 +199,7 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.imageWithText}>
             <Image
-              source={require("@/assets/icons/taskInfo.png")}
+              source={require("@/assets/icons/profTaskCount.png")}
               style={styles.infoImage}
             />
             <Text style={styles.historyText}>Биелэсэн</Text>
@@ -193,7 +207,7 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.imageWithText}>
             <Image
-              source={require("@/assets/icons/researchInfo.png")}
+              source={require("@/assets/icons/profSurveyCount.png")}
               style={styles.infoImage}
             />
             <Text style={styles.historyText}>Судалгаанд</Text>
@@ -207,10 +221,14 @@ export default function ProfileScreen() {
             </Text>
           </View>
           <View style={styles.countColumn}>
-            <Text style={styles.countText}>0</Text>
+            <Text style={styles.countText}>
+              {userData?.taskCount !== undefined ? userData.taskCount : "*"}
+            </Text>
           </View>
           <View style={styles.countColumn}>
-            <Text style={styles.countText}>0</Text>
+            <Text style={styles.countText}>
+              {userData?.surveyCount !== undefined ? userData.surveyCount : "*"}
+            </Text>
           </View>
         </View>
       </View>
@@ -218,7 +236,10 @@ export default function ProfileScreen() {
         <ScrollView>
           <TouchableOpacity style={styles.menuItem} onPress={handleInformation}>
             <View style={styles.menuItemContent}>
-              <Ionicons name="person" size={26} color={Colors.primaryColor} />
+              <Image
+                source={require("@/assets/icons/profInformationMenu.png")}
+                style={{ width: 26, height: 26 }}
+              />
               <Text style={styles.menuItemText}>Миний мэдээлэл</Text>
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
@@ -228,10 +249,9 @@ export default function ProfileScreen() {
             onPress={handleChangePinCode}
           >
             <View style={styles.menuItemContent}>
-              <Ionicons
-                name="lock-closed"
-                size={26}
-                color={Colors.primaryColor}
+              <Image
+                source={require("@/assets/icons/profPinCodeMenu.png")}
+                style={{ width: 26, height: 26 }}
               />
               <Text style={styles.menuItemText}>Пин код өөрчлөх</Text>
             </View>
@@ -239,21 +259,19 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemContent}>
-              <Ionicons
-                name="pricetags"
-                size={26}
-                color={Colors.primaryColor}
+              <Image
+                source={require("@/assets/icons/profGiftsMenu.png")}
+                style={{ width: 26, height: 26 }}
               />
-              <Text style={styles.menuItemText}>Миний хөнгөлөлт</Text>
+              <Text style={styles.menuItemText}>Бэлгүүд</Text>
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleWheel} style={styles.menuItem}>
             <View style={styles.menuItemContent}>
-              <Ionicons
-                name="help-circle"
-                size={26}
-                color={Colors.primaryColor}
+              <Image
+                source={require("@/assets/icons/profQuestionMenu.png")}
+                style={{ width: 26, height: 26 }}
               />
               <Text style={styles.menuItemText}>Асуулт, хариулт</Text>
             </View>
@@ -261,10 +279,9 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={handleTermsScreen}>
             <View style={styles.menuItemContent}>
-              <Ionicons
-                name="alert-circle"
-                size={26}
-                color={Colors.primaryColor}
+              <Image
+                source={require("@/assets/icons/profTermMenu.png")}
+                style={{ width: 26, height: 26 }}
               />
               <Text style={styles.menuItemText}>Үйлчилгээний нөхцөл</Text>
             </View>

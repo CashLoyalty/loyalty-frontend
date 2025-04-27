@@ -30,21 +30,21 @@ interface TaskItem {
 const TaskInfoData: TaskItem[] = [
   {
     id: "1",
-    imgUrl: require("@/assets/icons/taskItem1.png"),
+    imgUrl: "",
     taskTitle: "Найзаар урих",
     score: "+300",
     date: "2024-07-17",
   },
   {
     id: "2",
-    imgUrl: require("@/assets/icons/taskItem2.png"),
+    imgUrl: "",
     taskTitle: "Хүслийн жагсаалт",
     score: "+200",
     date: "2024-08-25",
   },
   {
     id: "3",
-    imgUrl: require("@/assets/icons/taskItem1.png"),
+    imgUrl: "",
     taskTitle: "Найзаар урих",
     score: "+100",
     date: "2024-09-27",
@@ -137,10 +137,24 @@ const Task: React.FC = () => {
       <Header />
       <HeaderSecond />
       <View style={styles.rowContainer}>
-        <TouchableOpacity onPress={handleBackPress}>
-          <Image source={require("@/assets/icons/back.png")} />
-        </TouchableOpacity>
-        <Text style={styles.titleText}>Даалгаврууд</Text>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={styles.titleText}>Даалгаврууд</Text>
+        </View>
+        <View style={{ flex: 1 }} />
       </View>
       <TouchableOpacity onPress={() => handleItemPress()}>
         <View style={styles.taskRowContainer}>
@@ -324,6 +338,7 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-evenly",
     marginTop: 10,
     marginHorizontal: 10,
   },
@@ -335,9 +350,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     color: "#0E0E96",
-    marginLeft: (width / 100) * 23.63,
-    alignItems: "center",
-    justifyContent: "center",
     fontWeight: "600",
   },
   emptyImageContainer: {
@@ -451,7 +463,7 @@ const styles = StyleSheet.create({
   taskRowContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 10,
   },
   taskRowContainer2: {
     flexDirection: "row",

@@ -14,7 +14,14 @@ import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
+<<<<<<< Updated upstream
 import Story from "@/components/global";
+=======
+import {
+  black,
+  yellow100,
+} from "react-native-paper/lib/typescript/styles/themes/v2/colors";
+>>>>>>> Stashed changes
 
 const { width, height } = screenDimensions;
 
@@ -199,8 +206,7 @@ const BottomModal = ({
 };
 
 const Award: React.FC = () => {
-  console.log("width : " + width + " height : " + height);
-  const [visible, setVisible] = useState(false); // Modal visibility state
+  const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
 
   const handleBackPress = () => {
@@ -248,9 +254,8 @@ const Award: React.FC = () => {
   );
 
   const handleItemPress = (item: PrizeItem) => {
-    setSelectedItem(item); // Set the item when it's pressed
+    setSelectedItem(item);
     setVisible(true);
-    console.log("item TTT : " + item.id);
   };
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -261,10 +266,24 @@ const Award: React.FC = () => {
       <Header />
       <HeaderSecond />
       <View style={styles.rowContainer}>
-        <TouchableOpacity onPress={handleBackPress}>
-          <Image source={require("@/assets/icons/back.png")} />
-        </TouchableOpacity>
-        <Text style={styles.titleText}>Шагнал</Text>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={styles.titleText}>Шагнал</Text>
+        </View>
+        <View style={{ flex: 1 }} />
       </View>
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Азын хүрд шагнал</Text>
@@ -332,8 +351,9 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-evenly",
     marginTop: 10,
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
   rowContainer2: {
     flexDirection: "row",
@@ -350,9 +370,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     color: "#0E0E96",
-    marginLeft: (width / 100) * 32.3,
-    alignItems: "center",
-    justifyContent: "center",
     fontWeight: "600",
   },
   emptyImageContainer: {

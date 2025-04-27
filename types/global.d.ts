@@ -1,26 +1,33 @@
 export interface BannerDataTypes {
-  bannerImageUrl: string;  // Adjust the type based on the data structure you have
+  bannerImageUrl: string;
 }
 
 export interface UserResponse {
-    id: string;
-    phoneNumber: string;
-    passCode: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    birthOfDate: string;
-    sex: string;
-    kyc: number;
-    point: number;
-    lottoCount: number;
-    imageUrl: string;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  phoneNumber: string;
+  passCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  birthOfDate: string;
+  sex: string;
+  kyc: number;
+  point: number;
+  lottoCount: number;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  level: {
+    name: string;
+    levelPoint: number;
+    collectPoint: number;
+  };
+  surveyCount: number;
+  taskCount: number;
 }
-  
+
 export interface ApiResponse {
-    code: number;
-    response: UserResponse;
-    title: string;
+  code: number;
+  response: UserResponse;
+  title: string;
 }

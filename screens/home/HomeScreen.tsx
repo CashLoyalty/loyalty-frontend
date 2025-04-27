@@ -89,7 +89,6 @@ const HomeScreen: React.FC = () => {
     console.log("Permission object:", permission);
 
     if (permission === null) {
-      // Permissions state not yet loaded
       console.log("Permission not loaded yet");
       return;
     }
@@ -106,7 +105,7 @@ const HomeScreen: React.FC = () => {
       }
     }
 
-    router.push("/qrcodeReader"); // navigate if permission granted
+    router.push("/qrcodeReader");
   };
   const handleModalClose = () => {
     setModalVisible(false);
@@ -277,7 +276,10 @@ const HomeScreen: React.FC = () => {
             onPress={handleRegLotteryNum}
             accessibilityLabel="Register Lottery Number"
           >
-            <Image source={require("@/assets/icons/lotteryNumber.png")} />
+            <Image
+              source={require("@/assets/icons/lotteryNumber.png")}
+              style={{ width: 40, height: 40 }}
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.lotteryNumberQr}>
@@ -285,7 +287,10 @@ const HomeScreen: React.FC = () => {
             onPress={handleQRLotteryNum}
             accessibilityLabel="Scan Lottery QR Code"
           >
-            <Image source={require("@/assets/icons/lotteryNumberQR.png")} />
+            <Image
+              source={require("@/assets/icons/lotteryNumberQR.png")}
+              style={{ width: 40, height: 40 }}
+            />
           </TouchableOpacity>
         </View>
       </View>

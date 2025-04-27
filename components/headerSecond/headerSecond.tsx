@@ -75,8 +75,8 @@ export default function HeaderSecond() {
         <View style={styles.section2}>
           <TouchableOpacity onPress={handleWheel}>
             <Image
-              source={require("@/assets/icons/wheelIcon.png")}
-              style={{ width: 60, height: 60 }}
+              source={require("@/assets/icons/spinWheel.png")}
+              style={styles.icon}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleGift}>
