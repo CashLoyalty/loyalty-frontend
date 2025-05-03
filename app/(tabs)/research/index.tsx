@@ -61,6 +61,10 @@ const Research: React.FC = () => {
         {questions.length > 0 ? (
           questions.map((item) => (
             <TouchableOpacity key={item.id} onPress={() => handleJump(item.id, item.point)} style={styles.card}>
+              <Image
+                style={{ width: 35, height: 35, borderRadius: 7, zIndex: 3, top: 20, left: 13 }}
+                source={require("@/assets/loyalty/reserch.png")}
+              />
               <View style={styles.cardMini}>
                 <View style={{ flex: 1, flexDirection: "row" }}>
                   <Text style={styles.cardText}>{item.title}</Text>
