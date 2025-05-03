@@ -72,7 +72,7 @@ const Research: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          <Text style={styles.titleText}>Шагнал</Text>
+          <Text style={styles.titleText}>Судалгаанууд</Text>
         </View>
         <View style={{ flex: 1 }} />
       </View>
