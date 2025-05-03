@@ -51,12 +51,31 @@ const Research: React.FC = () => {
   const handleJump = (id: string, point: string) => {
     router.push(`/questions/${id}?point=${point}`);
   };
+  const handleBackPress = () => {
+    router.navigate("/(tabs)");
+  };
 
   return (
     <View style={styles.container}>
       <Header />
       <HeaderSecond />
-
+      <View style={styles.rowContainer}>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image source={require("@/assets/icons/back.png")} style={{ width: 30, height: 30 }} />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={styles.titleText}>Шагнал</Text>
+        </View>
+        <View style={{ flex: 1 }} />
+      </View>
       <View style={styles.cardContainer}>
         {questions.length > 0 ? (
           questions.map((item) => (
@@ -115,6 +134,18 @@ const Research: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    marginTop: 10,
+    marginHorizontal: 10,
+  },
+  titleText: {
+    fontSize: 20,
+    color: "#0E0E96",
+    fontWeight: "600",
+  },
   cardText: {
     fontSize: 14,
     color: "#0025FF",
