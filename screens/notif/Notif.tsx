@@ -1,34 +1,11 @@
+import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 
-// Destructuring screen dimensions
 const { width, height } = screenDimensions;
-
-// Sample notifications
-const notificationMessage = [
-  {
-    id: 1,
-    title: "Амжилттай!",
-    message: "Таны “W9C1V2E1” бөглөө амжилттай бүртгэгдлээ.",
-    status: "success",
-  },
-  {
-    id: 2,
-    title: "Алдаа гарлаа.",
-    message: "Бөглөө “D2C1VRE4” бүртгэл амжилтгүй боллоо.",
-    status: "error",
-  },
-  {
-    id: 3,
-    title: "",
-    message:
-      "Зөвхөн 7 хонгийн турш Mountain Dew ундааны бөглөө 200 оноо өгөх болно. Идэвхитэй оролцоорой!",
-    status: "info",
-  },
-];
 
 const handleBackPress = () => {
   router.navigate("/(tabs)");
@@ -39,30 +16,26 @@ const NotificationScreen = () => {
     <View style={styles.container}>
       <Header />
       <View style={styles.contentWrapper}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require("@/assets/icons/back.png")} />
-          </TouchableOpacity>
-          <Text style={styles.pageTitle}>Мэдэгдэл</Text>
-        </View>
-
-        {notificationMessage.map((notif, index) => (
-          <View
-            key={notif.id}
-            style={[
-              styles.notificationCard,
-              {
-                borderBottomWidth:
-                  index === notificationMessage.length - 1 ? 1 : 0,
-              },
-            ]}
-          >
-            {notif.title ? (
-              <Text style={styles.notifTitle}>{notif.title}</Text>
-            ) : null}
-            <Text style={styles.notifMessage}>{notif.message}</Text>
+        <View style={styles.rowContainer}>
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity onPress={handleBackPress}>
+              <Image
+                source={require("@/assets/icons/back.png")}
+                style={{ width: 30, height: 30 }}
+              />
+            </TouchableOpacity>
           </View>
-        ))}
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={styles.titleText}>Мэдэгдэл</Text>
+          </View>
+          <View style={{ flex: 1 }} />
+        </View>
       </View>
     </View>
   );
@@ -75,6 +48,18 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     marginTop: 20,
+  },
+  titleText: {
+    fontSize: 20,
+    color: "#0E0E96",
+    fontWeight: "600",
+  },
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    marginTop: 10,
+    marginHorizontal: 10,
   },
   headerRow: {
     flexDirection: "row",

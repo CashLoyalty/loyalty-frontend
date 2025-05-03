@@ -48,7 +48,6 @@ const GiftInfoData: GiftItem[] = [
 ];
 
 export default function GiftScreen() {
-  console.log("width : " + width);
   const handleBackPress = () => {
     router.navigate("/(tabs)");
   };
@@ -108,10 +107,24 @@ export default function GiftScreen() {
       <Header />
       <HeaderSecond />
       <View style={styles.rowContainer}>
-        <TouchableOpacity onPress={handleBackPress}>
-          <Image source={require("@/assets/icons/back.png")} />
-        </TouchableOpacity>
-        <Text style={styles.titleText}>Бэлэг</Text>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={styles.titleText}>Бэлэг</Text>
+        </View>
+        <View style={{ flex: 1 }} />
       </View>
       <FlatList
         data={GiftInfoData}
@@ -130,15 +143,13 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-evenly",
     marginTop: 10,
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
   titleText: {
     fontSize: 20,
     color: "#0E0E96",
-    marginLeft: (width / 100) * 32.3,
-    alignItems: "center",
-    justifyContent: "center",
     fontWeight: "600",
   },
   giftItem: {

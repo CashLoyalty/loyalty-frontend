@@ -294,7 +294,7 @@ const Award: React.FC = () => {
           )}
         />
       </View> */}
-      <Story/>
+      <Story />
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>

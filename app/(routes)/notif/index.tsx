@@ -1,6 +1,6 @@
-import React from 'react';
-import Notif from '@/screens/notif/Notif';
+import React from "react";
+import NotificationScreen from "@/screens/notif/Notif";
 
-export default function LoginPinCode() {
-    return <Notif/>;
+export default function Notif() {
+  return <NotificationScreen />;
 }

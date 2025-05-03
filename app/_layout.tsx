@@ -31,6 +31,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(routes)/giftDetail1/index" />
         <Stack.Screen name="(routes)/giftDetail2/index" />
         <Stack.Screen name="(routes)/qrcodeReader/index" />
+        <Stack.Screen name="(routes)/notif/index" />
       </Stack>
     </ToastProvider>
   );
