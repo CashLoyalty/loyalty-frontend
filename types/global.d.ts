@@ -31,3 +31,23 @@ export interface ApiResponse {
   response: UserResponse;
   title: string;
 }
+
+export interface GiftItem {
+  id: string;
+  name: string;
+  probability: number;
+  limit: number;
+  text: string;
+  type: string;
+  expiresAt?: string | null;
+  image1?: string;
+  image2?: string;
+  point?: number;
+  isCoupon?: boolean;
+}
+
+interface ApiResponseGifts {
+  code: number;
+  response: GiftItem[];
+  title: string;
+}

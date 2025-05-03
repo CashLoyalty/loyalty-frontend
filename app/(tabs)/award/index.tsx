@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Image,
@@ -15,6 +15,10 @@ import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import Story from "@/components/global";
+import { GiftItem } from "@/types/global";
+import useFetchGifts from "@/hooks/useFetchGifts";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_URI } from "@/utils/uri";
 
 const { width, height } = screenDimensions;
 
@@ -201,6 +205,36 @@ const BottomModal = ({
 const Award: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
+  const [token, setToken] = useState<string>("");
+
+  const {
+    data: spinGifts,
+    loading,
+    error,
+  } = useFetchGifts(SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE", token);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("token");
+        if (storedToken) {
+          setToken(storedToken);
+        } else {
+          console.warn("No token found in AsyncStorage");
+        }
+      } catch (error) {
+        console.error("Failed to fetch token: ", error);
+      }
+    };
+
+    fetchToken();
+  }, []);
+
+  useEffect(() => {
+    if (spinGifts && Array.isArray(spinGifts)) {
+      console.log("Gifts array length:", spinGifts.length);
+    }
+  }, [spinGifts]);
 
   const handleBackPress = () => {
     router.navigate("/(tabs)");
@@ -294,7 +328,7 @@ const Award: React.FC = () => {
           )}
         />
       </View> */}
-      <Story />
+      <Story spinGifts={spinGifts || []} />
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>

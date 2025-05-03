@@ -9,56 +9,45 @@ import {
   Dimensions,
   Pressable,
   Animated,
-  ImageSourcePropType,
 } from "react-native";
 
-// Define the Product type
-type Product = {
+type GiftItem = {
   id: string;
-  image: ImageSourcePropType;
-  storyImage: ImageSourcePropType;
+  name: string;
+  probability: number;
+  limit: number;
+  text: string;
+  type: string;
+  expiresAt?: string | null;
+  image1?: string;
+  image2?: string;
+  point?: number;
+  isCoupon?: boolean;
+};
+
+type StoryProps = {
+  spinGifts: GiftItem[];
 };
 
 const StoryBackground = require("@/assets/loyalty/storyBackground.png");
 
-// Product list
-const products: Product[] = [
-  {
-    id: "1",
-    image: require("@/assets/icons/airСondition.png"),
-    storyImage: require("@/assets/loyalty/airCondition.png"),
-  },
-  {
-    id: "2",
-    image: require("@/assets/icons/phone.png"),
-    storyImage: require("@/assets/loyalty/phone.png"),
-  },
-  {
-    id: "3",
-    image: require("@/assets/icons/iwatch.png"),
-    storyImage: require("@/assets/loyalty/iWatch1.png"),
-  },
-  {
-    id: "4",
-    image: require("@/assets/icons/headPhone.png"),
-    storyImage: require("@/assets/loyalty/airPodMax.png"),
-  },
-];
-
-export default function Story() {
+export default function Story({ spinGifts }: StoryProps) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentItemId, setCurrentItemId] = useState<string | null>(null);
   const [progress] = useState(new Animated.Value(0));
   const isAnimating = useRef(false);
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-  const openModal = (index: number) => {
-    if (isAnimating.current) return;
+  const filteredSpinGifts = spinGifts.filter(
+    (item) => !!item.image1?.trim() && !!item.image2?.trim()
+  );
 
+  const openModal = (itemId: string) => {
+    if (isAnimating.current) return;
     isAnimating.current = true;
-    setCurrentIndex(index);
+    setCurrentItemId(itemId);
     setModalVisible(true);
   };
 
@@ -75,8 +64,11 @@ export default function Story() {
       duration: 5000,
       useNativeDriver: false,
     }).start(() => {
-      if (currentIndex < products.length - 1) {
-        setCurrentIndex(currentIndex + 1);
+      const currentIndex = filteredSpinGifts.findIndex(
+        (item) => item.id === currentItemId
+      );
+      if (currentIndex < filteredSpinGifts.length - 1) {
+        setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
       } else {
         closeModal();
       }
@@ -88,35 +80,35 @@ export default function Story() {
     const clickX = event.nativeEvent.locationX;
 
     if (clickX < screenCenter) {
-      goToPrevious(); // Left click
+      goToPrevious();
     } else {
-      goToNext(); // Right click
+      goToNext();
     }
   };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => {
-      if (prevIndex < products.length - 1) {
-        return prevIndex + 1;
-      }
-      return prevIndex;
-    });
+    const currentIndex = filteredSpinGifts.findIndex(
+      (item) => item.id === currentItemId
+    );
+    if (currentIndex < filteredSpinGifts.length - 1) {
+      setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
+    }
   };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => {
-      if (prevIndex > 0) {
-        return prevIndex - 1;
-      }
-      return prevIndex;
-    });
+    const currentIndex = filteredSpinGifts.findIndex(
+      (item) => item.id === currentItemId
+    );
+    if (currentIndex > 0) {
+      setCurrentItemId(filteredSpinGifts[currentIndex - 1].id);
+    }
   };
 
   useEffect(() => {
-    if (modalVisible) {
+    if (modalVisible && currentItemId) {
       startProgress();
     }
-  }, [modalVisible, currentIndex]);
+  }, [modalVisible, currentItemId]);
 
   const progressWidth = progress.interpolate({
     inputRange: [0, 1],
@@ -126,38 +118,64 @@ export default function Story() {
   return (
     <View>
       <FlatList
-        data={products}
+        data={filteredSpinGifts}
         horizontal
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => openModal(index)}>
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => openModal(item.id)}>
             <View style={styles.storyItem}>
-              <Image source={item.image} style={styles.storyImage} />
+              {item.image1 ? (
+                <Image
+                  source={{ uri: item.image1 }}
+                  style={styles.storyImage}
+                />
+              ) : null}
             </View>
           </TouchableOpacity>
         )}
       />
 
-      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={closeModal}>
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeModal}
+      >
         <Pressable style={styles.fullScreenModal} onPress={handlePress}>
-          {/* Close Button */}
           <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-            <Image source={require("@/assets/loyalty/close.png")} style={{ width: 23, height: 23 }} />
+            <Image
+              source={require("@/assets/loyalty/close.png")}
+              style={{ width: 23, height: 23 }}
+            />
           </TouchableOpacity>
 
           <View style={styles.progressBarContainer}>
-            <Animated.View style={[styles.progressBar, { width: progressWidth }]} />
+            <Animated.View
+              style={[styles.progressBar, { width: progressWidth }]}
+            />
           </View>
 
-          {/* Story Content with background behind the storyImage */}
           <View style={styles.storyContainer}>
             <Image
               source={StoryBackground}
-              style={[StyleSheet.absoluteFillObject, { zIndex: 0, width: screenWidth, height: screenHeight }]}
+              style={[
+                StyleSheet.absoluteFillObject,
+                { zIndex: 0, width: screenWidth, height: screenHeight },
+              ]}
               resizeMode="cover"
             />
-            <Image source={products[currentIndex]?.storyImage} style={styles.storyImageOverlay} resizeMode="contain" />
+            {currentItemId && (
+              <Image
+                source={{
+                  uri:
+                    filteredSpinGifts.find((item) => item.id === currentItemId)
+                      ?.image2 ?? "",
+                }}
+                style={styles.storyImageOverlay}
+                resizeMode="contain"
+              />
+            )}
           </View>
         </Pressable>
       </Modal>
