@@ -27,7 +27,7 @@ const NotificationScreen = () => {
           </View>
           <View
             style={{
-              flex: 1,
+              flex: 2,
               alignItems: "center",
               justifyContent: "center",
             }}

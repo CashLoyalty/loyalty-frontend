@@ -62,12 +62,15 @@ const Research: React.FC = () => {
       <View style={styles.rowContainer}>
         <View style={{ flex: 1 }}>
           <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require("@/assets/icons/back.png")} style={{ width: 30, height: 30 }} />
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
           </TouchableOpacity>
         </View>
         <View
           style={{
-            flex: 1,
+            flex: 2,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -79,9 +82,20 @@ const Research: React.FC = () => {
       <View style={styles.cardContainer}>
         {questions.length > 0 ? (
           questions.map((item) => (
-            <TouchableOpacity key={item.id} onPress={() => handleJump(item.id, item.point)} style={styles.card}>
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => handleJump(item.id, item.point)}
+              style={styles.card}
+            >
               <Image
-                style={{ width: 35, height: 35, borderRadius: 7, zIndex: 3, top: 20, left: 13 }}
+                style={{
+                  width: 35,
+                  height: 35,
+                  borderRadius: 7,
+                  zIndex: 3,
+                  top: 20,
+                  left: 13,
+                }}
                 source={require("@/assets/loyalty/reserch.png")}
               />
               <View style={styles.cardMini}>
@@ -110,8 +124,13 @@ const Research: React.FC = () => {
                       gap: 4,
                     }}
                   >
-                    <Text style={{ color: "#ffffff", fontSize: 13 }}>{item.point}</Text>
-                    <Image style={{ width: 20, height: 17 }} source={require("@/assets/icons/coin.png")} />
+                    <Text style={{ color: "#ffffff", fontSize: 13 }}>
+                      {item.point}
+                    </Text>
+                    <Image
+                      style={{ width: 20, height: 17 }}
+                      source={require("@/assets/icons/coin.png")}
+                    />
                   </View>
                   <Text style={{ color: "#4B5563", fontSize: 13 }}>
                     {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
@@ -121,10 +140,23 @@ const Research: React.FC = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <View>
-              <Image source={require("@/assets/images/emptyTask.png")} style={{ width: 260, height: 230 }} />
-              <Text style={{ color: "#0E0E96", fontWeight: "600", textAlign: "center" }}>Судалгаа олдсонгүй</Text>
+              <Image
+                source={require("@/assets/images/emptyTask.png")}
+                style={{ width: 260, height: 230 }}
+              />
+              <Text
+                style={{
+                  color: "#0E0E96",
+                  fontWeight: "600",
+                  textAlign: "center",
+                }}
+              >
+                Судалгаа олдсонгүй
+              </Text>
             </View>
           </View>
         )}

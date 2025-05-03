@@ -269,7 +269,7 @@ const Award: React.FC = () => {
         </View>
         <View
           style={{
-            flex: 1,
+            flex: 2,
             alignItems: "center",
             justifyContent: "center",
           }}
