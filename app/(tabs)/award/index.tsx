@@ -14,14 +14,7 @@ import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
-<<<<<<< Updated upstream
 import Story from "@/components/global";
-=======
-import {
-  black,
-  yellow100,
-} from "react-native-paper/lib/typescript/styles/themes/v2/colors";
->>>>>>> Stashed changes
 
 const { width, height } = screenDimensions;
 
