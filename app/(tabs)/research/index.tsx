@@ -51,6 +51,7 @@ const Research: React.FC = () => {
   const handleJump = (id: string, point: string) => {
     router.push(`/questions/${id}?point=${point}`);
   };
+
   const handleBackPress = () => {
     router.navigate("/(tabs)");
   };
@@ -68,20 +69,15 @@ const Research: React.FC = () => {
             />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            flex: 2,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <View style={{ flex: 2, alignItems: "center", justifyContent: "center" }}>
           <Text style={styles.titleText}>Судалгаанууд</Text>
         </View>
         <View style={{ flex: 1 }} />
       </View>
-      <View style={styles.cardContainer}>
-        {questions.length > 0 ? (
-          questions.map((item) => (
+
+      {questions.length > 0 ? (
+        <View style={styles.cardContainer}>
+          {questions.map((item) => (
             <TouchableOpacity
               key={item.id}
               onPress={() => handleJump(item.id, item.point)}
@@ -110,62 +106,39 @@ const Research: React.FC = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <View
-                    style={{
-                      backgroundColor: "#0025FF",
-                      flexDirection: "row",
-                      borderRadius: 15,
-                      maxHeight: 30,
-                      maxWidth: 80,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      gap: 4,
-                    }}
-                  >
-                    <Text style={{ color: "#ffffff", fontSize: 13 }}>
-                      {item.point}
-                    </Text>
+                  <View style={styles.pointContainer}>
+                    <Text style={styles.pointText}>{item.point}</Text>
                     <Image
                       style={{ width: 20, height: 17 }}
                       source={require("@/assets/icons/coin.png")}
                     />
                   </View>
-                  <Text style={{ color: "#4B5563", fontSize: 13 }}>
+                  <Text style={styles.durationText}>
                     {item.minMinutes ?? 0}-{item.maxMinutes ?? 0}мин
                   </Text>
                 </View>
               </View>
             </TouchableOpacity>
-          ))
-        ) : (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <View>
-              <Image
-                source={require("@/assets/images/emptyTask.png")}
-                style={{ width: 260, height: 230 }}
-              />
-              <Text
-                style={{
-                  color: "#0E0E96",
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
-              >
-                Судалгаа олдсонгүй
-              </Text>
-            </View>
-          </View>
-        )}
-      </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.notFoundModal}>
+          <Image
+            source={require("@/assets/images/emptyTask.png")}
+            style={styles.emptyImage}
+          />
+          <Text style={styles.text}>Даалгавар олдсонгүй</Text>
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -178,21 +151,10 @@ const styles = StyleSheet.create({
     color: "#0E0E96",
     fontWeight: "600",
   },
-  cardText: {
-    fontSize: 14,
-    color: "#0025FF",
-    fontWeight: "600",
-    marginTop: 10,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-  },
   cardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     padding: 10,
-    justifyContent: "space-between",
   },
   card: {
     backgroundColor: "#0025FF",
@@ -209,56 +171,51 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 12,
   },
-  researchItem: {
-    flex: 1,
-  },
-  researchRowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    paddingHorizontal: 10,
-  },
-  researchImgContainer: {
-    flex: 1,
-    zIndex: 2,
-  },
-  researchInfoContainer: {
-    flexDirection: "row",
-    width: "100%",
-    height: 150,
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: Colors.primaryColor,
-    justifyContent: "center",
-    zIndex: 1,
-    padding: 10,
-  },
-  infoSection1: {
-    flex: 4,
-    backgroundColor: Colors.white,
-  },
-  infoSection2: {
-    flex: 5,
-    backgroundColor: Colors.white,
-  },
-  researchInfoTitle: {
-    textAlign: "left",
-    fontSize: 23,
+  cardText: {
+    fontSize: 14,
+    color: "#0025FF",
     fontWeight: "600",
-    color: Colors.primaryColor,
+    marginTop: 10,
   },
-  scoureContainer: {
+  pointContainer: {
+    backgroundColor: "#0025FF",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    borderRadius: 15,
+    maxHeight: 30,
+    maxWidth: 80,
     alignItems: "center",
-    marginTop: 40,
-    marginBottom: 10,
+    justifyContent: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    gap: 4,
   },
-  questionContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
+  pointText: {
+    color: "#ffffff",
+    fontSize: 13,
+  },
+  durationText: {
+    color: "#4B5563",
+    fontSize: 13,
+  },
+  notFoundModal: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    height: "100%",
+    marginBottom:70
+  },
+  emptyImage: {
+    width: 261,
+    height: 233,
+    opacity: 0.5,
+  },
+  text: {
+    color: "#0E0E96",
+    fontWeight: "600",
+    fontSize: 14,
+    opacity: 0.5,
+    marginTop: 20,
   },
 });
 
