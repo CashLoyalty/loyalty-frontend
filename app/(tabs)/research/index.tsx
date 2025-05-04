@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     height: 233,
     opacity: 0.5,
   },
+  
   text: {
     color: "#0E0E96",
     fontWeight: "600",
