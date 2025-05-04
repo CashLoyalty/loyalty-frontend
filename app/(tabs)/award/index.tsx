@@ -18,6 +18,7 @@ import { GiftItem } from "@/types/global";
 import useFetchGifts from "@/hooks/useFetchGifts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_URI } from "@/utils/uri";
+import { Dimensions } from "react-native";
 
 interface AwardItem {
   id: string;
@@ -172,6 +173,11 @@ const Award: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
   const [token, setToken] = useState<string>("");
+  const screenWidth = Dimensions.get("window").width;
+  const isTablet = screenWidth >= 768;
+  const numColumns = isTablet ? 4 : 2;
+  const itemSpacing = 20;
+  const itemWidth = (screenWidth - itemSpacing * (numColumns + 1)) / numColumns;
 
   const { data: spinGifts } = useFetchGifts(
     SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
@@ -283,49 +289,28 @@ const Award: React.FC = () => {
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>
-      {/* <FlatList
-        data={prizes}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleItemPress(item)}>
-            <View style={styles.prizeContainer}>
-              <View style={styles.prizeImgContainer}>
-                <Image source={item.image} style={styles.prizeImage} />
-              </View>
-              <View style={styles.prizeInfoContainer}>
-                <Text style={styles.prizeInfoTitle}>{item.title}</Text>
-                <View style={styles.prizeScoreContainer}>
-                  <Text style={styles.prizeScoreTitle}>{item.score}</Text>
-                  <Image
-                    source={require("@/assets/icons/plug.png")}
-                    style={{ width: 14, height: 16 }}
-                  />
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      /> */}
       <FlatList
         data={pointGifts}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
+        numColumns={numColumns}
+        columnWrapperStyle={{
+          justifyContent: "space-between",
+          marginBottom: 20,
+        }}
+        contentContainerStyle={{ padding: itemSpacing }}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleItemPress(item.id)}>
-            <View style={styles.prizeContainer}>
+            <View style={[styles.prizeContainer, { width: itemWidth }]}>
               <View style={styles.prizeImgContainer}>
                 <Image
                   source={{ uri: item.image1 }}
                   style={styles.prizeImage}
+                  resizeMode="cover"
                 />
               </View>
               <View style={styles.prizeInfoContainer}>
                 <Text style={styles.prizeInfoTitle}>{item.name}</Text>
                 <View style={styles.prizeScoreContainer}>
-                  <Text style={styles.prizeScoreTitle}>{item.point}</Text>
                   <Image
                     source={require("@/assets/icons/plug.png")}
                     style={{ width: 14, height: 16 }}
@@ -485,7 +470,6 @@ const styles = StyleSheet.create({
   },
   prizeContainer: {
     flex: 1,
-    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -497,14 +481,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryColor,
     borderRadius: 10,
     backgroundColor: Colors.white,
-    alignContent: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   prizeImage: {
     width: 150,
-    height: 70,
-    justifyContent: "center",
-    alignContent: "center",
+    height: 90,
   },
   prizeInfoContainer: {
     flexDirection: "column",
@@ -560,7 +542,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     paddingHorizontal: 10,
     paddingVertical: 10,
   },

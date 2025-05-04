@@ -116,7 +116,7 @@ export default function Story({ spinGifts }: StoryProps) {
   });
 
   return (
-    <View>
+    <View style={{ marginTop: 10 }}>
       <FlatList
         data={filteredSpinGifts}
         horizontal
