@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     left: "41%",
     transform: [{ translateX: -50 }],
   },
+  
   errorText: { color: "white", textAlign: "center", marginVertical: 10 },
   modalOverlay: {
     flex: 1,
