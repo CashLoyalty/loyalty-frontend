@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     position: "absolute",
     top: 415,
-    left: "41%",
+    left: "35%",
     transform: [{ translateX: -50 }],
   },
   
