@@ -12,15 +12,12 @@ import {
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
-import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import Story from "@/components/global";
 import { GiftItem } from "@/types/global";
 import useFetchGifts from "@/hooks/useFetchGifts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_URI } from "@/utils/uri";
-
-const { width, height } = screenDimensions;
 
 interface AwardItem {
   id: string;
@@ -29,37 +26,6 @@ interface AwardItem {
   date: string;
   lottery: string;
 }
-
-const AwardInfoData: AwardItem[] = [
-  {
-    id: "1",
-    imgUrl: require("@/assets/icons/awardItem1.png"),
-    awardTitle: "AirPod MAX Win Big хөтөлбөр",
-    date: "2024-07-17",
-    lottery: "6 оролцох эрх",
-  },
-  {
-    id: "2",
-    imgUrl: require("@/assets/icons/awardItem2.png"),
-    awardTitle: "PlayStation 5 Win Big хөтөлбөр",
-    date: "2024-08-25",
-    lottery: "2 оролцох эрх",
-  },
-  {
-    id: "3",
-    imgUrl: require("@/assets/icons/awardItem3.png"),
-    awardTitle: "Scooter PRO Win Big хөтөлбөр",
-    date: "2024-09-27",
-    lottery: "5 оролцох эрх",
-  },
-];
-
-const products = [
-  { id: "1", image: require("@/assets/icons/airСondition.png") },
-  { id: "2", image: require("@/assets/icons/phone.png") },
-  { id: "3", image: require("@/assets/icons/iwatch.png") },
-  { id: "4", image: require("@/assets/icons/headPhone.png") },
-];
 
 interface PrizeItem {
   id: string;
@@ -207,11 +173,15 @@ const Award: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
   const [token, setToken] = useState<string>("");
 
-  const {
-    data: spinGifts,
-    loading,
-    error,
-  } = useFetchGifts(SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE", token);
+  const { data: spinGifts } = useFetchGifts(
+    SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
+    token
+  );
+
+  const { data: pointGifts } = useFetchGifts(
+    SERVER_URI + "/api/gift?type=POINT&status=ACTIVE",
+    token
+  );
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -229,12 +199,6 @@ const Award: React.FC = () => {
 
     fetchToken();
   }, []);
-
-  useEffect(() => {
-    if (spinGifts && Array.isArray(spinGifts)) {
-      console.log("Gifts array length:", spinGifts.length);
-    }
-  }, [spinGifts]);
 
   const handleBackPress = () => {
     router.navigate("/(tabs)");
@@ -280,9 +244,9 @@ const Award: React.FC = () => {
     </View>
   );
 
-  const handleItemPress = (item: PrizeItem) => {
-    setSelectedItem(item);
-    setVisible(true);
+  const handleItemPress = (itemId: GiftItem["id"]) => {
+    //setSelectedItem(item);
+    //setVisible(true);
   };
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -315,24 +279,11 @@ const Award: React.FC = () => {
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Азын хүрд шагнал</Text>
       </View>
-      {/* <View style={styles.container3}>
-        <FlatList
-          data={products}
-          horizontal
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.circle}>
-              <Image source={item.image} style={styles.image} />
-            </View>
-          )}
-        />
-      </View> */}
       <Story spinGifts={spinGifts || []} />
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>
-      <FlatList
+      {/* <FlatList
         data={prizes}
         keyExtractor={(item) => item.id}
         numColumns={2}
@@ -347,6 +298,34 @@ const Award: React.FC = () => {
                 <Text style={styles.prizeInfoTitle}>{item.title}</Text>
                 <View style={styles.prizeScoreContainer}>
                   <Text style={styles.prizeScoreTitle}>{item.score}</Text>
+                  <Image
+                    source={require("@/assets/icons/plug.png")}
+                    style={{ width: 14, height: 16 }}
+                  />
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      /> */}
+      <FlatList
+        data={pointGifts}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleItemPress(item.id)}>
+            <View style={styles.prizeContainer}>
+              <View style={styles.prizeImgContainer}>
+                <Image
+                  source={{ uri: item.image1 }}
+                  style={styles.prizeImage}
+                />
+              </View>
+              <View style={styles.prizeInfoContainer}>
+                <Text style={styles.prizeInfoTitle}>{item.name}</Text>
+                <View style={styles.prizeScoreContainer}>
+                  <Text style={styles.prizeScoreTitle}>{item.point}</Text>
                   <Image
                     source={require("@/assets/icons/plug.png")}
                     style={{ width: 14, height: 16 }}
