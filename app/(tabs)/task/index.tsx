@@ -189,7 +189,7 @@ const Task: React.FC = () => {
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleItemPress2()}>
+      {/* <TouchableOpacity onPress={() => handleItemPress2()}>
         <View style={styles.taskRowContainer2}>
           <View style={styles.taskInfoContainer}>
             <View style={{ paddingLeft: 20, marginTop: 10 }}>
@@ -222,7 +222,7 @@ const Task: React.FC = () => {
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Modal
         transparent
         visible={visible}
