@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SERVER_URI } from "@/utils/uri";
 
 const { width, height } = screenDimensions;
 
@@ -56,7 +57,7 @@ export default function ChangeNewPinCodeScreen() {
   }, [nowPinCode, pinCode]);
 
   const handleBack = () => {
-    navigation.goBack();
+    router.back()
   };
 
   const handleHook = (nowPinCode: any, pinCode: string) => {
@@ -67,7 +68,7 @@ export default function ChangeNewPinCodeScreen() {
     try {
       setLoading(true);
       const response = await axios.put(
-        "https://server-w6thjpmvcq-uc.a.run.app/api/user/updatePassCode",
+        `${SERVER_URI}/api/user/updatePassCode`,
         { oldPassCode: nowPinCode, newPassCode: pinCode },
         {
           headers: {
@@ -75,12 +76,13 @@ export default function ChangeNewPinCodeScreen() {
           },
         }
       );
+      console.log(response.data);
 
       if (response.data.code === 0 && response.data.title === "Success") {
         toast.show("Нууц үг солигдлоо", {
           type: "success",
           placement: "top",
-          duration: 2000,
+          duration: 1500,
           animationType: "slide-in",
         });
         const timer = setTimeout(() => {

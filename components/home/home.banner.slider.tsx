@@ -36,7 +36,7 @@ export default function Banner() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false} 
+        scrollEnabled={false}
         style={styles.scrollView}
       >
         {images.map((item, index) => (
