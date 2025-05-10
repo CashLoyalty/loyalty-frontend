@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fizz point",
-    "slug": "Fizz point",
+    "slug": "loyalty-app",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
