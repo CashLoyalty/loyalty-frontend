@@ -95,10 +95,8 @@ export default function GiftScreen() {
   );
   const handleItemPress = (item: GiftItem) => {
     if (item.id === "1") {
-      console.log("asdf");
       router.navigate("/(routes)/giftDetail1");
     } else {
-      console.log("dasg");
       router.navigate("/(routes)/giftDetail2");
     }
   };

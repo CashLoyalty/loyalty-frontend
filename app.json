@@ -1,20 +1,20 @@
 {
   "expo": {
-    "name": "PepsiLoyaltyApp",
-    "slug": "pepsi-loyalty-app",
-    "version": "1.0.0",
+    "name": "Fizz point",
+    "slug": "loyalty-app",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#FFFFFF"
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.batorgil.PepsiLoyaltyApp",
+      "bundleIdentifier": "com.amarasytem.loyalty-app",
       "buildNumber": "1.0.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
@@ -22,9 +22,11 @@
       }
     },
     "android": {
-      "package": "com.batorgil.PepsiLoyaltyApp",
-      "versionCode": 1,
-      "permissions": ["CAMERA"],
+      "package": "com.amarasystem.loyaltyapp",
+      "versionCode": 2,
+      "permissions": [
+        "CAMERA"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -43,6 +45,14 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
       ]
     ],
     "experiments": {
@@ -53,16 +63,16 @@
         "origin": false
       },
       "eas": {
-        "projectId": "79d27cdc-5d1b-4106-b07d-d43e47570505"
+        "projectId": "aa3019f0-33c3-4d89-bfde-e0cef80729b7"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/79d27cdc-5d1b-4106-b07d-d43e47570505"
+      "url": "https://u.expo.dev/aa3019f0-33c3-4d89-bfde-e0cef80729b7"
     },
     "newArchEnabled": true,
-    "owner": "bat-orgil"
+    "owner": "amarasystem"
   }
 }

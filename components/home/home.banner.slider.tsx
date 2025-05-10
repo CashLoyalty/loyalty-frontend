@@ -1,38 +1,68 @@
-import React from "react";
-import { View, Image } from "react-native";
-import { styles } from "@/styles/home/banner.style";
-import { StyleSheet } from "react-native";
-import Swiper from "react-native-swiper";
-import { bannerData } from "@/constants/constans";
-import { BannerDataTypes } from "@/types/global";
+import React, { useRef, useEffect, useState } from "react";
+import { View, Image, ScrollView, StyleSheet, Dimensions } from 'react-native';
 
-export default function HomeBannerSlider() {
+const { width } = Dimensions.get('window');
+
+const images = [
+  {
+    image: require('../../assets/banners/banner1.jpg'),
+  },
+  {
+    image: require('../../assets/banners/banner2.jpg'),
+  },
+  {
+    image: require('../../assets/banners/banner3.jpg'),
+  }
+];
+
+export default function Banner() {
+  const scrollRef = useRef<ScrollView>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % images.length;
+      scrollRef.current?.scrollTo({ x: nextIndex * width, animated: true });
+      setCurrentIndex(nextIndex);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+
   return (
     <View style={styles.container}>
-      <Swiper
-        dotStyle={styles.dot}
-        activeDotStyle={styles.activeDot}
-        autoplay={true}
-        autoplayTimeout={5}
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={false} 
+        style={styles.scrollView}
       >
-        {bannerData.map((item: BannerDataTypes, index: number) => (
-          <View key={index} style={[styles.slide, { overflow: "hidden" }]}>
-            <Image
-              source={item.bannerImageUrl}
-              style={inStyles.image}
-            />
-          </View>
+        {images.map((item, index) => (
+          <Image
+            key={index}
+            source={item.image}
+            style={styles.image}
+          />
         ))}
-      </Swiper>
+      </ScrollView>
     </View>
   );
 }
 
-const inStyles = StyleSheet.create({
-  image: {
-    width: "100%",
+const styles = StyleSheet.create({
+  container: {
     height: 175,
     borderRadius: 10,
-    resizeMode: "cover",
+    overflow: 'hidden',
+  },
+  scrollView: {
+    width: width,
+  },
+  image: {
+    width: width,
+    height: 175,
+    resizeMode: 'cover',
   },
 });

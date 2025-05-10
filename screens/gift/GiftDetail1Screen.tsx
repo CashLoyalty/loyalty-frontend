@@ -15,7 +15,7 @@ import { router } from "expo-router";
 export default function GiftDetail1Screen() {
   const insets = useSafeAreaInsets();
   const handleBackPress = () => {
-    router.navigate("/(routes)/gift");
+    router.back()
   };
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

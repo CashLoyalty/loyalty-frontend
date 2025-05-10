@@ -17,7 +17,7 @@ import { router } from "expo-router";
 export default function GiftDetail2Screen() {
   const insets = useSafeAreaInsets();
   const handleBackPress = () => {
-    router.navigate("/(routes)/gift");
+    router.back();
   };
   const prizeData = {
     lastName: "Хүрэлбаатар Мөнх-Эрдэнэ",
