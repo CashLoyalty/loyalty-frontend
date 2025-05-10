@@ -93,7 +93,7 @@ export default function ChangeNewPinCodeScreen() {
       toast.show("Амжилтгүй", {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
     } finally {

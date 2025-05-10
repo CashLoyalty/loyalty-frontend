@@ -40,7 +40,7 @@ export default function LoginScreen() {
       toast.show(`Утасны дугаар оруулна уу...`, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -50,7 +50,7 @@ export default function LoginScreen() {
       toast.show(`Утасны дугаар буруу...`, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -85,7 +85,7 @@ export default function LoginScreen() {
         toast.show(`Алдаа: ${data.title}`, {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
       }
@@ -98,7 +98,7 @@ export default function LoginScreen() {
           {
             type: "danger",
             placement: "top",
-            duration: 4000,
+            duration: 1500,
             animationType: "slide-in",
           }
         );
@@ -106,7 +106,7 @@ export default function LoginScreen() {
         toast.show(`Алдаа гарлаа: ${String(error)}`, {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
       }

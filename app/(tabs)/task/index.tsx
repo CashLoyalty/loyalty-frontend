@@ -73,7 +73,7 @@ const Task: React.FC = () => {
       toast.show(`Утасны дугаар оруулна уу...`, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -83,7 +83,7 @@ const Task: React.FC = () => {
       toast.show(`Утасны дугаар буруу...`, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -108,7 +108,7 @@ const Task: React.FC = () => {
         toast.show(`Алдаа гарлаа`, {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
           style: {
             backgroundColor: Colors.red,
@@ -125,7 +125,7 @@ const Task: React.FC = () => {
             toast.show(`Энэ дугаар бүртгэгдсэн байна....`, {
               type: "danger",
               placement: "top",
-              duration: 4000,
+              duration: 1500,
               animationType: "slide-in",
               style: {
                 backgroundColor: Colors.red,
@@ -136,7 +136,7 @@ const Task: React.FC = () => {
             toast.show(`Амжилттай`, {
               type: "info",
               placement: "top",
-              duration: 4000,
+              duration: 1500,
               animationType: "slide-in",
               style: {
                 backgroundColor: Colors.green,
@@ -146,6 +146,7 @@ const Task: React.FC = () => {
           default:
             toast.show(`Танигдаагүй код: ${data.code}`, {
               type: "warning",
+              duration: 1500,
             });
         }
       }

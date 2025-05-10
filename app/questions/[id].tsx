@@ -90,6 +90,7 @@ export default function QuestionDetailPage() {
       toast.show("Энэ асуултыг хариулаагүй байна.", {
         type: "danger",
         placement: "top",
+        duration: 1500,
       });
       return;
     }
@@ -109,6 +110,7 @@ export default function QuestionDetailPage() {
             },
           }
         );
+        console.log("Response from server:", response.data);
         if (response.data.title === "Success") {
           setModal(true);
           Keyboard.dismiss();
@@ -118,6 +120,7 @@ export default function QuestionDetailPage() {
         toast.show("Судалгаа илгээхэд алдаа гарлаа!", {
           type: "danger",
           placement: "top",
+          duration: 1500,
         });
       }
     } else {

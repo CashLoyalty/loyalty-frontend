@@ -89,14 +89,14 @@ export default function LoginWithPinCodeScreen() {
           toast.show("Пин код буруу", {
             type: "danger",
             placement: "top",
-            duration: 4000,
+            duration: 1500,
             animationType: "slide-in",
           });
         } else {
           toast.show(response.data.title, {
             type: "danger",
             placement: "top",
-            duration: 4000,
+            duration: 1500,
             animationType: "slide-in",
           });
         }
@@ -106,7 +106,7 @@ export default function LoginWithPinCodeScreen() {
       toast.show("Алдаа гарлаа: " + error, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
     } finally {

@@ -307,13 +307,13 @@ export default function InformationScreen() {
         toast.show("Амжилтгүй", {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
         });
       } else if (result.code === 0 && result.title === "Success") {
         toast.show("Мэдээлэл амжилттай шинэчлэгдлээ", {
           type: "success",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
         });
         clearFormErrors();
       }

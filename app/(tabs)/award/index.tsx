@@ -233,7 +233,7 @@ const Award: React.FC = () => {
         toast.show(`Алдаа гарлаа`, {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
           style: {
             backgroundColor: Colors.red,
@@ -246,7 +246,7 @@ const Award: React.FC = () => {
         toast.show(`Амжилттай`, {
           type: "info",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
           style: {
             backgroundColor: Colors.green,

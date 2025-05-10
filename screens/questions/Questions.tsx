@@ -41,7 +41,7 @@ const Questions: React.FC = () => {
       toast.show("Та асуулт 1-г хариулаагүй байна.", {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -52,7 +52,7 @@ const Questions: React.FC = () => {
       toast.show("Та амт сонгоогүй байна.", {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;

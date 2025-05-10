@@ -30,7 +30,7 @@ const QRCodeReaderScreen = () => {
       toast.show(`Бөглөөний код буруу байна`, {
         type: "info",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,

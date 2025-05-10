@@ -125,7 +125,7 @@ const HomeScreen: React.FC = () => {
       toast.show(`Бөглөөний код буруу байна`, {
         type: "info",
         placement: "center",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,
@@ -150,7 +150,7 @@ const HomeScreen: React.FC = () => {
         toast.show(`Бүртгэгдсэн бөглөө код байна`, {
           type: "warning",
           placement: "center",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
       }
@@ -159,7 +159,7 @@ const HomeScreen: React.FC = () => {
         toast.show(`Бөглөө код амжилттай бүртгэгдлээ`, {
           type: "success",
           placement: "center",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
 
@@ -169,7 +169,7 @@ const HomeScreen: React.FC = () => {
       toast.show(`Код илгээхэд алдаа гарлаа`, {
         type: "danger",
         placement: "center",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,

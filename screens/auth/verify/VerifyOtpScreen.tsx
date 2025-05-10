@@ -56,7 +56,7 @@ export default function VerifyOtpScreen() {
       toast.show(`OTP код 6 оронтой байх ёстой.`, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
@@ -79,7 +79,7 @@ export default function VerifyOtpScreen() {
         toast.show(`Баталгаажуулах код буруу.`, {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
       }
@@ -89,7 +89,7 @@ export default function VerifyOtpScreen() {
       toast.show(errorMessage, {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
     } finally {

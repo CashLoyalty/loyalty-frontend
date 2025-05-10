@@ -92,7 +92,7 @@ export default function CheckPinCodeScreen() {
           toast.show("Баталгаажуулалт амжилтгүй!", {
             type: "danger",
             placement: "top",
-            duration: 4000,
+            duration: 1500,
             animationType: "slide-in",
           });
         }
@@ -101,7 +101,7 @@ export default function CheckPinCodeScreen() {
         toast.show("Алдаа гарлаа, дахин оролдоно уу...", {
           type: "danger",
           placement: "top",
-          duration: 4000,
+          duration: 1500,
           animationType: "slide-in",
         });
       } finally {
@@ -111,7 +111,7 @@ export default function CheckPinCodeScreen() {
       toast.show("Кодууд тохирохгүй байна!", {
         type: "danger",
         placement: "top",
-        duration: 4000,
+        duration: 1500,
         animationType: "slide-in",
       });
       return;
