@@ -4,21 +4,29 @@
       "android": {
         "buildType": "apk"
       },
-      "ios": {},
+      "ios": {
+        "simulator": true
+      },
       "channel": "development"
     },
     "preview": {
       "android": {
         "buildType": "app-bundle"
       },
-      "ios": {},
+      "ios": {
+        "simulator": true
+      },
       "channel": "preview"
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
       },
-      "ios": {},
+      "ios": {
+        "distribution": "app-store",
+        "simulator": false,
+        "autoIncrement": true
+      },
       "channel": "production"
     }
   }

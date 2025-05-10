@@ -4,13 +4,11 @@ import {
   Text,
   StyleSheet,
   Image,
-  Dimensions,
   StatusBar,
   TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-const { width, height } = Dimensions.get("window");
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 
@@ -26,7 +24,10 @@ export default function GiftDetail1Screen() {
       <View style={styles.containerSec}>
         <View style={styles.rowContainer}>
           <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require("@/assets/icons/back.png")} />
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
           </TouchableOpacity>
           <Text style={styles.titleText}>Burger King 20`000₮ Эрхийн бичиг</Text>
         </View>
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: Colors.black,
-    marginLeft: 20,
+    marginLeft: 10,
     fontWeight: "600",
   },
   card: {

@@ -8,7 +8,6 @@ import {
   StatusBar,
   TouchableOpacity,
 } from "react-native";
-import { Card, Title, Paragraph } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 const { width, height } = Dimensions.get("window");
@@ -35,7 +34,10 @@ export default function GiftDetail2Screen() {
       <View style={styles.containerSec}>
         <View style={styles.rowContainer}>
           <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require("@/assets/icons/back.png")} />
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: 30, height: 30 }}
+            />
           </TouchableOpacity>
           <Text style={styles.titleText}>55 inch ухаалаг зурагт OLED</Text>
         </View>
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: Colors.black,
-    marginLeft: 20,
+    marginLeft: 10,
     fontWeight: "600",
   },
   backBtnText: {

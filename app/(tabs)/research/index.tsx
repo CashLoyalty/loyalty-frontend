@@ -69,7 +69,9 @@ const Research: React.FC = () => {
             />
           </TouchableOpacity>
         </View>
-        <View style={{ flex: 2, alignItems: "center", justifyContent: "center" }}>
+        <View
+          style={{ flex: 2, alignItems: "center", justifyContent: "center" }}
+        >
           <Text style={styles.titleText}>Судалгаанууд</Text>
         </View>
         <View style={{ flex: 1 }} />
@@ -154,6 +156,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent:"space-evenly",
     padding: 10,
   },
   card: {
@@ -203,14 +206,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: "100%",
-    marginBottom:70
+    marginBottom: 70,
   },
   emptyImage: {
     width: 261,
     height: 233,
     opacity: 0.5,
   },
-  
+
   text: {
     color: "#0E0E96",
     fontWeight: "600",

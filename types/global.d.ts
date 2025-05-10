@@ -1,5 +1,6 @@
+import { ImageSourcePropType } from "react-native";
 export interface BannerDataTypes {
-  bannerImageUrl: string;
+  bannerImageUrl: ImageSourcePropType;
 }
 
 export interface UserResponse {

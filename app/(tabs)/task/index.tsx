@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   Image,
   Text,
   TouchableOpacity,
-  ListRenderItem,
   Modal,
   TextInput,
   Pressable,
+  Keyboard,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
@@ -16,103 +16,146 @@ import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { SERVER_URI } from "@/utils/uri";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useToast } from "react-native-toast-notifications";
 
 const { width, height } = screenDimensions;
-
-interface TaskItem {
-  id: string;
-  imgUrl: any;
-  taskTitle: string;
-  score: string;
-  date: string;
-}
-
-const TaskInfoData: TaskItem[] = [
-  {
-    id: "1",
-    imgUrl: "",
-    taskTitle: "Найзаар урих",
-    score: "+300",
-    date: "2024-07-17",
-  },
-  {
-    id: "2",
-    imgUrl: "",
-    taskTitle: "Хүслийн жагсаалт",
-    score: "+200",
-    date: "2024-08-25",
-  },
-  {
-    id: "3",
-    imgUrl: "",
-    taskTitle: "Найзаар урих",
-    score: "+100",
-    date: "2024-09-27",
-  },
-];
 
 const Task: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [visibleSec, setVisibleSec] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [token, setToken] = useState<string>("");
+  const requiredLength = 8;
+  const toast = useToast();
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("token");
+        if (storedToken) {
+          setToken(storedToken);
+        } else {
+          console.warn("No token found in AsyncStorage");
+        }
+      } catch (error) {
+        console.error("Failed to fetch token: ", error);
+      }
+    };
+
+    fetchToken();
+  }, [token]);
+  ``;
+
+  useEffect(() => {
+    if (phoneNumber.length === requiredLength) {
+      Keyboard.dismiss();
+    }
+  }, [phoneNumber]);
 
   const handleBackPress = () => {
     router.navigate("/(tabs)");
   };
 
   const handleItemPress = () => {
-    console.log("handleItemPress : 1");
     setVisible(true);
   };
 
   const handleItemPress2 = () => {
-    console.log("handleItemPress : 2");
     setVisibleSec(true);
   };
 
-  const RenderItem: ListRenderItem<TaskItem> = ({ item }) => (
-    <View>
-      <View style={styles.taskItem}>
-        <View>
-          <Image source={item.imgUrl} />
-        </View>
-        <View style={styles.taskInfo}>
-          <View>
-            <Text style={styles.taskTitleStyle}>{item.taskTitle}</Text>
-          </View>
-          <View style={styles.taskScoreRowContainer}>
-            <Image
-              source={require("@/assets/icons/score.png")}
-              style={{ width: 23, height: 23 }}
-            ></Image>
-            <Text
-              style={{
-                fontSize: 14,
-                color: Colors.primaryColor,
-                marginLeft: 10,
-              }}
-            >
-              {item.score}
-            </Text>
-          </View>
-          <View style={styles.taskDateRowContainer}>
-            <Image
-              source={require("@/assets/icons/date.png")}
-              style={{ width: 23, height: 23 }}
-            ></Image>
-            <Text
-              style={{
-                fontSize: 14,
-                color: Colors.primaryColor,
-                marginLeft: 10,
-              }}
-            >
-              {item.date}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+  const handleInviteFriend = async () => {
+    const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
+
+    if (verifiedPhoneNumber.length === 0) {
+      toast.show(`Утасны дугаар оруулна уу...`, {
+        type: "danger",
+        placement: "top",
+        duration: 4000,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    if (verifiedPhoneNumber.length !== requiredLength) {
+      toast.show(`Утасны дугаар буруу...`, {
+        type: "danger",
+        placement: "top",
+        duration: 4000,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${SERVER_URI}/api/user/friend/invite`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          invitedPhoneNumber: phoneNumber,
+        }),
+      });
+
+      // console.log("response : " + JSON.stringify(response));
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.show(`Алдаа гарлаа`, {
+          type: "danger",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: Colors.red,
+          },
+        });
+        // console.log("Backend error:", errorData);
+        // console.log("Error Code :", errorData.code);
+      } else {
+        const data = await response.json();
+        // console.log("Successfully sent to backend:", data);
+        // console.log("Success Code :", data.code);
+        switch (data.code) {
+          case 1000:
+            toast.show(`Энэ дугаар бүртгэгдсэн байна....`, {
+              type: "danger",
+              placement: "top",
+              duration: 4000,
+              animationType: "slide-in",
+              style: {
+                backgroundColor: Colors.red,
+              },
+            });
+            break;
+          case 0:
+            toast.show(`Амжилттай`, {
+              type: "info",
+              placement: "top",
+              duration: 4000,
+              animationType: "slide-in",
+              style: {
+                backgroundColor: Colors.green,
+              },
+            });
+            break;
+          default:
+            toast.show(`Танигдаагүй код: ${data.code}`, {
+              type: "warning",
+            });
+        }
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+    setPhoneNumber("");
+    setVisible(false);
+  };
+
   const StepIndicator = ({ totalSteps = 4, currentStep = 1 }) => {
     return (
       <View style={styles.stepContainer}>
@@ -251,17 +294,17 @@ const Task: React.FC = () => {
                 placeholder="Утасны дугаар"
                 placeholderTextColor="#A0A4B0"
                 keyboardType="numeric"
-                // maxLength={requiredLength}
-                // value={phoneNumber}
-                // onChangeText={(text) => {
-                //   if (text.length <= requiredLength) {
-                //     setPhoneNumber(text);
-                //   }
-                // }}
+                maxLength={requiredLength}
+                value={phoneNumber}
+                onChangeText={(text) => {
+                  if (text.length <= requiredLength) {
+                    setPhoneNumber(text);
+                  }
+                }}
               />
             </View>
             <TouchableOpacity
-              onPress={() => setVisible(false)}
+              onPress={handleInviteFriend}
               style={styles.sendButton}
             >
               <Text style={styles.buttonText}>илгээх</Text>

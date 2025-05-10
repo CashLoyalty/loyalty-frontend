@@ -4,7 +4,7 @@ import {
   Image,
   Text,
   StyleSheet,
-  ListRenderItem,
+  Pressable,
   FlatList,
   TouchableOpacity,
   Modal,
@@ -19,67 +19,46 @@ import useFetchGifts from "@/hooks/useFetchGifts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_URI } from "@/utils/uri";
 import { Dimensions } from "react-native";
-
-interface AwardItem {
-  id: string;
-  imgUrl: any;
-  awardTitle: string;
-  date: string;
-  lottery: string;
-}
-
-interface PrizeItem {
-  id: string;
-  title: string;
-  score: number;
-  image: any;
-}
-
-const prizes: PrizeItem[] = [
-  {
-    id: "1",
-    title: "Burger King 20`000₮ эрхийн бичиг",
-    score: 15000,
-    image: require("@/assets/icons/bur20.png"),
-  },
-  {
-    id: "2",
-    title: "Азын хүрд эргүүлэх",
-    score: 15000,
-    image: require("@/assets/icons/bur20.png"),
-  },
-  {
-    id: "3",
-    title: "Prime Cineplex 20`000₮ эрхийн бичиг",
-    score: 20000,
-    image: require("@/assets/icons/bur20.png"),
-  },
-  {
-    id: "4",
-    title: "PIZZA HUT 15`000 эрхийн бичиг",
-    score: 15000,
-    image: require("@/assets/icons/bur20.png"),
-  },
-];
+import { UserResponse } from "@/types/global";
+import useFetchUser from "@/hooks/useFetchUser";
+import { useToast } from "react-native-toast-notifications";
 
 const BottomModal = ({
   visible,
   setVisible,
   item,
+  count,
+  setCount,
+  onConfirm,
+  userData,
 }: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  item: PrizeItem | null;
+  item: GiftItem | null;
+  count: number;
+  setCount: React.Dispatch<React.SetStateAction<number>>;
+  onConfirm: (item: GiftItem, count: number) => void;
+  userData: UserResponse | null;
 }) => {
+  const handleDecrease = () => {
+    if (count > 1) {
+      setCount(count - 1);
+    }
+  };
+
+  const handleIncrease = () => {
+    setCount(count + 1);
+  };
+
   return (
     <Modal
       visible={visible}
-      //animationType="slide"
       transparent
+      animationType="fade"
       onRequestClose={() => setVisible(false)}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
+        <Pressable style={styles.modal} onPress={() => {}}>
           <View style={styles.rowContainer2}>
             <View>
               <Text style={{ fontSize: 15, fontWeight: "600" }}>ТАНД</Text>
@@ -88,7 +67,7 @@ const BottomModal = ({
               <Text
                 style={{ fontSize: 15, fontWeight: "600", color: Colors.white }}
               >
-                45203
+                {userData?.point ? userData.point : "0"}
               </Text>
             </View>
             <View>
@@ -97,45 +76,32 @@ const BottomModal = ({
               </Text>
             </View>
           </View>
+
           <View style={styles.videoContainer}>
             <View style={styles.modalColumncontainer}>
-              <View>
-                <Image
-                  source={require("@/assets/icons/bur2.png")}
-                  resizeMode="contain"
-                  style={{ width: 300, height: 156 }}
-                />
-              </View>
-              <View>
-                <Text style={{ fontSize: 15, fontWeight: "600" }}>
-                  Burger King 20`000₮ эрхийн бичиг
-                </Text>
-              </View>
+              <Image
+                source={{ uri: item?.image1 }}
+                resizeMode="contain"
+                style={{ width: 300, height: 156 }}
+              />
+              <Text style={{ fontSize: 15, fontWeight: "600" }}>
+                {item?.name}
+              </Text>
               <View style={{ alignItems: "flex-end" }}>
                 <Text
-                  style={{ fontSize: 12, fontFamily: "800", color: "#808080" }}
+                  style={{ fontSize: 12, fontWeight: "800", color: "#808080" }}
                 >
-                  үлд: 20ш
+                  үлд: {item?.probability}ш
                 </Text>
               </View>
             </View>
           </View>
+
           <View style={styles.modalColumncontainer2}>
-            <View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "500",
-                  alignItems: "flex-start",
-                }}
-              >
-                Дэлгэрэнгүй
-              </Text>
-            </View>
+            <Text style={{ fontSize: 18, fontWeight: "500" }}>Дэлгэрэнгүй</Text>
             <View style={{ marginTop: 20 }}>
               <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                Та BurgerKing аль ч салбараар 20`000₮ үйлчлүүлэх хөнгөлөлтийн
-                эрхийн бичиг
+                {item?.text}
               </Text>
             </View>
           </View>
@@ -143,41 +109,62 @@ const BottomModal = ({
           <View style={styles.modalTotalScore}>
             <Text style={styles.totalText}>НИЙТ</Text>
             <View style={styles.modalAmount}>
-              <Text style={styles.amountText}>40`000</Text>
+              <Text style={styles.amountText}>
+                {item?.point ? count * item.point : 0}
+              </Text>
               <Image source={require("@/assets/icons/plug2.png")} />
             </View>
           </View>
+
           <View style={styles.countContainer}>
-            <TouchableOpacity style={styles.countButton}>
+            <TouchableOpacity
+              style={styles.countButton}
+              onPress={handleDecrease}
+            >
               <Text style={styles.countButtonText}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.countText}>2</Text>
-            <TouchableOpacity style={styles.countButton}>
+            <Text style={styles.countText}>{count}</Text>
+            <TouchableOpacity
+              style={styles.countButton}
+              onPress={handleIncrease}
+            >
               <Text style={styles.countButtonText}>+</Text>
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity
-            onPress={() => setVisible(false)}
+            onPress={() => {
+              if (item) {
+                onConfirm(item, count);
+                setCount(1);
+                setVisible(false);
+              }
+            }}
             style={styles.closeButton}
           >
             <Text style={styles.buttonText}>Авах</Text>
           </TouchableOpacity>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
 
 const Award: React.FC = () => {
   const [visible, setVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<PrizeItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<GiftItem | null>(null);
   const [token, setToken] = useState<string>("");
   const screenWidth = Dimensions.get("window").width;
   const isTablet = screenWidth >= 768;
   const numColumns = isTablet ? 4 : 2;
-  const itemSpacing = 20;
+  const itemSpacing = 10;
   const itemWidth = (screenWidth - itemSpacing * (numColumns + 1)) / numColumns;
+  const [count, setCount] = useState<number>(1);
+  const [selectedGifts, setSelectedGifts] = useState<
+    { item: GiftItem; count: number }[]
+  >([]);
+  const [userData, setUserData] = useState<UserResponse | null>(null);
+  const toast = useToast();
 
   const { data: spinGifts } = useFetchGifts(
     SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
@@ -204,59 +191,74 @@ const Award: React.FC = () => {
     };
 
     fetchToken();
-  }, []);
+  }, [token]);
+  ``;
+  const { data } = useFetchUser(SERVER_URI + "/api/user", token);
+  useEffect(() => {
+    if (data) {
+      console.log("data : " + JSON.stringify(data));
+      setUserData(data);
+    }
+  }, [data]);
 
   const handleBackPress = () => {
     router.navigate("/(tabs)");
   };
 
-  const renderItem: ListRenderItem<AwardItem> = ({ item }) => (
-    <View style={styles.awardItem}>
-      <View style={styles.awardRowContainer}>
-        <View style={styles.awardImgContainer}>
-          <Image source={item.imgUrl} />
-        </View>
-        <View style={styles.awardInfoContainer}>
-          <View style={styles.infoSection1} />
-          <View style={styles.infoSection2}>
-            <Text style={styles.awardInfoTitle}>{item.awardTitle}</Text>
-            <View style={styles.dateContainer}>
-              <Image source={require("@/assets/icons/date.png")} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.primaryColor,
-                  marginLeft: 10,
-                }}
-              >
-                {item.date}
-              </Text>
-            </View>
-            <View style={styles.lotteryContainer}>
-              <Image source={require("@/assets/icons/lottery.png")} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.primaryColor,
-                  marginLeft: 10,
-                }}
-              >
-                {item.lottery}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
-  const handleItemPress = (itemId: GiftItem["id"]) => {
-    //setSelectedItem(item);
-    //setVisible(true);
+  const handleItemPress = (item: GiftItem) => {
+    setSelectedItem(item);
+    setVisible(true);
   };
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [count, setCount] = useState<number>(0);
+  const handleConfirmGift = async (item: GiftItem, count: number) => {
+    setSelectedGifts((prev) => [...prev, { item, count }]);
+
+    try {
+      const response = await fetch(`${SERVER_URI}/api/user/gift/buy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          giftId: item.id,
+          count: count,
+        }),
+      });
+
+      // console.log("response : " + JSON.stringify(response));
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.show(`Алдаа гарлаа`, {
+          type: "danger",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: Colors.red,
+          },
+        });
+        // console.log("Backend error:", errorData);
+        // console.log("Error Code :", errorData.code);
+      } else {
+        const data = await response.json();
+        toast.show(`Амжилттай`, {
+          type: "info",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: Colors.green,
+          },
+        });
+        // console.log("Successfully sent to backend:", data);
+        // console.log("Success Code :", data.code);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -299,7 +301,7 @@ const Award: React.FC = () => {
         }}
         contentContainerStyle={{ padding: itemSpacing }}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleItemPress(item.id)}>
+          <TouchableOpacity onPress={() => handleItemPress(item)}>
             <View style={[styles.prizeContainer, { width: itemWidth }]}>
               <View style={styles.prizeImgContainer}>
                 <Image
@@ -311,6 +313,15 @@ const Award: React.FC = () => {
               <View style={styles.prizeInfoContainer}>
                 <Text style={styles.prizeInfoTitle}>{item.name}</Text>
                 <View style={styles.prizeScoreContainer}>
+                  <Text
+                    style={{
+                      color: Colors.white,
+                      paddingTop: 1,
+                      marginRight: 5,
+                    }}
+                  >
+                    {item.point}
+                  </Text>
                   <Image
                     source={require("@/assets/icons/plug.png")}
                     style={{ width: 14, height: 16 }}
@@ -325,6 +336,10 @@ const Award: React.FC = () => {
         visible={visible}
         setVisible={setVisible}
         item={selectedItem}
+        count={count}
+        setCount={setCount}
+        onConfirm={handleConfirmGift}
+        userData={userData}
       />
     </View>
   );
@@ -521,6 +536,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   prizeInfoTitle: {
+    flex: 2,
     fontSize: 12,
     fontWeight: "600",
     color: Colors.white,
@@ -528,11 +544,12 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   prizeScoreContainer: {
-    flex: 1,
+    flex: 2,
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginTop: 5,
-    marginRight: 20,
+    alignItems: "flex-start",
+    marginTop: 10,
+    paddingRight: 20,
   },
   prizeScoreTitle: {
     fontSize: 10,
@@ -600,6 +617,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 20,
     height: 50,
   },
