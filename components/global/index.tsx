@@ -63,45 +63,19 @@ export default function Story({ spinGifts }: StoryProps) {
       toValue: 1,
       duration: 5000,
       useNativeDriver: false,
-    }).start(() => {
+    }).start(({ finished }) => {
+      if (!finished) return;
+
       const currentIndex = filteredSpinGifts.findIndex(
         (item) => item.id === currentItemId
       );
+
       if (currentIndex < filteredSpinGifts.length - 1) {
         setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
       } else {
         closeModal();
       }
     });
-  };
-
-  const handlePress = (event: any) => {
-    const screenCenter = screenWidth / 2;
-    const clickX = event.nativeEvent.locationX;
-
-    if (clickX < screenCenter) {
-      goToPrevious();
-    } else {
-      goToNext();
-    }
-  };
-
-  const goToNext = () => {
-    const currentIndex = filteredSpinGifts.findIndex(
-      (item) => item.id === currentItemId
-    );
-    if (currentIndex < filteredSpinGifts.length - 1) {
-      setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
-    }
-  };
-
-  const goToPrevious = () => {
-    const currentIndex = filteredSpinGifts.findIndex(
-      (item) => item.id === currentItemId
-    );
-    if (currentIndex > 0) {
-      setCurrentItemId(filteredSpinGifts[currentIndex - 1].id);
-    }
   };
 
   useEffect(() => {
@@ -142,7 +116,7 @@ export default function Story({ spinGifts }: StoryProps) {
         animationType="fade"
         onRequestClose={closeModal}
       >
-        <Pressable style={styles.fullScreenModal} onPress={handlePress}>
+        <Pressable style={styles.fullScreenModal}>
           <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
             <Image
               source={require("@/assets/loyalty/close.png")}
@@ -213,12 +187,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-  },
-  backgroundImage: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 0,
-    width: "100%",
-    height: "100%",
   },
   storyImageOverlay: {
     width: "80%",

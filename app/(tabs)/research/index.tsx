@@ -41,7 +41,7 @@ const Research: React.FC = () => {
           setQuestions(response.data.response);
         }
       } catch (error) {
-        console.error("Failed to fetch questions:", error);
+        console.log("Failed to fetch questions:", error);
       }
     };
 

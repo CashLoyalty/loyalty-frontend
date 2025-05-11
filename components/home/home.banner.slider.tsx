@@ -1,18 +1,18 @@
 import React, { useRef, useEffect, useState } from "react";
-import { View, Image, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, ScrollView, StyleSheet, Dimensions } from "react-native";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const images = [
   {
-    image: require('../../assets/banners/banner1.jpg'),
+    image: require("../../assets/banners/banner1.jpg"),
   },
   {
-    image: require('../../assets/banners/banner2.jpg'),
+    image: require("../../assets/banners/banner2.jpg"),
   },
   {
-    image: require('../../assets/banners/banner3.jpg'),
-  }
+    image: require("../../assets/banners/banner3.jpg"),
+  },
 ];
 
 export default function Banner() {
@@ -29,6 +29,11 @@ export default function Banner() {
     return () => clearInterval(interval);
   }, [currentIndex]);
 
+  const onScrollEnd = (e: any) => {
+    const newIndex = Math.round(e.nativeEvent.contentOffset.x / width);
+    setCurrentIndex(newIndex);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -36,15 +41,12 @@ export default function Banner() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
+        scrollEnabled
+        onMomentumScrollEnd={onScrollEnd}
         style={styles.scrollView}
       >
         {images.map((item, index) => (
-          <Image
-            key={index}
-            source={item.image}
-            style={styles.image}
-          />
+          <Image key={index} source={item.image} style={styles.image} />
         ))}
       </ScrollView>
     </View>
@@ -55,7 +57,8 @@ const styles = StyleSheet.create({
   container: {
     height: 175,
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
+    marginHorizontal: 10,
   },
   scrollView: {
     width: width,
@@ -63,6 +66,6 @@ const styles = StyleSheet.create({
   image: {
     width: width,
     height: 175,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
 });
