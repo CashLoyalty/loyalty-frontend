@@ -86,17 +86,13 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleQRLotteryNum = async () => {
-    console.log("Permission object:", permission);
-
     if (permission === null) {
-      console.log("Permission not loaded yet");
       return;
     }
 
     if (!permission.granted) {
       const res = await requestPermission();
       if (!res.granted) {
-        console.log("Camera permission denied");
         Alert.alert(
           "Permission required",
           "We need permission to access your camera to scan a QR code."
@@ -123,14 +119,15 @@ const HomeScreen: React.FC = () => {
     setButtonSpinner(true);
     if (inputValue.length < 8) {
       toast.show(`Бөглөөний код буруу байна`, {
-        type: "info",
-        placement: "center",
+        type: "danger",
+        placement: "top",
         duration: 1500,
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,
         },
       });
+      setButtonSpinner(false);
       return;
     }
 
@@ -144,12 +141,11 @@ const HomeScreen: React.FC = () => {
           },
         }
       );
-      console.log(response.data);
 
       if (response.data.title === "This code already registered.") {
         toast.show(`Бүртгэгдсэн бөглөө код байна`, {
           type: "warning",
-          placement: "center",
+          placement: "top",
           duration: 1500,
           animationType: "slide-in",
         });
@@ -168,11 +164,11 @@ const HomeScreen: React.FC = () => {
     } catch (error) {
       toast.show(`Код илгээхэд алдаа гарлаа`, {
         type: "danger",
-        placement: "center",
+        placement: "top",
         duration: 1500,
         animationType: "slide-in",
         style: {
-          backgroundColor: Colors.primaryColor,
+          backgroundColor: Colors.red,
         },
       });
     } finally {

@@ -196,7 +196,6 @@ const Award: React.FC = () => {
   const { data } = useFetchUser(SERVER_URI + "/api/user", token);
   useEffect(() => {
     if (data) {
-      console.log("data : " + JSON.stringify(data));
       setUserData(data);
     }
   }, [data]);
@@ -226,8 +225,6 @@ const Award: React.FC = () => {
         }),
       });
 
-      // console.log("response : " + JSON.stringify(response));
-
       if (!response.ok) {
         const errorData = await response.json();
         toast.show(`Алдаа гарлаа`, {
@@ -239,8 +236,6 @@ const Award: React.FC = () => {
             backgroundColor: Colors.red,
           },
         });
-        // console.log("Backend error:", errorData);
-        // console.log("Error Code :", errorData.code);
       } else {
         const data = await response.json();
         toast.show(`Амжилттай`, {
@@ -252,8 +247,6 @@ const Award: React.FC = () => {
             backgroundColor: Colors.green,
           },
         });
-        // console.log("Successfully sent to backend:", data);
-        // console.log("Success Code :", data.code);
       }
     } catch (error) {
       console.error("Network error:", error);
