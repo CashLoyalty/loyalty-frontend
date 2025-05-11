@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Platform,
-  Dimensions,
-  StatusBar,
-} from "react-native";
-//import { StatusBar } from "expo-status-bar";
+import { View, StyleSheet, Image, Platform, Dimensions } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 import {
   SafeAreaView,
@@ -61,7 +54,7 @@ export default function Header() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar style="light" backgroundColor="white" />
       <View style={styles.logoContainerStyle}>
         <Image
           source={require("@/assets/images/header-pepsi-logo.png")}

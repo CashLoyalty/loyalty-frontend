@@ -47,8 +47,50 @@ export interface GiftItem {
   isCoupon?: boolean;
 }
 
+export interface GiftItemDetail {
+  id: string;
+  name: string;
+  type: string;
+  image1: string;
+  image2: string;
+  historyDate: string | null;
+}
+
+export interface GiftItemDetailSpin {
+  id: string;
+  name: string;
+  type: string;
+  historyDate: string | null;
+}
+
+export interface GiftHistoryItem {
+  id: string;
+  giftId: string;
+  giftName: string;
+  giftImage: string;
+  giftType: string;
+  createdAt?: string | null;
+}
+
 interface ApiResponseGifts {
   code: number;
   response: GiftItem[];
+  title: string;
+}
+
+interface ApiResponseGiftsHistory {
+  code: number;
+  response: GiftHistoryItem[];
+  title: string;
+}
+
+interface ApiResponseGiftDetail {
+  code: number;
+  response: GiftItemDetail;
+  title: string;
+}
+interface ApiResponseGiftDetailSpin {
+  code: number;
+  response: GiftItemDetailSpin;
   title: string;
 }

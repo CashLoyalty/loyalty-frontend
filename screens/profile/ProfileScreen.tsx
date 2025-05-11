@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
-  StatusBar,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
@@ -137,13 +137,13 @@ export default function ProfileScreen() {
     router.navigate("/(routes)/terms");
   };
 
-  const handleWheel = () => {
-    //router.navigate("/(routes)/spinWheels");
+  const handleGifts = () => {
+    router.navigate("/(routes)/giftHistory");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar style="dark" backgroundColor="black" />
       <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
         <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
       </TouchableOpacity>
@@ -257,7 +257,7 @@ export default function ProfileScreen() {
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity onPress={handleGifts} style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image
                 source={require("@/assets/icons/profGiftsMenu.png")}
@@ -267,7 +267,7 @@ export default function ProfileScreen() {
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleWheel} style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image
                 source={require("@/assets/icons/profQuestionMenu.png")}

@@ -13,11 +13,11 @@ import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { router } from "expo-router";
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GiftItem } from "@/types/global";
-import useFetchActiveGifts from "@/hooks/useFetchActiveGifts";
+import { GiftHistoryItem } from "@/types/global";
+import useFetchGiftsHistory from "@/hooks/userFetchGiftsHistory";
 import { format } from "date-fns";
 
 export default function GiftScreen() {
@@ -39,8 +39,8 @@ export default function GiftScreen() {
     fetchToken();
   }, [token]);
 
-  const { data: giftsActive } = useFetchActiveGifts(
-    SERVER_URI + "/api/gift?status=ACTIVE",
+  const { data: giftHistory } = useFetchGiftsHistory(
+    SERVER_URI + "/api/user/gift/history",
     token
   );
 
@@ -48,18 +48,18 @@ export default function GiftScreen() {
     router.back();
   };
 
-  const renderItem: ListRenderItem<GiftItem> = ({ item }) => (
+  const renderItem: ListRenderItem<GiftHistoryItem> = ({ item }) => (
     <TouchableOpacity
       style={styles.giftItem}
       onPress={() => handleItemPress(item)}
     >
       <View style={styles.giftRowContainer}>
         <View style={styles.giftImgContainer}>
-          <Image source={{ uri: item.image1 }} style={styles.image} />
+          <Image source={{ uri: item.giftImage }} style={styles.image} />
         </View>
         <View style={styles.giftInfoContainer}>
           <View>
-            <Text style={styles.giftInfoTitle}>{item.name}</Text>
+            <Text style={styles.giftInfoTitle}>{item.giftName}</Text>
             <View style={styles.scoreContainer}>
               <Image
                 source={require("@/assets/icons/git-merge.png")}
@@ -73,7 +73,7 @@ export default function GiftScreen() {
                   marginLeft: 10,
                 }}
               >
-                {item.type == "POINT" ? "Point market" : "Азын хүрд"}
+                {item.giftType == "POINT" ? "Point market" : "Азын хүрд"}
               </Text>
             </View>
             <View style={styles.questionContainer}>
@@ -89,8 +89,8 @@ export default function GiftScreen() {
                   marginLeft: 10,
                 }}
               >
-                {item.expiresAt
-                  ? format(new Date(item.expiresAt), "yyyy-MM-dd")
+                {item.createdAt
+                  ? format(new Date(item.createdAt), "yyyy-MM-dd")
                   : "N/A"}{" "}
                 хүчинтэй
               </Text>
@@ -100,8 +100,8 @@ export default function GiftScreen() {
       </View>
     </TouchableOpacity>
   );
-  const handleItemPress = (item: GiftItem) => {
-    if (item.type === "POINT") {
+  const handleItemPress = (item: GiftHistoryItem) => {
+    if (item.giftType === "POINT") {
       router.push(`/giftDetail1?id=${item.id}`);
     } else {
       router.push(`/giftDetail2?id=${item.id}`);
@@ -131,9 +131,9 @@ export default function GiftScreen() {
         </View>
         <View style={{ flex: 1 }} />
       </View>
-      {giftsActive && (
+      {giftHistory && (
         <FlatList
-          data={giftsActive}
+          data={giftHistory}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
