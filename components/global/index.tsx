@@ -34,7 +34,8 @@ const StoryBackground = require("@/assets/loyalty/storyBackground.png");
 export default function Story({ spinGifts }: StoryProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState<string | null>(null);
-  const [progress] = useState(new Animated.Value(0));
+  const progress = useRef(new Animated.Value(0)).current;
+  const animation = useRef<Animated.CompositeAnimation | null>(null);
   const isAnimating = useRef(false);
 
   const screenWidth = Dimensions.get("window").width;
@@ -57,23 +58,48 @@ export default function Story({ spinGifts }: StoryProps) {
     isAnimating.current = false;
   };
 
+  const goToNextStory = () => {
+    const currentIndex = filteredSpinGifts.findIndex(
+      (item) => item.id === currentItemId
+    );
+
+    if (currentIndex < filteredSpinGifts.length - 1) {
+      setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
+      progress.setValue(0);
+      startProgress();
+    } else {
+      closeModal();
+    }
+  };
+
   const startProgress = () => {
     progress.setValue(0);
-    Animated.timing(progress, {
+    animation.current = Animated.timing(progress, {
       toValue: 1,
       duration: 5000,
       useNativeDriver: false,
-    }).start(({ finished }) => {
-      if (!finished) return;
+    });
 
-      const currentIndex = filteredSpinGifts.findIndex(
-        (item) => item.id === currentItemId
-      );
+    animation.current.start(({ finished }) => {
+      if (finished) {
+        goToNextStory();
+      }
+    });
+  };
 
-      if (currentIndex < filteredSpinGifts.length - 1) {
-        setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
-      } else {
-        closeModal();
+  const resumeProgress = () => {
+    const currentProgress = (progress as any).__getValue();
+    const remainingDuration = (1 - currentProgress) * 5000;
+
+    animation.current = Animated.timing(progress, {
+      toValue: 1,
+      duration: remainingDuration,
+      useNativeDriver: false,
+    });
+
+    animation.current.start(({ finished }) => {
+      if (finished) {
+        goToNextStory();
       }
     });
   };
@@ -116,7 +142,15 @@ export default function Story({ spinGifts }: StoryProps) {
         animationType="fade"
         onRequestClose={closeModal}
       >
-        <Pressable style={styles.fullScreenModal}>
+        <Pressable
+          style={styles.fullScreenModal}
+          onPressIn={() => {
+            if (animation.current) animation.current.stop();
+          }}
+          onPressOut={() => {
+            resumeProgress();
+          }}
+        >
           <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
             <Image
               source={require("@/assets/loyalty/close.png")}
