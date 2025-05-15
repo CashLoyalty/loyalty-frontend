@@ -7,6 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Platform,
+  Alert,
 } from "react-native";
 import { router } from "expo-router";
 import axios from "axios";
@@ -18,14 +20,46 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { StatusBar } from "expo-status-bar";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 const { width, height } = screenDimensions;
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [expoPushToken, setExpoPushToken] = useState<string>("");
   const requiredLength = 8;
   const toast = useToast();
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      console.log("Notification permission status:", status);
+      if (status !== "granted") {
+        alert("Notification permission denied");
+      }
+
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: "default",
+        });
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) {
+        setExpoPushToken(token);
+        console.log("Expo push token registered:", token);
+      } else {
+        console.log("Token олдсонгүй");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (phoneNumber.length === requiredLength) {
@@ -168,6 +202,31 @@ export default function LoginScreen() {
   );
 }
 
+async function registerForPushNotificationsAsync(): Promise<
+  string | undefined
+> {
+  if (!Device.isDevice) {
+    Alert.alert("Push мэдэгдэл зөвхөн бодит төхөөрөмж дээр ажиллана.");
+    return;
+  }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== "granted") {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== "granted") {
+    Alert.alert("Push мэдэгдлийн зөвшөөрөл олгогдоогүй.");
+    return;
+  }
+
+  const tokenData = await Notifications.getExpoPushTokenAsync();
+  return tokenData.data;
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -262,5 +321,36 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     transform: [{ scale: 1.2 }],
+  },
+  notificationBanner: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    right: 20,
+    backgroundColor: "#333",
+    padding: 15,
+    borderRadius: 10,
+    zIndex: 2000,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  notificationTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  notificationBody: {
+    color: "#ddd",
+    fontSize: 14,
+  },
+  notificationClose: {
+    color: "#4DA6FF",
+    marginTop: 10,
+    textAlign: "right",
+    fontWeight: "600",
   },
 });

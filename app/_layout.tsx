@@ -1,7 +1,21 @@
+// app/_layout.tsx
+
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
+import * as Notifications from "expo-notifications";
+
+// 🔔 Notification handler - зөвхөн 1 удаа ажиллана
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export default function RootLayout() {
   return (
@@ -15,7 +29,6 @@ function RootLayoutNav() {
   return (
     <ToastProvider>
       <Stack screenOptions={{ headerShown: false }}>
-        {/* Define your screens here */}
         <Stack.Screen name="(routes)/login/index" />
         <Stack.Screen name="(routes)/verifyOtp/index" />
         <Stack.Screen name="(routes)/profile/index" />

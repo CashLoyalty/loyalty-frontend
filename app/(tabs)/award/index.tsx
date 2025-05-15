@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
@@ -31,6 +32,7 @@ const BottomModal = ({
   setCount,
   onConfirm,
   userData,
+  buttonSpinner,
 }: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,6 +41,7 @@ const BottomModal = ({
   setCount: React.Dispatch<React.SetStateAction<number>>;
   onConfirm: (item: GiftItem, count: number) => void;
   userData: UserResponse | null;
+  buttonSpinner: boolean;
 }) => {
   const handleDecrease = () => {
     if (count > 1) {
@@ -131,7 +134,6 @@ const BottomModal = ({
               <Text style={styles.countButtonText}>+</Text>
             </TouchableOpacity>
           </View>
-
           <TouchableOpacity
             onPress={() => {
               if (item) {
@@ -165,6 +167,7 @@ const Award: React.FC = () => {
   >([]);
   const [userData, setUserData] = useState<UserResponse | null>(null);
   const toast = useToast();
+  const [buttonSpinner, setButtonSpinner] = useState(false);
 
   const { data: spinGifts } = useFetchGifts(
     SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
@@ -210,6 +213,7 @@ const Award: React.FC = () => {
   };
 
   const handleConfirmGift = async (item: GiftItem, count: number) => {
+    //setButtonSpinner(true);
     setSelectedGifts((prev) => [...prev, { item, count }]);
 
     try {
@@ -224,6 +228,8 @@ const Award: React.FC = () => {
           count: count,
         }),
       });
+
+      console.log("award response : ", JSON.stringify(response));
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -250,6 +256,8 @@ const Award: React.FC = () => {
       }
     } catch (error) {
       console.error("Network error:", error);
+    } finally {
+      //setButtonSpinner(false);
     }
   };
 
@@ -333,6 +341,7 @@ const Award: React.FC = () => {
         setCount={setCount}
         onConfirm={handleConfirmGift}
         userData={userData}
+        buttonSpinner={buttonSpinner}
       />
     </View>
   );

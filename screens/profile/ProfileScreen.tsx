@@ -166,9 +166,7 @@ export default function ProfileScreen() {
                 {userData?.kyc === 2 ? userData.firstName : "NEWBIE"}
               </Text>
               <View style={styles.scoreRowContainer}>
-                <Text style={styles.scoreText}>
-                  {userData?.point !== undefined ? userData.point : "*"}
-                </Text>
+                <Text style={styles.scoreText}>{userData?.point ?? 0}</Text>
                 <Image
                   source={require("@/assets/icons/profScore.png")}
                   style={styles.logoImage}
@@ -181,7 +179,7 @@ export default function ProfileScreen() {
           {userData?.level && (
             <ProgressBar
               levelName={userData.level.name}
-              progress={userData.level.collectPoint}
+              progress={userData?.level.collectPoint ?? 0}
               total={userData.level.levelPoint}
             />
           )}

@@ -18,19 +18,21 @@
       "buildNumber": "1.0.2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes."
+        "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes.",
+        "NSUserNotificationUsageDescription": "This app uses notifications to inform you about important updates."
       }
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
       "versionCode": 3,
-      "permissions": [
-        "CAMERA"
-      ],
+      "permissions": ["CAMERA", "NOTIFICATIONS"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
+    },
+    "notification": {
+      "color": "#FF7A00"
     },
     "web": {
       "bundler": "metro",
@@ -53,7 +55,8 @@
             "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true

@@ -28,6 +28,8 @@ import { format } from "date-fns";
 import Checkbox from "expo-checkbox";
 import { useLocalSearchParams, router } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
+import * as Notifications from "expo-notifications";
+import { showLocalNotification } from "@/utils/localNotification";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,6 +47,9 @@ const HomeScreen: React.FC = () => {
   const [isChecked, setIsChecked] = useState(false);
   const showTerms = String(terms).toLowerCase() === "true";
   const [permission, requestPermission] = useCameraPermissions();
+  const [showNotification, setShowNotification] = useState<boolean>(false);
+  const [notificationContent, setNotificationContent] =
+    useState<Notifications.NotificationContent | null>(null);
 
   useEffect(() => {
     if (showTerms) setModalVisibleTerms(true);
@@ -76,6 +81,28 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     fetchToken();
   }, []);
+
+  // useEffect(() => {
+  //   const subscription = Notifications.addNotificationReceivedListener(
+  //     (notification) => {
+  //       console.log("Foreground notification:", notification);
+  //       setNotificationContent(notification.request.content);
+  //       setShowNotification(true);
+  //     }
+  //   );
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    if (showNotification) {
+      const timeout = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [showNotification]);
 
   if (inputValue.length === 8) {
     Keyboard.dismiss();
@@ -143,12 +170,11 @@ const HomeScreen: React.FC = () => {
       );
 
       if (response.data.title === "This code already registered.") {
-        toast.show(`Бүртгэгдсэн бөглөө код байна`, {
-          type: "warning",
-          placement: "top",
-          duration: 1500,
-          animationType: "slide-in",
-        });
+        console.log("Бөглөөний код : ", inputValue);
+        showLocalNotification(
+          "Fizz Point!",
+          `Таны ${inputValue} бүртгэгдсэн бөглөө код байна`
+        );
       }
 
       if (response.data.code === 0) {
@@ -290,6 +316,19 @@ const HomeScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
+      {/* {showNotification && notificationContent && (
+              <View style={styles.notificationBanner}>
+                <Text style={styles.notificationTitle}>
+                  {notificationContent.title}
+                </Text>
+                <Text style={styles.notificationBody}>
+                  {notificationContent.body}
+                </Text>
+                <TouchableOpacity onPress={() => setShowNotification(false)}>
+                  <Text style={styles.notificationClose}>Хаах</Text>
+                </TouchableOpacity>
+              </View>
+            )} */}
       <Modal
         transparent={true}
         visible={modalVisible}

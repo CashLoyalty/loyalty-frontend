@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Image,
   Dimensions,
   Pressable,
@@ -19,7 +18,6 @@ const frameSize = width * 0.5;
 
 const QRCodeReaderScreen = () => {
   const [facing, setFacing] = useState<CameraType>("back");
-  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const toast = useToast();
 
@@ -37,35 +35,18 @@ const QRCodeReaderScreen = () => {
         },
       });
 
-      // Delay navigation slightly to show the toast
       setTimeout(() => {
         router.navigate("/(tabs)");
       }, 4000);
     }
   };
 
-  // Reset scan state on screen focus
   useFocusEffect(
     useCallback(() => {
       setScanned(false);
       return () => {};
     }, [])
   );
-
-  /*  if (!permission) {
-    return <View />;
-  } */
-
-  /* if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  } */
 
   return (
     <View style={styles.container}>
@@ -104,7 +85,10 @@ const QRCodeReaderScreen = () => {
             </View>
           </View>
           <View style={styles.footer}>
-            <Image source={require("@/assets/icons/qrCodeReader.png")} />
+            <Image
+              source={require("@/assets/icons/qrCodeReader.png")}
+              style={{ width: 24, height: 24 }}
+            />
             <Text style={styles.footerText}>QR кодоо уншуулна уу !</Text>
           </View>
         </View>
