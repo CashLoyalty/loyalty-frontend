@@ -78,7 +78,15 @@ const Research: React.FC = () => {
       </View>
 
       {questions.length > 0 ? (
-        <View style={styles.cardContainer}>
+        <View
+          style={[
+            styles.cardContainer,
+            {
+              justifyContent:
+                questions.length === 1 ? "flex-start" : "space-evenly",
+            },
+          ]}
+        >
           {questions.map((item) => (
             <TouchableOpacity
               key={item.id}

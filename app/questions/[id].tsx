@@ -8,7 +8,7 @@ import { Checkbox } from "react-native-paper";
 import { SERVER_URI } from "@/utils/uri";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Slider from "@react-native-community/slider";
+import { Slider } from "react-native-elements";
 import {
   View,
   Text,
@@ -486,10 +486,10 @@ export default function QuestionDetailPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent dark background
-            justifyContent: "center", // Center the modal vertically
-            alignItems: "center", // Center the modal horizontally
-            zIndex: 999, // Make sure it appears on top
+            backgroundColor: "rgba(0, 0, 0, 0.5)", 
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
           }}
         >
           <View
