@@ -78,6 +78,7 @@ export default function WheelScreen() {
           toast.show("Таньд хүрд эргүүлэх эрх байхгүй байна.", {
             type: "danger",
             placement: "top",
+            duration: 1500,
           });
           setLoader(false);
           setIsSpinning(false);
@@ -121,11 +122,13 @@ export default function WheelScreen() {
           toast.show("Таньд хүрд эргүүлэх эрх байхгүй байна.", {
             type: "danger",
             placement: "top",
+            duration: 1500,
           });
         } else {
           toast.show("Алдаа гарлаа. Дахин оролдож үзнэ үү.", {
             type: "danger",
             placement: "top",
+            duration: 1500,
           });
         }
       }
@@ -134,6 +137,7 @@ export default function WheelScreen() {
       toast.show("Та эхлээд нэвтэрнэ үү.", {
         type: "danger",
         placement: "top",
+        duration: 1500,
       });
     }
   };
