@@ -94,7 +94,8 @@
           "react-native-elements",
           "react-native-feather",
           "react-native-otp-textinput",
-          "react-native-swiper"
+          "react-native-swiper",
+          "react-native-toast-notifications"
         ],
         "listUnknownPackages": false
       }
