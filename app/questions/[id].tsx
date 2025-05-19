@@ -37,6 +37,7 @@ export default function QuestionDetailPage() {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [border, setBorder] = useState(true);
   const { id, point } = useLocalSearchParams();
+  const checkboxColor = Platform.OS === "ios" ? "white" : Colors.primaryColor;
   const [token, setToken] = useState("");
 
   useEffect(() => {
@@ -235,7 +236,9 @@ export default function QuestionDetailPage() {
                   {border && (
                     <View
                       style={{
-                        backgroundColor: selected ? Colors.primaryColor : Colors.white,
+                        backgroundColor: selected
+                          ? Colors.primaryColor
+                          : Colors.white,
                         borderColor: selected ? Colors.primaryColor : "#ccc",
                         borderWidth: 1,
                         padding: 2,
@@ -247,8 +250,13 @@ export default function QuestionDetailPage() {
                       }}
                     />
                   )}
-                  <Checkbox color="white" status={selected ? "checked" : "unchecked"} />
-                  <Text style={{ fontSize: 18, fontWeight: "500" }}>{option}</Text>
+                  <Checkbox
+                    color={checkboxColor}
+                    status={selected ? "checked" : "unchecked"}
+                  />
+                  <Text style={{ fontSize: 18, fontWeight: "500" }}>
+                    {option}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
