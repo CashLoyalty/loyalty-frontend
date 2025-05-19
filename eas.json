@@ -1,6 +1,11 @@
 {
+  "cli": {
+    "appVersionSource": "remote"
+  },
   "build": {
     "development": {
+      "developmentClient": true,
+      "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
@@ -16,6 +21,7 @@
       "ios": {
         "simulator": true
       },
+      "distribution": "internal",
       "channel": "preview"
     },
     "production": {
@@ -30,7 +36,7 @@
       "channel": "production"
     }
   },
-  "cli": {
-    "appVersionSource": "remote"
+  "submit": {
+    "production": {}
   }
 }

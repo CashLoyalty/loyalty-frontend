@@ -31,7 +31,10 @@ const useFetchGiftsHistory = (url: string, token: string) => {
         const result: ApiResponseGiftsHistory = await response.json();
 
         if (result.code === 0) {
-          setData(result.response);
+          const filteredData = result.response.filter(
+            (item) => item.giftName !== "THANK YOU"
+          );
+          setData(filteredData);
         } else {
           console.error("API returned error code:", result.code);
           throw new Error(result.title);

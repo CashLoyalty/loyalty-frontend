@@ -16,6 +16,7 @@ const usePointDetails = (prodUrl: string) => {
   const [pointDetails, setPointDetails] = useState<PointDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [registeredPlugCount, setRegisteredPlugCount] = useState<number>(0);
 
   const fetchPointDetails = useCallback(async () => {
     setLoading(true);
@@ -39,6 +40,7 @@ const usePointDetails = (prodUrl: string) => {
 
       if (response.data.code === 0) {
         setPointDetails(response.data.response);
+        setRegisteredPlugCount(response.data.response.length);
       } else {
         setError("Failed to fetch point details");
       }
@@ -53,7 +55,13 @@ const usePointDetails = (prodUrl: string) => {
     fetchPointDetails();
   }, [fetchPointDetails]);
 
-  return { pointDetails, loading, error, fetchPointDetails }; // Expose the fetch function
+  return {
+    pointDetails,
+    loading,
+    error,
+    fetchPointDetails,
+    registeredPlugCount,
+  };
 };
 
 export default usePointDetails;

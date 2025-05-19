@@ -15,6 +15,7 @@ import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserResponse } from "@/types/global";
 import useFetchUser from "@/hooks/useFetchUser";
+import usePointDetails from "@/hooks/usePointDetials";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVER_URI } from "@/utils/uri";
 import axios from "axios";
@@ -51,6 +52,7 @@ export default function ProfileScreen() {
   const [userError, setUserError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [profileImage, setProfileImage] = useState<string>("");
+  const { registeredPlugCount } = usePointDetails(SERVER_URI);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -214,9 +216,7 @@ export default function ProfileScreen() {
         </View>
         <View style={styles.countsContainer}>
           <View style={styles.countColumn}>
-            <Text style={styles.countText}>
-              {userData?.lottoCount !== undefined ? userData.lottoCount : "*"}
-            </Text>
+            <Text style={styles.countText}>{registeredPlugCount}</Text>
           </View>
           <View style={styles.countColumn}>
             <Text style={styles.countText}>
@@ -255,7 +255,7 @@ export default function ProfileScreen() {
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleGifts} style={styles.menuItem}>
+          {/* <TouchableOpacity onPress={handleGifts} style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image
                 source={require("@/assets/icons/profGiftsMenu.png")}
@@ -264,7 +264,7 @@ export default function ProfileScreen() {
               <Text style={styles.menuItemText}>Бэлгүүд</Text>
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image

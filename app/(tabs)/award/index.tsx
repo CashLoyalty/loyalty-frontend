@@ -215,7 +215,6 @@ const Award: React.FC = () => {
   const handleConfirmGift = async (item: GiftItem, count: number) => {
     //setButtonSpinner(true);
     setSelectedGifts((prev) => [...prev, { item, count }]);
-
     try {
       const response = await fetch(`${SERVER_URI}/api/user/gift/buy`, {
         method: "POST",

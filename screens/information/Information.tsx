@@ -119,7 +119,7 @@ export default function InformationScreen() {
           if (status !== "granted") {
             Alert.alert(
               "Permission required",
-              "We need permission to access your camera to take a photo."
+              "We use your camera to allow you to take profile photos that will be shown in your user account."
             );
             return;
           }
@@ -147,7 +147,7 @@ export default function InformationScreen() {
           if (status !== "granted") {
             Alert.alert(
               "Permission required",
-              "We need permission to access your photo library."
+              "We use photo library to allow you to take profile photos that will be shown in your user account."
             );
             return;
           }

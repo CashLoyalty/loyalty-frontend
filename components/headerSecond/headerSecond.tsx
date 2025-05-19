@@ -39,7 +39,8 @@ export default function HeaderSecond() {
   };
 
   const handleGift = () => {
-    router.navigate("/(routes)/gift");
+    // router.navigate("/(routes)/gift");
+    router.navigate("/(routes)/giftHistory");
   };
 
   const handleWheel = () => {
