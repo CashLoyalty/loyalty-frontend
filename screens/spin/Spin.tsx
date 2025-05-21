@@ -220,6 +220,9 @@ export default function Spin() {
 
   return (
     <View style={styles.container}>
+      {/* Semi-transparent background covering the whole window */}
+      <View style={styles.overlayBackground} />
+
       <TouchableOpacity
         onPress={handleBack}
         style={{ position: "absolute", top: 60, right: 20, zIndex: 10 }}
@@ -230,6 +233,15 @@ export default function Spin() {
       <Image source={require("@/assets/spin/bg.png")} style={styles.bg} />
       <Image source={require("@/assets/spin/light.png")} style={styles.light} />
       <Image source={require("@/assets/spin/red.png")} style={styles.red} />
+      <Image
+        source={require("@/assets/spin/zuun2.png")}
+        style={[styles.zuun, { transform: [{ scale: 0.7 }] }]}
+      />
+      <Image
+        source={require("@/assets/spin/baruun2.png")}
+        style={[styles.baruun, { transform: [{ scale: 0.7 }] }]}
+      />
+
       <Animated.View
         style={{
           position: "absolute",
@@ -242,6 +254,7 @@ export default function Spin() {
           borderWidth: 15,
           borderColor: "black",
           backgroundColor: "transparent",
+          zIndex: 5,
         }}
       >
         <Svg width={WHEEL_SIZE} height={WHEEL_SIZE}>
@@ -301,37 +314,31 @@ export default function Spin() {
         })}
       </Animated.View>
 
+      <TouchableOpacity
+        style={{ position: "absolute", zIndex: 10 }}
+        onPress={handleSpin}
+        disabled={isSpinning}
+      >
+        <Animated.Image
+          source={require("@/assets/spin/pepLogo.png")}
+          style={[
+            styles.centerImage,
+            {
+              transform: [
+                { translateX: -40 },
+                { translateY: -40 },
+                { scale: scaleAnim },
+              ],
+            },
+          ]}
+        />
+      </TouchableOpacity>
+
       <Text style={styles.topLabel}>
         {lottoCount > 0
           ? `Танд ${lottoCount} удаа эргүүлэх эрх байна`
           : "Эргүүлэх эрхгүй"}
       </Text>
-
-      <TouchableOpacity
-        style={{ position: "absolute" }}
-        onPress={handleSpin}
-        disabled={isSpinning}
-      >
-        <TouchableOpacity
-          style={{ position: "absolute" }}
-          onPress={handleSpin}
-          disabled={isSpinning}
-        >
-          <Animated.Image
-            source={require("@/assets/spin/pepLogo.png")}
-            style={[
-              styles.centerImage,
-              {
-                transform: [
-                  { translateX: -40 },
-                  { translateY: -40 },
-                  { scale: scaleAnim },
-                ],
-              },
-            ]}
-          />
-        </TouchableOpacity>
-      </TouchableOpacity>
 
       {showModal && (
         <View style={styles.modalOverlay}>
@@ -369,38 +376,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 20,
-  },
-  topLabel: {
-    position: "absolute",
-    fontSize: 12,
-    color: Colors.white,
-    fontWeight: "bold",
-    top: "73%",
-  },
-  bg: {
-    width: 700,
-    height: 700,
-    position: "absolute",
-    resizeMode: "contain",
-  },
-  light: {
-    width: 1000,
-    height: 1000,
-    position: "absolute",
-  },
-  red: {
-    width: 25,
-    height: 25,
-    position: "absolute",
-    top: "25%",
-    left: "58.8%",
-    transform: "translateX(-50%)",
-  },
   centerImage: {
     position: "absolute",
     width: 80,
@@ -408,6 +383,64 @@ const styles = StyleSheet.create({
     left: "50%",
     top: "50%",
     transform: "translate(-50%, -50%)",
+  },
+  conainerCenterImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  overlayBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    zIndex: 4,
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 6,
+  },
+  zuun: {
+    position: "absolute",
+    zIndex: 2,
+  },
+  baruun: {
+    position: "absolute",
+    zIndex: 2,
+  },
+  topLabel: {
+    position: "absolute",
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: "bold",
+    top: "73%",
+    zIndex: 4,
+  },
+  bg: {
+    width: 700,
+    height: 700,
+    position: "absolute",
+    resizeMode: "contain",
+    zIndex: 0,
+  },
+  light: {
+    width: 1000,
+    height: 1000,
+    position: "absolute",
+    zIndex: 1,
+  },
+  red: {
+    width: 25,
+    height: 25,
+    position: "absolute",
+    top: "27%",
+    left: "58.8%",
+    transform: "translateX(-50%)",
+    zIndex: 10,
   },
   modalOverlay: {
     position: "absolute",
