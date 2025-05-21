@@ -160,9 +160,14 @@ export default function Spin() {
         style={{
           position: "absolute",
           transform: [{ rotate: interpolatedRotate }],
+          width: WHEEL_SIZE + 30, // 15px border on each side
+          height: WHEEL_SIZE + 30,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: (WHEEL_SIZE + 30) / 2,
           borderWidth: 15,
-          borderColor: "black", 
-          borderRadius: WHEEL_SIZE / 1.6,
+          borderColor: "black", // Change to any color you like
+          backgroundColor: "transparent",
         }}
       >
         <Svg width={WHEEL_SIZE} height={WHEEL_SIZE}>
@@ -201,7 +206,27 @@ export default function Spin() {
             })}
           </G>
         </Svg>
+
+        {/* Dots (already rotating with the wheel) */}
+        {segments.map((item, index) => {
+          const startAngle = angleStep * index;
+          const dotDistance = RADIUS + 7;
+
+          const dot1Angle = startAngle + angleStep * 0.25;
+          const dot2Angle = startAngle + angleStep * 0.75;
+
+          const dot1 = polarToCartesian(CENTER, CENTER, dotDistance, dot1Angle);
+          const dot2 = polarToCartesian(CENTER, CENTER, dotDistance, dot2Angle);
+
+          return (
+            <React.Fragment key={`dots-${item.id}`}>
+              <View style={dotStyle(dot1.x -2, dot1.y -2, "#FFFFFF")} />
+              <View style={dotStyle(dot2.x -2, dot2.y -2, "#FF0000")} />
+            </React.Fragment>
+          );
+        })}
       </Animated.View>
+
       <Text style={styles.topLabel}>
         {lottoCount > 0
           ? `Танд ${lottoCount} удаа эргүүлэх эрх байна`
@@ -223,7 +248,6 @@ export default function Spin() {
         />
       </TouchableOpacity>
 
-      {/* Custom Modal */}
       {showModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
@@ -240,6 +264,16 @@ export default function Spin() {
     </View>
   );
 }
+
+const dotStyle = (x: number, y: number, color: string) => ({
+  position: "absolute" as const,
+  width: 8,
+  height: 8,
+  borderRadius: 5,
+  backgroundColor: color,
+  top: y - 2,
+  left: x - 2,
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -282,11 +316,6 @@ const styles = StyleSheet.create({
     left: "50%",
     top: "50%",
     transform: "translate(-50%, -50%)",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   modalOverlay: {
     position: "absolute",
