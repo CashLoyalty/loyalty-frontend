@@ -12,10 +12,11 @@ import {
   Image,
 } from "react-native";
 import Svg, { Path, G, Text as SvgText } from "react-native-svg";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "@/constants/Colors";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 interface Segment {
   id: string;
   label: string;
@@ -61,6 +62,10 @@ export default function Spin() {
   const [showModal, setShowModal] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isSpinning, setIsSpinning] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleLoopRef = useRef<Animated.CompositeAnimation | null>(null); // 👈 Store loop animation
+
+  const navigation = useNavigation();
 
   const angleStep = segments.length > 0 ? 360 / segments.length : 0;
 
@@ -110,6 +115,10 @@ export default function Spin() {
     if (isSpinning || segments.length === 0) return;
 
     setIsSpinning(true);
+
+    // 👉 Stop pulsing animation
+    scaleLoopRef.current?.stop();
+
     const token = await AsyncStorage.getItem("token");
 
     try {
@@ -139,10 +148,45 @@ export default function Spin() {
         rotateAnim.setValue(totalRotation % 360);
         setIsSpinning(false);
         setShowModal(true);
+
+        // 👉 Restart pulsing animation after spin
+        const loop = Animated.loop(
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ])
+        );
+        loop.start();
+        scaleLoopRef.current = loop;
       });
     } catch (error) {
       console.error("Spin error:", error);
       setIsSpinning(false);
+      // 🛠 Optional: restart pulse if spin fails
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      loop.start();
+      scaleLoopRef.current = loop;
     }
   };
 
@@ -151,8 +195,38 @@ export default function Spin() {
     outputRange: ["0deg", "360deg"],
   });
 
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    scaleLoopRef.current = loop; // 👈 Save it so we can stop it later
+  }, []);
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={handleBack}
+        style={{ position: "absolute", top: 60, right: 20, zIndex: 10 }}
+      >
+        <Text style={{ color: "white" }}>Хаах</Text>
+      </TouchableOpacity>
+
       <Image source={require("@/assets/spin/bg.png")} style={styles.bg} />
       <Image source={require("@/assets/spin/light.png")} style={styles.light} />
       <Image source={require("@/assets/spin/red.png")} style={styles.red} />
@@ -160,13 +234,13 @@ export default function Spin() {
         style={{
           position: "absolute",
           transform: [{ rotate: interpolatedRotate }],
-          width: WHEEL_SIZE + 30, // 15px border on each side
+          width: WHEEL_SIZE + 30,
           height: WHEEL_SIZE + 30,
           alignItems: "center",
           justifyContent: "center",
           borderRadius: (WHEEL_SIZE + 30) / 2,
           borderWidth: 15,
-          borderColor: "black", // Change to any color you like
+          borderColor: "black",
           backgroundColor: "transparent",
         }}
       >
@@ -191,7 +265,7 @@ export default function Spin() {
                     y={labelPos.y}
                     fontFamily="Inter"
                     fill="white"
-                    fontSize="10"
+                    fontSize="11"
                     fontWeight="bold"
                     textAnchor="middle"
                     alignmentBaseline="middle"
@@ -220,8 +294,8 @@ export default function Spin() {
 
           return (
             <React.Fragment key={`dots-${item.id}`}>
-              <View style={dotStyle(dot1.x -2, dot1.y -2, "#FFFFFF")} />
-              <View style={dotStyle(dot2.x -2, dot2.y -2, "#FF0000")} />
+              <View style={dotStyle(dot1.x - 2, dot1.y - 2, "#FFFFFF")} />
+              <View style={dotStyle(dot2.x - 2, dot2.y - 2, "#FF0000")} />
             </React.Fragment>
           );
         })}
@@ -238,14 +312,25 @@ export default function Spin() {
         onPress={handleSpin}
         disabled={isSpinning}
       >
-        <Image
-          style={styles.centerImage}
-          source={
-            isSpinning
-              ? require("@/assets/spin/pepLogo.png")
-              : require("@/assets/spin/pepLogo.png")
-          }
-        />
+        <TouchableOpacity
+          style={{ position: "absolute" }}
+          onPress={handleSpin}
+          disabled={isSpinning}
+        >
+          <Animated.Image
+            source={require("@/assets/spin/pepLogo.png")}
+            style={[
+              styles.centerImage,
+              {
+                transform: [
+                  { translateX: -40 },
+                  { translateY: -40 },
+                  { scale: scaleAnim },
+                ],
+              },
+            ]}
+          />
+        </TouchableOpacity>
       </TouchableOpacity>
 
       {showModal && (
@@ -282,6 +367,13 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 20,
   },
   topLabel: {
     position: "absolute",
@@ -305,14 +397,14 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     position: "absolute",
-    top: "26%",
+    top: "25%",
     left: "58.8%",
     transform: "translateX(-50%)",
   },
   centerImage: {
     position: "absolute",
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     left: "50%",
     top: "50%",
     transform: "translate(-50%, -50%)",

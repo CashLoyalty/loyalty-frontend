@@ -23,6 +23,7 @@ import { Dimensions } from "react-native";
 import { UserResponse } from "@/types/global";
 import useFetchUser from "@/hooks/useFetchUser";
 import { useToast } from "react-native-toast-notifications";
+import axios from "axios";
 
 const BottomModal = ({
   visible,
@@ -213,26 +214,32 @@ const Award: React.FC = () => {
   };
 
   const handleConfirmGift = async (item: GiftItem, count: number) => {
-    //setButtonSpinner(true);
+    // Optional: show loading spinner
+    // setButtonSpinner(true);
+
+    // Optimistically update selected gifts
     setSelectedGifts((prev) => [...prev, { item, count }]);
+
     try {
-      const response = await fetch(`${SERVER_URI}/api/user/gift/buy`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${SERVER_URI}/api/user/gift/buy`,
+        {
           giftId: item.id,
-          count: count,
-        }),
-      });
+          quantity: count,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      console.log("award response : ", JSON.stringify(response));
+      // Check if response indicates failure (status code outside 2xx)
+      if (response.status !== 200) {
+        const errorData = response.data;
+        console.error("API Error:", errorData);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.show(`Алдаа гарлаа`, {
+        toast.show(`Алдаа гарлаа: ${errorData.message || "Алдаа"}`, {
           type: "danger",
           placement: "top",
           duration: 1500,
@@ -241,22 +248,36 @@ const Award: React.FC = () => {
             backgroundColor: Colors.red,
           },
         });
-      } else {
-        const data = await response.json();
-        toast.show(`Амжилттай`, {
-          type: "info",
-          placement: "top",
-          duration: 1500,
-          animationType: "slide-in",
-          style: {
-            backgroundColor: Colors.green,
-          },
-        });
+        return; // Stop here on error
       }
+
+      const data = response.data; // Response data
+      console.log("Success:", data);
+
+      toast.show(`Амжилттай`, {
+        type: "info",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+        style: {
+          backgroundColor: Colors.green,
+        },
+      });
     } catch (error) {
       console.error("Network error:", error);
+
+      toast.show(`Сүлжээний алдаа`, {
+        type: "danger",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+        style: {
+          backgroundColor: Colors.red,
+        },
+      });
     } finally {
-      //setButtonSpinner(false);
+      // Optional: hide loading spinner
+      // setButtonSpinner(false);
     }
   };
 

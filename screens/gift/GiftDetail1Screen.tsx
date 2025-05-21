@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import useFetchGiftDetail from "@/hooks/useFetchGiftDetail";
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +14,7 @@ export default function GiftDetail1Screen() {
   const route = useRoute();
   const { id } = route.params as { id?: string };
   const [token, setToken] = useState<string>("");
+  const navigation = useNavigation();
 
   console.log("id : ", id);
 
@@ -40,7 +41,7 @@ export default function GiftDetail1Screen() {
   );
 
   const handleBackPress = () => {
-    router.back();
+    navigation.goBack();
   };
 
   return (
