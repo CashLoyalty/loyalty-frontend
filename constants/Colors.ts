@@ -8,4 +8,5 @@ export default {
   backgroundColor: "#EFF6FF",
   giftBackgroundColor: "#0025FF",
   prizeLabelColor: "#6A6A6A",
+  tabBarBackground: "#F9F9F9",
 };

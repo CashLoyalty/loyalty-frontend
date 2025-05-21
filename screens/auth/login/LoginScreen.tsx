@@ -50,16 +50,16 @@ export default function LoginScreen() {
     })();
   }, []);
 
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      if (token) {
-        setExpoPushToken(token);
-        console.log("Expo push token registered:", token);
-      } else {
-        console.log("Token олдсонгүй");
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   registerForPushNotificationsAsync().then((token) => {
+  //     if (token) {
+  //       setExpoPushToken(token);
+  //       console.log("Expo push token registered:", token);
+  //     } else {
+  //       console.log("Token олдсонгүй");
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (phoneNumber.length === requiredLength) {
