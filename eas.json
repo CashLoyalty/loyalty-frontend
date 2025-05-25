@@ -23,7 +23,8 @@
         "simulator": true
       },
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "autoIncrement": true 
     },
     "production": {
       "android": {
@@ -31,10 +32,10 @@
       },
       "ios": {
         "distribution": "store",
-        "simulator": false,
-        "autoIncrement": true
+        "simulator": false
       },
-      "channel": "production"
+      "channel": "production",
+      "autoIncrement": true 
     }
   },
   "submit": {
