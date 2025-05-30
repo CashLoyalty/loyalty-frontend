@@ -3,22 +3,22 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import { screenDimensions } from "@/constants/constans";
-import { router } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = screenDimensions;
 
-const handleBackPress = () => {
-  router.navigate("/(tabs)");
-};
-
 const NotificationScreen = () => {
+  const navigation = useNavigation();
+  const handleBack = () => {
+    navigation.goBack();
+  };
   return (
     <View style={styles.container}>
       <Header />
       <View style={styles.contentWrapper}>
         <View style={styles.rowContainer}>
           <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={handleBackPress}>
+            <TouchableOpacity onPress={handleBack}>
               <Image
                 source={require("@/assets/icons/back.png")}
                 style={{ width: 30, height: 30 }}
