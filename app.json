@@ -25,10 +25,6 @@
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
-<<<<<<< Updated upstream
-      "versionCode": 5,
-      "permissions": ["CAMERA", "NOTIFICATIONS"],
-=======
       "versionCode": 4,
       "permissions": [
         "CAMERA",
@@ -36,7 +32,6 @@
         "WRITE_EXTERNAL_STORAGE",
         "NOTIFICATIONS"
       ],
->>>>>>> Stashed changes
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
