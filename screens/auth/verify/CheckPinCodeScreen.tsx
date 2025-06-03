@@ -97,7 +97,7 @@ export default function CheckPinCodeScreen() {
           });
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
         toast.show("Алдаа гарлаа, дахин оролдоно уу...", {
           type: "danger",
           placement: "top",

@@ -78,7 +78,7 @@ export default function Spin() {
       });
       setLottoCount(response.data.response.lottoCount);
     } catch (error) {
-      console.error("Error fetching lotto:", error);
+      console.log("Error fetching lotto:", error);
     }
   };
 
@@ -105,7 +105,7 @@ export default function Spin() {
 
         setSegments(formattedData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.log("Error fetching data:", error);
       }
     };
     fetchData();
@@ -168,7 +168,7 @@ export default function Spin() {
         scaleLoopRef.current = loop;
       });
     } catch (error) {
-      console.error("Spin error:", error);
+      console.log("Spin error:", error);
       setIsSpinning(false);
       // 🛠 Optional: restart pulse if spin fails
       const loop = Animated.loop(

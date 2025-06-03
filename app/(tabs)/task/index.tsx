@@ -40,7 +40,7 @@ const Task: React.FC = () => {
           console.warn("No token found in AsyncStorage");
         }
       } catch (error) {
-        console.error("Failed to fetch token: ", error);
+        console.log("Failed to fetch token: ", error);
       }
     };
 
@@ -146,7 +146,7 @@ const Task: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error("Network error:", error);
+      console.log("Network error:", error);
     }
     setPhoneNumber("");
     setVisible(false);

@@ -24,7 +24,7 @@ const useFetchActiveGifts = (url: string, token: string) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("Error response:", errorText);
+          console.log("Error response:", errorText);
           throw new Error("Network response was not ok");
         }
 
@@ -33,7 +33,7 @@ const useFetchActiveGifts = (url: string, token: string) => {
         if (result.code === 0) {
           setData(result.response);
         } else {
-          console.error("API returned error code:", result.code);
+          console.log("API returned error code:", result.code);
           throw new Error(result.title);
         }
       } catch (err: unknown) {

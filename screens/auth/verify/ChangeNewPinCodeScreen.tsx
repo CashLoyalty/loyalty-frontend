@@ -42,7 +42,7 @@ export default function ChangeNewPinCodeScreen() {
           console.warn("No token found in AsyncStorage");
         }
       } catch (error) {
-        console.error("Failed to fetch token: ", error);
+        console.log("Failed to fetch token: ", error);
       }
     };
 
@@ -91,7 +91,7 @@ export default function ChangeNewPinCodeScreen() {
         return () => clearTimeout(timer);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       toast.show("Амжилтгүй", {
         type: "danger",
         placement: "top",

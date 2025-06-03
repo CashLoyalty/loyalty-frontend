@@ -63,7 +63,7 @@ export default function ProfileScreen() {
           console.warn("No token found in AsyncStorage");
         }
       } catch (error) {
-        console.error("Failed to fetch token: ", error);
+        console.log("Failed to fetch token: ", error);
       } finally {
         setLoading(false);
       }
@@ -83,7 +83,7 @@ export default function ProfileScreen() {
       setUserData(data);
     }
     if (userErrorFetched) {
-      console.error("Error fetching user data:", userErrorFetched);
+      console.log("Error fetching user data:", userErrorFetched);
       setUserError(userErrorFetched);
     }
   }, [data, userErrorFetched]);
@@ -102,7 +102,7 @@ export default function ProfileScreen() {
     try {
       await AsyncStorage.removeItem("token");
     } catch (error) {
-      console.error("Failed to remove token: ", error);
+      console.log("Failed to remove token: ", error);
     } finally {
       router.navigate("/(routes)/login");
     }

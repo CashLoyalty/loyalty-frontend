@@ -26,7 +26,7 @@ export default function GiftDetail1Screen() {
           console.warn("No token found in AsyncStorage");
         }
       } catch (error) {
-        console.error("Failed to fetch token: ", error);
+        console.log("Failed to fetch token: ", error);
       }
     };
 

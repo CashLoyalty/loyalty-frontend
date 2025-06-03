@@ -19,7 +19,7 @@ export default function HeaderSecond() {
           setToken(storedToken);
         }
       } catch (error) {
-        console.error("Failed to fetch token: ", error);
+        console.log("Failed to fetch token: ", error);
       }
     };
 

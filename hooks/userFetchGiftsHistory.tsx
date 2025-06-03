@@ -24,7 +24,7 @@ const useFetchGiftsHistory = (url: string, token: string) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("Error response:", errorText);
+          console.log("Error response:", errorText);
           throw new Error("Network response was not ok");
         }
 
@@ -36,7 +36,7 @@ const useFetchGiftsHistory = (url: string, token: string) => {
           );
           setData(filteredData);
         } else {
-          console.error("API returned error code:", result.code);
+          console.log("API returned error code:", result.code);
           throw new Error(result.title);
         }
       } catch (err: unknown) {

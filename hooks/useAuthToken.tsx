@@ -14,7 +14,7 @@ export const useAuthToken = () => {
                     setToken(storedToken);
                 }
             } catch (error) {
-                console.error('Failed to load token:', error);
+                console.log('Failed to load token:', error);
             }
         };
 
@@ -26,7 +26,7 @@ export const useAuthToken = () => {
             await AsyncStorage.setItem(TOKEN_KEY, newToken);
             setToken(newToken);
         } catch (error) {
-            console.error('Failed to save token:', error);
+            console.log('Failed to save token:', error);
         }
     };
 
@@ -35,7 +35,7 @@ export const useAuthToken = () => {
             await AsyncStorage.removeItem(TOKEN_KEY);
             setToken(null);
         } catch (error) {
-            console.error('Failed to remove token:', error);
+            console.log('Failed to remove token:', error);
         }
     };
 

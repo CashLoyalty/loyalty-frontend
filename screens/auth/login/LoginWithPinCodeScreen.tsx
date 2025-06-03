@@ -102,7 +102,7 @@ export default function LoginWithPinCodeScreen() {
         }
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       toast.show("Алдаа гарлаа: " + error, {
         type: "danger",
         placement: "top",

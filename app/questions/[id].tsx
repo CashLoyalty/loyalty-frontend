@@ -64,7 +64,7 @@ export default function QuestionDetailPage() {
 
           setQuestion(sortedQuestions);
         } catch (err) {
-          console.error("Failed to load questions:", err);
+          console.log("Failed to load questions:", err);
         }
       };
 
@@ -117,7 +117,7 @@ export default function QuestionDetailPage() {
           Keyboard.dismiss();
         }
       } catch (error) {
-        console.error("Error submitting survey:", error);
+        console.log("Error submitting survey:", error);
         toast.show("Судалгаа илгээхэд алдаа гарлаа!", {
           type: "danger",
           placement: "top",

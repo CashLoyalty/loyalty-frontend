@@ -58,7 +58,7 @@ export default function WheelScreen() {
       const lottoCount = response.data.response.lottoCount;
       setLottoCount(lottoCount);
     } catch (error) {
-      console.error("Error fetching lotto data:", error);
+      console.log("Error fetching lotto data:", error);
     }
   };
 

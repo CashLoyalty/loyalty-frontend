@@ -74,7 +74,7 @@ export default function InformationScreen() {
       setUserData(data);
     }
     if (userErrorFetched) {
-      console.error(userErrorFetched);
+      console.log(userErrorFetched);
     }
   }, [data, userErrorFetched]);
 
@@ -204,7 +204,7 @@ export default function InformationScreen() {
       });
       return result.uri;
     } catch (error) {
-      console.error("Error compressing image:", error);
+      console.log("Error compressing image:", error);
       return uri;
     }
   };
@@ -264,16 +264,16 @@ export default function InformationScreen() {
         });
 
         if (!response.ok) {
-          console.error(
+          console.log(
             "Failed to upload image. Response status:",
             response.status
           );
           const errorText = await response.text();
-          console.error("Error details:", errorText);
+          console.log("Error details:", errorText);
           throw new Error(`Upload failed with status: ${response.status}`);
         }
       } catch (error) {
-        console.error("Error during image upload:", error);
+        console.log("Error during image upload:", error);
       }
     } else {
       console.log("No image selected");
@@ -318,7 +318,7 @@ export default function InformationScreen() {
         clearFormErrors();
       }
     } catch (error) {
-      console.error("Error saving user data:", error);
+      console.log("Error saving user data:", error);
     } finally {
       setButtonSpinner(false);
     }
