@@ -16,8 +16,6 @@ export default function GiftDetail1Screen() {
   const [token, setToken] = useState<string>("");
   const navigation = useNavigation();
 
-  console.log("id : ", id);
-
   useEffect(() => {
     const fetchToken = async () => {
       try {

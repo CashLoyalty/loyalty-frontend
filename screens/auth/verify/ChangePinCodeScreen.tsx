@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
@@ -37,7 +38,18 @@ export default function ChangePinCodeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      {Platform.OS === "android" && (
+        <View
+          style={{
+            backgroundColor: Colors.black,
+          }}
+        />
+      )}
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <TouchableOpacity onPress={handleBack}>
         <Ionicons
           name="arrow-back"

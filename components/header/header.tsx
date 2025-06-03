@@ -4,30 +4,29 @@ import {
   StyleSheet,
   Image,
   Platform,
+  StatusBar,
   Dimensions,
-  StatusBar as RNStatusBar,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-const { height } = Dimensions.get("window");
-
 export default function Header() {
   const insets = useSafeAreaInsets();
+  const screenHeight = Dimensions.get("window").height;
+  const [topOffset, setTopOffset] = useState(20);
 
-  let topOffset = 0;
-
-  if (insets.top >= 44) {
-    topOffset = insets.top - 8;
-  } else if (insets.top > 20) {
-    topOffset = insets.top + 7;
-  } else {
-    topOffset = 20;
-  }
+  useEffect(() => {
+    if (insets.top >= 44) {
+      setTopOffset(insets.top - 8);
+    } else if (insets.top > 20) {
+      setTopOffset(insets.top);
+    } else {
+      setTopOffset(20);
+    }
+  }, [insets.top]);
 
   const styles = StyleSheet.create({
     statusBarBackground: {
@@ -70,8 +69,19 @@ export default function Header() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.statusBarBackground} />
-      <StatusBar style="light" />
+      {Platform.OS === "android" && (
+        <View
+          style={{
+            height: (screenHeight / 100) * 5.43,
+            backgroundColor: Colors.black,
+          }}
+        />
+      )}
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <View style={styles.logoContainerStyle}>
         <Image
           source={require("@/assets/images/header-pepsi-logo.png")}

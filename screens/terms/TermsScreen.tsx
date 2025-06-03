@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ScrollView,
   Text,
@@ -17,9 +17,13 @@ const TermsScreen = () => {
   const handleBackPress = () => {
     router.back();
   };
+
   return (
     <SafeAreaView style={styles.saveAreaView}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.backgroundColor}
+      />
       <View style={styles.back}>
         <TouchableOpacity
           onPress={handleBackPress}
@@ -227,7 +231,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    marginHorizontal: 10,
+    margin: 10,
     borderRadius: 10,
     backgroundColor: Colors.white,
   },

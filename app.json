@@ -19,17 +19,32 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes.",
-        "NSUserNotificationUsageDescription": "This app uses notifications to inform you about important updates."
+        "NSUserNotificationUsageDescription": "This app uses notifications to inform you about important updates.",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library to select images."
       }
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
+<<<<<<< Updated upstream
       "versionCode": 5,
       "permissions": ["CAMERA", "NOTIFICATIONS"],
+=======
+      "versionCode": 4,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "NOTIFICATIONS"
+      ],
+>>>>>>> Stashed changes
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       }
+    },
+    "androidNavigationBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#ffffff"
     },
     "notification": {
       "color": "#FF7A00"
@@ -56,7 +71,14 @@
           }
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Камер ашиглах зөвшөөрөл хэрэгтэй.",
+          "photosPermission": "Зургийн сан руу хандах зөвшөөрөл хэрэгтэй."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -69,9 +91,7 @@
         "projectId": "aa3019f0-33c3-4d89-bfde-e0cef80729b7"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/aa3019f0-33c3-4d89-bfde-e0cef80729b7"
     },

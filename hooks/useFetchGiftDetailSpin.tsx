@@ -29,7 +29,6 @@ const useFetchGiftDetailSpin = (url: string, token: string) => {
         }
 
         const result: ApiResponseGiftDetailSpin = await response.json();
-        console.log("response : ", result.response);
 
         if (result.code === 0) {
           setData(result.response);

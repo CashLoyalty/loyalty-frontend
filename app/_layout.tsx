@@ -1,12 +1,9 @@
-// app/_layout.tsx
-
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
 import * as Notifications from "expo-notifications";
 
-// 🔔 Notification handler - зөвхөн 1 удаа ажиллана
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

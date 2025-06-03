@@ -101,8 +101,6 @@ const Task: React.FC = () => {
         }),
       });
 
-      // console.log("response : " + JSON.stringify(response));
-
       if (!response.ok) {
         const errorData = await response.json();
         toast.show(`Алдаа гарлаа`, {
@@ -114,12 +112,9 @@ const Task: React.FC = () => {
             backgroundColor: Colors.red,
           },
         });
-        // console.log("Backend error:", errorData);
-        // console.log("Error Code :", errorData.code);
       } else {
         const data = await response.json();
-        // console.log("Successfully sent to backend:", data);
-        // console.log("Success Code :", data.code);
+
         switch (data.code) {
           case 1000:
             toast.show(`Энэ дугаар бүртгэгдсэн байна....`, {

@@ -170,6 +170,7 @@ const HomeScreen: React.FC = () => {
       );
 
       if (response.data.title === "This code already registered.") {
+        console.log("Бөглөөний код : ", inputValue);
         showLocalNotification(
           "Fizz Point!",
           `Таны ${inputValue} бүртгэгдсэн бөглөө код байна`

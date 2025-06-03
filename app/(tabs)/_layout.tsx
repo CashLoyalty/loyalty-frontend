@@ -8,15 +8,12 @@ import * as NavigationBar from "expo-navigation-bar";
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      // Цагаан background + хар товч
-      NavigationBar.setBackgroundColorAsync("#ffffff");
-      NavigationBar.setButtonStyleAsync("dark");
-    }
-  }, []);
-
-  console.log("insert bottom : " + insets.bottom);
+  // useEffect(() => {
+  //   if (Platform.OS === "android") {
+  //     NavigationBar.setBackgroundColorAsync("#ffffff");
+  //     NavigationBar.setButtonStyleAsync("dark");
+  //   }
+  // }, []);
 
   return (
     <Tabs

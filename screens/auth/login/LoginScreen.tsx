@@ -9,6 +9,7 @@ import {
   Keyboard,
   Platform,
   Alert,
+  StatusBar,
 } from "react-native";
 import { router } from "expo-router";
 import axios from "axios";
@@ -19,7 +20,6 @@ import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
-import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
@@ -32,23 +32,23 @@ export default function LoginScreen() {
   const requiredLength = 8;
   const toast = useToast();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      console.log("Notification permission status:", status);
-      if (status !== "granted") {
-        alert("Notification permission denied");
-      }
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Notifications.requestPermissionsAsync();
+  //     console.log("Notification permission status:", status);
+  //     if (status !== "granted") {
+  //       alert("Notification permission denied");
+  //     }
 
-      if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync("default", {
-          name: "default",
-          importance: Notifications.AndroidImportance.HIGH,
-          sound: "default",
-        });
-      }
-    })();
-  }, []);
+  //     if (Platform.OS === "android") {
+  //       await Notifications.setNotificationChannelAsync("default", {
+  //         name: "default",
+  //         importance: Notifications.AndroidImportance.HIGH,
+  //         sound: "default",
+  //       });
+  //     }
+  //   })();
+  // }, []);
 
   // useEffect(() => {
   //   registerForPushNotificationsAsync().then((token) => {
@@ -151,7 +151,19 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="black" />
+      {Platform.OS === "android" && (
+        <View
+          style={{
+            height: StatusBar.currentHeight,
+            backgroundColor: Colors.black,
+          }}
+        />
+      )}
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <View
         style={{
           marginTop: (height / 100) * 13.7,

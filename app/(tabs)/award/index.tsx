@@ -145,7 +145,11 @@ const BottomModal = ({
             }}
             style={styles.closeButton}
           >
-            <Text style={styles.buttonText}>Авах</Text>
+            {buttonSpinner ? (
+              <ActivityIndicator size="small" color={Colors.white} />
+            ) : (
+              <Text style={styles.buttonText}>Авах</Text>
+            )}
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -197,7 +201,9 @@ const Award: React.FC = () => {
     fetchToken();
   }, [token]);
   ``;
+
   const { data } = useFetchUser(SERVER_URI + "/api/user", token);
+
   useEffect(() => {
     if (data) {
       setUserData(data);
@@ -214,10 +220,7 @@ const Award: React.FC = () => {
   };
 
   const handleConfirmGift = async (item: GiftItem, count: number) => {
-    // Optional: show loading spinner
-    // setButtonSpinner(true);
-
-    // Optimistically update selected gifts
+    setButtonSpinner(true);
     setSelectedGifts((prev) => [...prev, { item, count }]);
 
     try {
@@ -234,10 +237,8 @@ const Award: React.FC = () => {
         }
       );
 
-      // Check if response indicates failure (status code outside 2xx)
       if (response.status !== 200) {
         const errorData = response.data;
-        console.error("API Error:", errorData);
 
         toast.show(`Алдаа гарлаа: ${errorData.message || "Алдаа"}`, {
           type: "danger",
@@ -248,24 +249,34 @@ const Award: React.FC = () => {
             backgroundColor: Colors.red,
           },
         });
-        return; // Stop here on error
       }
+      
+      // type: "success" | "danger" | "warning" | "info" | "normal"
 
-      const data = response.data; // Response data
-      console.log("Success:", data);
+      console.log("code : ", response.data.code);
 
-      toast.show(`Амжилттай`, {
-        type: "info",
-        placement: "top",
-        duration: 1500,
-        animationType: "slide-in",
-        style: {
-          backgroundColor: Colors.green,
-        },
-      });
+      if (response.data.code === 1010) {
+        toast.show(`Оноо хүрэхгүй байна`, {
+          type: "warning",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: 65,
+            //backgroundColor: Colors.red,
+          },
+        });
+      }
+      // toast.show(`Амжилттай`, {
+      //   type: "info",
+      //   placement: "top",
+      //   duration: 1500,
+      //   animationType: "slide-in",
+      //   style: {
+      //     backgroundColor: Colors.green,
+      //   },
+      // });
     } catch (error) {
-      console.error("Network error:", error);
-
       toast.show(`Сүлжээний алдаа`, {
         type: "danger",
         placement: "top",
@@ -276,8 +287,7 @@ const Award: React.FC = () => {
         },
       });
     } finally {
-      // Optional: hide loading spinner
-      // setButtonSpinner(false);
+      setButtonSpinner(false);
     }
   };
 

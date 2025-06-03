@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  StatusBar,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
@@ -18,7 +18,6 @@ import useFetchUser from "@/hooks/useFetchUser";
 import usePointDetails from "@/hooks/usePointDetials";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVER_URI } from "@/utils/uri";
-import axios from "axios";
 
 interface ProgressBarProps {
   levelName: string;
@@ -91,30 +90,12 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (userData?.imageUrl) {
-      checkImageUrl(userData.imageUrl);
       setProfileImage(userData.imageUrl);
     }
   }, [userData]);
 
-  const checkImageUrl = async (url: string) => {
-    try {
-      const response = await axios.head(url);
-      if (response.status === 200) {
-        console.log("Image is accessible");
-      } else {
-        console.log("Image is not accessible");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setProfileImage("");
-      } else {
-        console.error("Unknown error occurred");
-      }
-    }
-  };
-
   const handleBackPress = () => {
-    router.navigate("/(tabs)");
+    router.back();
   };
 
   const handleLogout = async () => {
@@ -139,13 +120,12 @@ export default function ProfileScreen() {
     router.navigate("/(routes)/terms");
   };
 
-  const handleGifts = () => {
-    router.navigate("/(routes)/giftHistory");
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" backgroundColor="black" />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.backgroundColor}
+      />
       <TouchableOpacity onPress={handleBackPress} style={styles.backContainer}>
         <Ionicons name="arrow-back" size={24} color={Colors.primaryColor} />
       </TouchableOpacity>
@@ -255,16 +235,6 @@ export default function ProfileScreen() {
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
-          {/* <TouchableOpacity onPress={handleGifts} style={styles.menuItem}>
-            <View style={styles.menuItemContent}>
-              <Image
-                source={require("@/assets/icons/profGiftsMenu.png")}
-                style={{ width: 26, height: 26 }}
-              />
-              <Text style={styles.menuItemText}>Бэлгүүд</Text>
-            </View>
-            <AntDesign name="right" size={20} color={Colors.primaryColor} />
-          </TouchableOpacity> */}
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image

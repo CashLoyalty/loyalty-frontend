@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  StatusBar,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
@@ -22,8 +23,7 @@ import { useToast } from "react-native-toast-notifications";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import axios from "axios";
-import ActionSheet from "react-native-action-sheet";
+import CustomActionSheet from "@/components/customActionSheet/customActionSheet";
 
 interface ImageType {
   uri: string;
@@ -50,6 +50,7 @@ export default function InformationScreen() {
   const [buttonSpinner, setButtonSpinner] = useState(false);
   const [image, setImage] = useState<ImageType | null>(null);
   const [profileImage, setProfileImage] = useState<string>("");
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   useEffect(() => {
     const getToken = async () => {
@@ -97,81 +98,102 @@ export default function InformationScreen() {
       setGender(userData.sex.toLowerCase());
     }
     if (userData?.imageUrl) {
-      console.log("imageUrl : " + userData.imageUrl);
-      checkImageUrl(userData.imageUrl);
       setProfileImage(userData.imageUrl);
     }
   }, [userData]);
 
-  const pickImage = async () => {
-    const options = ["Take Photo", "Choose Photo", "Cancel"];
-    const cancelButtonIndex = 2;
+  const handleActionSheetSelect = async (index: number) => {
+    const getFileNameFromUri = (uri: string): string => {
+      return uri.split("/").pop() || `photo_${Date.now()}.jpg`;
+    };
 
-    ActionSheet.showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-      },
-      async (buttonIndex) => {
-        if (buttonIndex === 0) {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-
-          if (status !== "granted") {
-            Alert.alert(
-              "Permission required",
-              "We use your camera to allow you to take profile photos that will be shown in your user account."
-            );
-            return;
-          }
-
-          // Open the camera
-          const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-          });
-
-          if (!result.canceled && result.assets.length > 0) {
-            const asset = result.assets[0];
-            const image = {
-              uri: asset.uri,
-              type: asset.type || "image/jpeg",
-              fileName: asset.fileName || "photo.jpg",
-            };
-            setImage(image);
-            setProfileImage(image.uri);
-          }
-        } else if (buttonIndex === 1) {
-          const { status } =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-          if (status !== "granted") {
-            Alert.alert(
-              "Permission required",
-              "We use photo library to allow you to take profile photos that will be shown in your user account."
-            );
-            return;
-          }
-
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
-
-          if (!result.canceled && result.assets.length > 0) {
-            const asset = result.assets[0];
-            const image: ImageType = {
-              uri: asset.uri,
-              type: asset.type || "image/jpeg",
-              fileName: asset.fileName || "image.jpg",
-            };
-            setImage(image);
-            setProfileImage(image.uri);
-          }
-        }
+    const getMimeType = (filename: string): string => {
+      const ext = filename.split(".").pop()?.toLowerCase();
+      switch (ext) {
+        case "jpg":
+        case "jpeg":
+          return "image/jpeg";
+        case "png":
+          return "image/png";
+        case "webp":
+          return "image/webp";
+        default:
+          return "application/octet-stream";
       }
-    );
+    };
+
+    if (index === 0) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission required",
+          "We use your camera to allow you to take profile photos that will be shown in your user account."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+
+        const fileName = asset.fileName || getFileNameFromUri(asset.uri);
+        const mimeType = asset.mimeType || getMimeType(fileName);
+
+        const image = {
+          uri: asset.uri,
+          type: mimeType,
+          fileName,
+        };
+
+        setImage(image);
+        setProfileImage(image.uri);
+      }
+      setActionSheetVisible(false);
+    } else if (index === 1) {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission required",
+          "We use photo library to allow you to take profile photos that will be shown in your user account."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+        const fileName = asset.fileName || getFileNameFromUri(asset.uri);
+        const mimeType = asset.mimeType || getMimeType(fileName);
+
+        const image = {
+          uri: asset.uri,
+          type: mimeType,
+          fileName,
+        };
+
+        setImage(image);
+        setProfileImage(image.uri);
+      }
+      setActionSheetVisible(false);
+    }
+  };
+
+  const pickImage = async () => {
+    setActionSheetVisible(true);
   };
 
   const compressImage = async (uri: string) => {
@@ -184,23 +206,6 @@ export default function InformationScreen() {
     } catch (error) {
       console.error("Error compressing image:", error);
       return uri;
-    }
-  };
-
-  const checkImageUrl = async (url: string) => {
-    try {
-      const response = await axios.head(url);
-      if (response.status === 200) {
-        console.log("Image is accessible");
-      } else {
-        console.log("Image is not accessible");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setProfileImage("");
-      } else {
-        console.error("Unknown error occurred");
-      }
     }
   };
 
@@ -254,7 +259,6 @@ export default function InformationScreen() {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
           body: formData,
         });
@@ -268,9 +272,6 @@ export default function InformationScreen() {
           console.error("Error details:", errorText);
           throw new Error(`Upload failed with status: ${response.status}`);
         }
-
-        const result = await response.json();
-        console.log("Image upload result:", result);
       } catch (error) {
         console.error("Error during image upload:", error);
       }
@@ -303,7 +304,6 @@ export default function InformationScreen() {
       const result = await userResponse.json();
       if (result.code === 400) {
         handleValidationErrors(result);
-
         toast.show("Амжилтгүй", {
           type: "danger",
           placement: "top",
@@ -349,6 +349,10 @@ export default function InformationScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.backgroundColor}
+      />
       <View style={styles.back}>
         <TouchableOpacity
           onPress={handleBackPress}
@@ -448,19 +452,6 @@ export default function InformationScreen() {
               <Text style={styles.errorText}>{errorFirstName}</Text>
             </View>
           ) : null}
-          {/*<View style={styles.inputContainer}>
-                        <Text style={styles.label}>Утас
-                            <Text style={styles.asterisk}>*</Text>
-                        </Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder=""
-                            placeholderTextColor="transparent"
-                        />
-                        <View style={styles.iconContainer}>
-                            <Image source={require("@/assets/icons/editPhone.png")} style={styles.icon} />
-                        </View>
-                    </View>*/}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>
               И-Mэйл
@@ -576,6 +567,11 @@ export default function InformationScreen() {
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
+      />
+      <CustomActionSheet
+        visible={actionSheetVisible}
+        onSelect={handleActionSheetSelect}
+        onCancel={() => setActionSheetVisible(false)}
       />
     </SafeAreaView>
   );
