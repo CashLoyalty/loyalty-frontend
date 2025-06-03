@@ -95,7 +95,7 @@ const BottomModal = ({
                 <Text
                   style={{ fontSize: 12, fontWeight: "800", color: "#808080" }}
                 >
-                  үлд: {item?.probability}ш
+                  үлд: {item?.limit}ш
                 </Text>
               </View>
             </View>
@@ -250,7 +250,7 @@ const Award: React.FC = () => {
           },
         });
       }
-      
+
       // type: "success" | "danger" | "warning" | "info" | "normal"
 
       console.log("code : ", response.data.code);
@@ -263,7 +263,18 @@ const Award: React.FC = () => {
           animationType: "slide-in",
           style: {
             top: 65,
-            //backgroundColor: Colors.red,
+          },
+        });
+      }
+
+      if (response.data.code === 1000) {
+        toast.show(`Бэлэг үлдэгдэл хүрэхгүй байна`, {
+          type: "warning",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: 65,
           },
         });
       }
