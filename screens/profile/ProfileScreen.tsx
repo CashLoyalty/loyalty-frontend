@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   historyText: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "center",
     color: Colors.primaryColor,
     fontWeight: "600",
