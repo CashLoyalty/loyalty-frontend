@@ -278,15 +278,6 @@ const Award: React.FC = () => {
           },
         });
       }
-      // toast.show(`Амжилттай`, {
-      //   type: "info",
-      //   placement: "top",
-      //   duration: 1500,
-      //   animationType: "slide-in",
-      //   style: {
-      //     backgroundColor: Colors.green,
-      //   },
-      // });
     } catch (error) {
       toast.show(`Сүлжээний алдаа`, {
         type: "danger",
