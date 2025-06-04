@@ -24,7 +24,7 @@ const useFetchGiftsHistory = (url: string, token: string) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.log("Error response:", errorText);
+          // console.log("Error response:", errorText);
           throw new Error("Network response was not ok");
         }
 
