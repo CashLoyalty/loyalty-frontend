@@ -17,15 +17,20 @@ export default function Header() {
   const insets = useSafeAreaInsets();
   const screenHeight = Dimensions.get("window").height;
   const [topOffset, setTopOffset] = useState(20);
+  const [headerHeight, setHeaderHeight] = useState((screenHeight / 100) * 9);
 
   useEffect(() => {
+    let calculatedTop = 20;
+    let calculatedHeight = (screenHeight / 100) * 9;
+
     if (insets.top >= 44) {
-      setTopOffset(insets.top - 8);
+      calculatedTop = insets.top - 8;
     } else if (insets.top > 20) {
-      setTopOffset(insets.top);
-    } else {
-      setTopOffset(20);
+      calculatedTop = insets.top;
     }
+
+    setTopOffset(calculatedTop);
+    setHeaderHeight(calculatedHeight);
   }, [insets.top]);
 
   const styles = StyleSheet.create({
@@ -42,6 +47,7 @@ export default function Header() {
       alignItems: "center",
       marginBottom: 16,
       backgroundColor: Colors.primaryColor,
+      height: headerHeight,
       zIndex: 1,
     },
     logoContainerStyle: {

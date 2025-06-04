@@ -84,6 +84,9 @@ export default function Spin() {
 
   useEffect(() => {
     checkLotto();
+  });
+  
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -418,7 +421,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: "bold",
     top: "73%",
-    zIndex: 4,
+    zIndex: 5,
   },
   bg: {
     width: 700,
