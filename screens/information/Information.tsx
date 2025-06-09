@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   iconContainer: {
     position: "absolute",
