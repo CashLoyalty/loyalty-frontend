@@ -218,7 +218,7 @@ export default function LoginWithPinCodeScreen() {
                 shadowRadius: 10,
 
                 // Shadow for Android
-                elevation: 10,
+                elevation: 12,
               },
               filledPinCodeContainerStyle: {
                 borderColor: Colors.primaryColor,

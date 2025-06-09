@@ -65,13 +65,13 @@ const QRCodeReaderScreen = () => {
                 />
               </Pressable>
             </View>
-            <View style={styles.iconWrapper}>
+            {/* <View style={styles.iconWrapper}>
               <Image source={require("@/assets/icons/flashLight.png")} />
               <Image
                 style={{ marginLeft: 10 }}
                 source={require("@/assets/icons/uploadQrCode.png")}
               />
-            </View>
+            </View> */}
           </View>
           <View style={styles.scanAreaWrapper}>
             <Text style={styles.instruction}>
@@ -99,7 +99,7 @@ const QRCodeReaderScreen = () => {
 
 const borderLength = 30;
 const borderWidth = 4;
-const borderColor = "white";
+const borderColor = Colors.primaryColor;
 const borderRadius = 12;
 
 const styles = StyleSheet.create({
