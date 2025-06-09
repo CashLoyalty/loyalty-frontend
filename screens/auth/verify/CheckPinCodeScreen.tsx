@@ -27,8 +27,11 @@ export default function CheckPinCodeScreen() {
   const [code, setCode] = useState<string>("");
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber } = route.params as { phoneNumber?: string };
-  const { pinCode } = route.params as { pinCode?: string };
+  const { phoneNumber, pinCode, screenName } = route.params as {
+    phoneNumber?: string;
+    pinCode?: string;
+    screenName?: string;
+  };
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
@@ -76,36 +79,70 @@ export default function CheckPinCodeScreen() {
 
     if (enteredCode === pinCode) {
       setLoading(true);
+      if (screenName) {
+        try {
+          const response = await axios.post(
+            `${SERVER_URI}/api/user/setNewPassCode`,
+            {
+              phoneNumber: phoneNumber,
+              newPassCode: enteredCode,
+            }
+          );
 
-      try {
-        const response = await axios.post(`${SERVER_URI}/api/user/register`, {
-          phoneNumber: phoneNumber,
-          passCode: enteredCode,
-        });
-
-        if (response.data.code === 0) {
-          const accessToken = response.data.response.access_token;
-          await AsyncStorage.setItem("token", accessToken);
-          playSound();
-          router.push("/(tabs)?terms=true");
-        } else {
-          toast.show("Баталгаажуулалт амжилтгүй!", {
+          if (response.data.code === 0) {
+            const accessToken = response.data.response.access_token;
+            await AsyncStorage.setItem("token", accessToken);
+            playSound();
+          } else {
+            toast.show("Баталгаажуулалт амжилтгүй!", {
+              type: "danger",
+              placement: "top",
+              duration: 1500,
+              animationType: "slide-in",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          toast.show("Алдаа гарлаа, дахин оролдоно уу...", {
             type: "danger",
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
           });
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.log(error);
-        toast.show("Алдаа гарлаа, дахин оролдоно уу...", {
-          type: "danger",
-          placement: "top",
-          duration: 1500,
-          animationType: "slide-in",
-        });
-      } finally {
-        setLoading(false);
+      } else {
+        try {
+          const response = await axios.post(`${SERVER_URI}/api/user/register`, {
+            phoneNumber: phoneNumber,
+            passCode: enteredCode,
+          });
+
+          if (response.data.code === 0) {
+            const accessToken = response.data.response.access_token;
+            await AsyncStorage.setItem("token", accessToken);
+            playSound();
+            router.push("/(tabs)?terms=true");
+          } else {
+            toast.show("Баталгаажуулалт амжилтгүй!", {
+              type: "danger",
+              placement: "top",
+              duration: 1500,
+              animationType: "slide-in",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          toast.show("Алдаа гарлаа, дахин оролдоно уу...", {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        } finally {
+          setLoading(false);
+        }
       }
     } else {
       toast.show("Кодууд тохирохгүй байна!", {

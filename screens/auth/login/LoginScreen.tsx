@@ -23,7 +23,7 @@ import { screenDimensions } from "@/constants/constans";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
-const { width, height } = screenDimensions;
+const { height } = screenDimensions;
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -66,6 +66,94 @@ export default function LoginScreen() {
       Keyboard.dismiss();
     }
   }, [phoneNumber]);
+
+  const handleForgetPinCode = async () => {
+    const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
+
+    if (verifiedPhoneNumber.length === 0) {
+      toast.show(`Утасны дугаар оруулна уу...`, {
+        type: "danger",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    if (verifiedPhoneNumber.length !== requiredLength) {
+      toast.show(`Утасны дугаар буруу...`, {
+        type: "danger",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${SERVER_URI}/api/user/getForgotPasscodeOtp`,
+        {
+          phoneNumber: verifiedPhoneNumber,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
+      if (data.code === 0) {
+        router.push(
+          `/verifyOtp?phoneNumber=${encodeURIComponent(
+            verifiedPhoneNumber
+          )}&screenName=${encodeURIComponent("forgotPinCode")}`
+        );
+      }
+      /*if (data.title === "Success") {
+        router.push(
+          `/verifyOtp?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
+        );
+      } else if (data.title === "Phone number Duplicated") {
+        router.push(
+          `/loginPinCode?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
+        );
+      } else {
+        toast.show(`Алдаа: ${data.title}`, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      }*/
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.show(
+          `Алдаа гарлаа (axios): ${
+            error.response?.data?.message || error.message
+          }`,
+          {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          }
+        );
+      } else {
+        toast.show(`Алдаа гарлаа: ${String(error)}`, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
@@ -196,6 +284,9 @@ export default function LoginScreen() {
         </View>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonSignText}>Нэвтрэх</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleForgetPinCode}>
+          <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
@@ -364,5 +455,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "right",
     fontWeight: "600",
+  },
+  underlineText: {
+    textDecorationLine: "underline",
+    color: Colors.white,
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginTop: 10,
   },
 });

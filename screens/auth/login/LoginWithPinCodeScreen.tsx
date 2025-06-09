@@ -114,6 +114,72 @@ export default function LoginWithPinCodeScreen() {
     }
   };
 
+  const handleForgetPinCode = async () => {
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${SERVER_URI}/api/user/getForgotPasscodeOtp`,
+        {
+          phoneNumber: phoneNumber,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
+      /*if (data.code === 0) {
+        router.push(
+          `/verifyOtp?phoneNumber=${encodeURIComponent(
+            phoneNumber
+          )}&screenName=${encodeURIComponent("forgotPinCode")}`
+        );
+      }*/
+      /*if (data.title === "Success") {
+        router.push(
+          `/verifyOtp?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
+        );
+      } else if (data.title === "Phone number Duplicated") {
+        router.push(
+          `/loginPinCode?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
+        );
+      } else {
+        toast.show(`Алдаа: ${data.title}`, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      }*/
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.show(
+          `Алдаа гарлаа (axios): ${
+            error.response?.data?.message || error.message
+          }`,
+          {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          }
+        );
+      } else {
+        toast.show(`Алдаа гарлаа: ${String(error)}`, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={handleBack}>
@@ -171,6 +237,9 @@ export default function LoginWithPinCodeScreen() {
             }}
           />
         </View>
+        <TouchableOpacity onPress={handleForgetPinCode}>
+          <Text style={styles.underlineText}>Пин код сэргээх</Text>
+        </TouchableOpacity>
       </View>
 
       {loading && (
@@ -233,5 +302,12 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     transform: [{ scale: 1.2 }],
+  },
+  underlineText: {
+    textDecorationLine: "underline",
+    color: Colors.white,
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginTop: 10,
   },
 });

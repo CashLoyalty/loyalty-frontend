@@ -19,7 +19,10 @@ const { width, height } = screenDimensions;
 export default function CreatePinCodeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber } = route.params as { phoneNumber?: string };
+  const { phoneNumber, screenName } = route.params as {
+    phoneNumber?: string;
+    screenName?: string;
+  };
   const [pinCode, setPinCode] = useState<string>("");
 
   useEffect(() => {
@@ -33,11 +36,21 @@ export default function CreatePinCodeScreen() {
   };
 
   const handleHook = (phoneNumber: any, pinCode: string) => {
-    router.push(
-      `/checkPinCode?phoneNumber=${encodeURIComponent(
-        phoneNumber
-      )}&pinCode=${encodeURIComponent(pinCode)}`
-    );
+    if (screenName) {
+      router.push(
+        `/checkPinCode?phoneNumber=${encodeURIComponent(
+          phoneNumber
+        )}&pinCode=${encodeURIComponent(
+          pinCode
+        )}&screenName=${encodeURIComponent(screenName)}`
+      );
+    } else {
+      router.push(
+        `/checkPinCode?phoneNumber=${encodeURIComponent(
+          phoneNumber
+        )}&pinCode=${encodeURIComponent(pinCode)}`
+      );
+    }
   };
 
   return (
@@ -66,7 +79,7 @@ export default function CreatePinCodeScreen() {
                 height: height < 650 ? 45 : 55,
                 borderRadius: 10,
                 borderWidth: 2,
-                borderColor: Colors.primaryColor, // this adds the blue border
+                borderColor: Colors.primaryColor,
                 justifyContent: "center",
                 alignItems: "center",
 
@@ -89,9 +102,9 @@ export default function CreatePinCodeScreen() {
                 height: height < 650 ? 45 : 55,
               },
               pinCodeTextStyle: {
-                color: Colors.white, // Text color inside the input
-                fontSize: 25, // Font size for the digits
-                textAlign: "center", // Optionally align text
+                color: Colors.white,
+                fontSize: 25,
+                textAlign: "center",
               },
             }}
           />

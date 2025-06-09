@@ -24,7 +24,10 @@ const { width, height } = screenDimensions;
 
 export default function VerifyOtpScreen() {
   const route = useRoute();
-  const { phoneNumber } = route.params as { phoneNumber?: string };
+  const { phoneNumber, screenName } = route.params as {
+    phoneNumber?: string;
+    screenName?: string;
+  };
   const [pinCode, setPinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
@@ -65,35 +68,76 @@ export default function VerifyOtpScreen() {
     Keyboard.dismiss();
     setLoading(true);
 
-    try {
-      const response = await axios.post(`${SERVER_URI}/api/user/checkOtp`, {
-        phoneNumber,
-        otp: otpCode,
-      });
-
-      if (response.data.code === 0) {
-        router.push(
-          `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}`
+    if (screenName) {
+      try {
+        const response = await axios.post(
+          `${SERVER_URI}/api/user/checkForgotPasscodeOtp`,
+          {
+            phoneNumber,
+            otp: otpCode,
+          }
         );
-      } else {
-        toast.show(`Баталгаажуулах код буруу.`, {
+
+        if (response.data.code === 0) {
+          router.push(
+            `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}`
+          );
+        } else {
+          router.push(
+            `/createPinCode?phoneNumber=${encodeURIComponent(
+              phoneNumber
+            )}&screenName=${encodeURIComponent("forgotPinCode")}`
+          );
+          // toast.show(`Баталгаажуулах код буруу.`, {
+          //   type: "danger",
+          //   placement: "top",
+          //   duration: 1500,
+          //   animationType: "slide-in",
+          // });
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        toast.show(errorMessage, {
           type: "danger",
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
         });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      toast.show(errorMessage, {
-        type: "danger",
-        placement: "top",
-        duration: 1500,
-        animationType: "slide-in",
-      });
-    } finally {
-      setLoading(false);
+    } else {
+      try {
+        const response = await axios.post(`${SERVER_URI}/api/user/checkOtp`, {
+          phoneNumber,
+          otp: otpCode,
+        });
+
+        if (response.data.code === 0) {
+          router.push(
+            `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}`
+          );
+        } else {
+          toast.show(`Баталгаажуулах код буруу.`, {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        toast.show(errorMessage, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -130,7 +174,7 @@ export default function VerifyOtpScreen() {
               height: height < 650 ? 45 : 55,
               borderRadius: 10,
               borderWidth: 2,
-              borderColor: Colors.primaryColor, // this adds the blue border
+              borderColor: Colors.primaryColor,
               justifyContent: "center",
               alignItems: "center",
 
@@ -153,9 +197,9 @@ export default function VerifyOtpScreen() {
               height: height < 650 ? 45 : 55,
             },
             pinCodeTextStyle: {
-              color: Colors.white, // Text color inside the input
-              fontSize: 25, // Font size for the digits
-              textAlign: "center", // Optionally align text
+              color: Colors.white,
+              fontSize: 25,
+              textAlign: "center",
             },
           }}
         />
