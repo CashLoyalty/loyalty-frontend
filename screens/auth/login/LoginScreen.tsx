@@ -22,6 +22,8 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { height } = screenDimensions;
 
@@ -31,6 +33,7 @@ export default function LoginScreen() {
   const [expoPushToken, setExpoPushToken] = useState<string>("");
   const requiredLength = 8;
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   // useEffect(() => {
   //   (async () => {
@@ -76,6 +79,9 @@ export default function LoginScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -86,6 +92,9 @@ export default function LoginScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -127,6 +136,9 @@ export default function LoginScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+                  style: {
+          top: toastHeight,
+        },
         });
       }*/
     } catch (error) {
@@ -140,6 +152,9 @@ export default function LoginScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           }
         );
       } else {
@@ -148,6 +163,9 @@ export default function LoginScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       }
     } finally {
@@ -164,6 +182,9 @@ export default function LoginScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -174,6 +195,9 @@ export default function LoginScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -209,6 +233,9 @@ export default function LoginScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       }
     } catch (error) {
@@ -222,6 +249,9 @@ export default function LoginScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           }
         );
       } else {
@@ -230,6 +260,9 @@ export default function LoginScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       }
     } finally {

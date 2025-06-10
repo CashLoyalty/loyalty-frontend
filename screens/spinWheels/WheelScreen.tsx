@@ -1,11 +1,22 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, Animated, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Animated,
+  ActivityIndicator,
+} from "react-native";
 import { SERVER_URI } from "@/utils/uri";
 import axios from "axios";
 import Colors from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useToast } from "react-native-toast-notifications";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 type PrizeDetails = {
   prizeName: string;
@@ -23,17 +34,24 @@ export default function WheelScreen() {
   const circleRef = useRef<any>(null);
   const spinValue = useRef(new Animated.Value(0)).current;
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   const getPrizeDetails = (giftName: string): PrizeDetails => {
     const prizeData = new Map<string, PrizeDetails>([
       ["THANK YOU", { prizeName: "Баярлалаа дахин оролдоно уу.", deg: 1313 }],
       ["IPHONE 16 PRO MAX", { prizeName: "iPhone 16 Pro Max", deg: 1349 }],
       ["AIRPODS MAX", { prizeName: "AirPods Max", deg: 1278 }],
-      ["PEPSI 3 MONTHS OF USE", { prizeName: "PEPSI 3 САРЫН ХЭРЭГЛЭЭ", deg: 1242 }],
+      [
+        "PEPSI 3 MONTHS OF USE",
+        { prizeName: "PEPSI 3 САРЫН ХЭРЭГЛЭЭ", deg: 1242 },
+      ],
       ["AIR PURIFIER", { prizeName: "АГААР ЦЭВЭРШҮҮЛЭГЧ", deg: 1206 }],
       ["SMART TV", { prizeName: "Ухаалаг зурагт", deg: 1170 }],
       ["MARSHALL SPEAKER", { prizeName: "MARSHALL SPEAKER", deg: 1134 }],
-      ["PEPSI 1 MONTHS OF USE", { prizeName: "PEPSI 1 САРЫН ХЭРЭГЛЭЭ", deg: 1459 }],
+      [
+        "PEPSI 1 MONTHS OF USE",
+        { prizeName: "PEPSI 1 САРЫН ХЭРЭГЛЭЭ", deg: 1459 },
+      ],
       ["DYSON V15", { prizeName: "Dyson V15", deg: 1421 }],
       ["APPLE WATCH", { prizeName: "Apple Watch", deg: 1385 }],
     ]);
@@ -79,6 +97,9 @@ export default function WheelScreen() {
             type: "danger",
             placement: "top",
             duration: 1500,
+            style: {
+              top: toastHeight,
+            },
           });
           setLoader(false);
           setIsSpinning(false);
@@ -123,12 +144,18 @@ export default function WheelScreen() {
             type: "danger",
             placement: "top",
             duration: 1500,
+            style: {
+              top: toastHeight,
+            },
           });
         } else {
           toast.show("Алдаа гарлаа. Дахин оролдож үзнэ үү.", {
             type: "danger",
             placement: "top",
             duration: 1500,
+            style: {
+              top: toastHeight,
+            },
           });
         }
       }
@@ -138,6 +165,9 @@ export default function WheelScreen() {
         type: "danger",
         placement: "top",
         duration: 1500,
+        style: {
+          top: toastHeight,
+        },
       });
     }
   };
@@ -155,17 +185,32 @@ export default function WheelScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: "white", position: "absolute", top: 70, right: 30 }} onPress={handleProfile}>
+      <Text
+        style={{ color: "white", position: "absolute", top: 70, right: 30 }}
+        onPress={handleProfile}
+      >
         Хаах
       </Text>
       <View>
         <TouchableOpacity onPress={handleSpin} disabled={isSpinning}>
           <View style={styles.containersmall}>
-            <Image source={require("@/assets/loyalty/zuun.png")} style={styles.choket} />
-            <Image source={require("@/assets/loyalty/baruun.png")} style={styles.choket} />
+            <Image
+              source={require("@/assets/loyalty/zuun.png")}
+              style={styles.choket}
+            />
+            <Image
+              source={require("@/assets/loyalty/baruun.png")}
+              style={styles.choket}
+            />
           </View>
-          <Image source={require("@/assets/loyalty/bg.png")} style={styles.bg} />
-          <Image source={require("@/assets/loyalty/red.png")} style={styles.red} />
+          <Image
+            source={require("@/assets/loyalty/bg.png")}
+            style={styles.bg}
+          />
+          <Image
+            source={require("@/assets/loyalty/red.png")}
+            style={styles.red}
+          />
           <Animated.Image
             source={require("@/assets/loyalty/spin.png")}
             style={[
@@ -183,15 +228,27 @@ export default function WheelScreen() {
             ]}
           />
         </TouchableOpacity>
-        <Text style={styles.lotto}>Таньд {lottoCount} хүрд эргүүлэх эрх байна.</Text>
+        <Text style={styles.lotto}>
+          Таньд {lottoCount} хүрд эргүүлэх эрх байна.
+        </Text>
       </View>
-      <Modal transparent={true} animationType="fade" visible={modal} onRequestClose={() => setModal(false)}>
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={modal}
+        onRequestClose={() => setModal(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Congratulations!</Text>
             <Text style={styles.modalPrize}>{prize}</Text>
-            {prizeImage && <Image source={{ uri: prizeImage }} style={styles.prizeImage} />}
-            <TouchableOpacity onPress={handleModalClose} style={styles.closeButton}>
+            {prizeImage && (
+              <Image source={{ uri: prizeImage }} style={styles.prizeImage} />
+            )}
+            <TouchableOpacity
+              onPress={handleModalClose}
+              style={styles.closeButton}
+            >
               <Text style={styles.closeButtonText}>Хаах</Text>
             </TouchableOpacity>
           </View>
@@ -248,7 +305,7 @@ const styles = StyleSheet.create({
     left: "50%",
     transform: [{ translateX: -50 }],
   },
-  
+
   errorText: { color: "white", textAlign: "center", marginVertical: 10 },
   modalOverlay: {
     flex: 1,

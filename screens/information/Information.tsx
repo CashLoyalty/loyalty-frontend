@@ -24,6 +24,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import CustomActionSheet from "@/components/customActionSheet/customActionSheet";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 interface ImageType {
   uri: string;
@@ -51,6 +53,7 @@ export default function InformationScreen() {
   const [image, setImage] = useState<ImageType | null>(null);
   const [profileImage, setProfileImage] = useState<string>("");
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const { toastHeight } = useContext(GlobalContext);
 
   useEffect(() => {
     const getToken = async () => {
@@ -308,12 +311,18 @@ export default function InformationScreen() {
           type: "danger",
           placement: "top",
           duration: 1500,
+          style: {
+            top: toastHeight,
+          },
         });
       } else if (result.code === 0 && result.title === "Success") {
         toast.show("Мэдээлэл амжилттай шинэчлэгдлээ", {
           type: "success",
           placement: "top",
           duration: 1500,
+          style: {
+            top: toastHeight,
+          },
         });
         clearFormErrors();
       }

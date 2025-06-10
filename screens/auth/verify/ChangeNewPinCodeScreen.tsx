@@ -19,6 +19,8 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVER_URI } from "@/utils/uri";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
 
@@ -30,6 +32,7 @@ export default function ChangeNewPinCodeScreen() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [token, setToken] = useState<string>("");
+  const { toastHeight } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -57,7 +60,7 @@ export default function ChangeNewPinCodeScreen() {
   }, [nowPinCode, pinCode]);
 
   const handleBack = () => {
-    router.back()
+    router.back();
   };
 
   const handleHook = (nowPinCode: any, pinCode: string) => {
@@ -84,6 +87,9 @@ export default function ChangeNewPinCodeScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
         const timer = setTimeout(() => {
           router.push(`/profile`);
@@ -97,6 +103,9 @@ export default function ChangeNewPinCodeScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
     } finally {
       setLoading(false);

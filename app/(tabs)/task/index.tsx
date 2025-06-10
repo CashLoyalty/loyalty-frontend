@@ -19,6 +19,8 @@ import { Feather } from "@expo/vector-icons";
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "react-native-toast-notifications";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
 
@@ -29,6 +31,7 @@ const Task: React.FC = () => {
   const [token, setToken] = useState<string>("");
   const requiredLength = 8;
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -75,6 +78,9 @@ const Task: React.FC = () => {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -85,6 +91,9 @@ const Task: React.FC = () => {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -110,6 +119,7 @@ const Task: React.FC = () => {
           animationType: "slide-in",
           style: {
             backgroundColor: Colors.red,
+            top: toastHeight,
           },
         });
       } else {
@@ -124,6 +134,7 @@ const Task: React.FC = () => {
               animationType: "slide-in",
               style: {
                 backgroundColor: Colors.red,
+                top: toastHeight,
               },
             });
             break;
@@ -135,6 +146,7 @@ const Task: React.FC = () => {
               animationType: "slide-in",
               style: {
                 backgroundColor: Colors.green,
+                top: toastHeight,
               },
             });
             break;
@@ -142,6 +154,9 @@ const Task: React.FC = () => {
             toast.show(`Танигдаагүй код: ${data.code}`, {
               type: "warning",
               duration: 1500,
+              style: {
+                top: toastHeight,
+              },
             });
         }
       }

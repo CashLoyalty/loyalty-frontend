@@ -19,6 +19,8 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVER_URI } from "@/utils/uri";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
 
@@ -32,6 +34,7 @@ export default function VerifyOtpScreen() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   useEffect(() => {
     if (phoneNumber?.length === 8 && pinCode.length === 6 && !loading) {
@@ -61,6 +64,9 @@ export default function VerifyOtpScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -103,6 +109,9 @@ export default function VerifyOtpScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       } finally {
         setLoading(false);
@@ -124,6 +133,9 @@ export default function VerifyOtpScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           });
         }
       } catch (error) {
@@ -134,6 +146,9 @@ export default function VerifyOtpScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       } finally {
         setLoading(false);

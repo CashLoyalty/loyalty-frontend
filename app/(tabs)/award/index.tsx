@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
@@ -24,6 +25,8 @@ import { UserResponse } from "@/types/global";
 import useFetchUser from "@/hooks/useFetchUser";
 import { useToast } from "react-native-toast-notifications";
 import axios from "axios";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const BottomModal = ({
   visible,
@@ -173,6 +176,7 @@ const Award: React.FC = () => {
   const [userData, setUserData] = useState<UserResponse | null>(null);
   const toast = useToast();
   const [buttonSpinner, setButtonSpinner] = useState(false);
+  const { toastHeight } = useContext(GlobalContext);
 
   const { data: spinGifts } = useFetchGifts(
     SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
@@ -247,6 +251,7 @@ const Award: React.FC = () => {
           animationType: "slide-in",
           style: {
             backgroundColor: Colors.red,
+            top: toastHeight,
           },
         });
       }
@@ -262,7 +267,7 @@ const Award: React.FC = () => {
           duration: 1500,
           animationType: "slide-in",
           style: {
-            top: 65,
+            top: toastHeight,
           },
         });
       }
@@ -274,7 +279,7 @@ const Award: React.FC = () => {
           duration: 1500,
           animationType: "slide-in",
           style: {
-            top: 65,
+            top: toastHeight,
           },
         });
       }
@@ -286,6 +291,7 @@ const Award: React.FC = () => {
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.red,
+          top: toastHeight,
         },
       });
     } finally {

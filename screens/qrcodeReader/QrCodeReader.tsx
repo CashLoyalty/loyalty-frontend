@@ -12,6 +12,8 @@ import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 import { useToast } from "react-native-toast-notifications";
 import { useFocusEffect } from "@react-navigation/native";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width } = Dimensions.get("window");
 const frameSize = width * 0.5;
@@ -20,6 +22,7 @@ const QRCodeReaderScreen = () => {
   const [facing, setFacing] = useState<CameraType>("back");
   const [scanned, setScanned] = useState(false);
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     if (!scanned && data !== "") {
@@ -32,6 +35,7 @@ const QRCodeReaderScreen = () => {
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,
+          top: toastHeight,
         },
       });
 

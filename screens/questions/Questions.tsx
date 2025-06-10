@@ -18,6 +18,8 @@ import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import RadioButtonRN from "radio-buttons-react-native";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
 
@@ -28,6 +30,7 @@ const Questions: React.FC = () => {
   const [border, setBorder] = useState(true);
   const [navigationBtn, setNavigationBtn] = useState(false);
   const [navigationFirstBtn, setNavigationFirstBtn] = useState(true);
+  const { toastHeight } = useContext(GlobalContext);
   const [formData, setFormData] = useState({
     value: "",
     rageValue: 3,
@@ -43,6 +46,9 @@ const Questions: React.FC = () => {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }
@@ -54,6 +60,9 @@ const Questions: React.FC = () => {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
       return;
     }

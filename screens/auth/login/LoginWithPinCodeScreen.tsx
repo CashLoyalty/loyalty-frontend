@@ -20,6 +20,8 @@ import Colors from "@/constants/Colors";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
 
@@ -31,6 +33,7 @@ export default function LoginWithPinCodeScreen() {
   const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { toastHeight } = useContext(GlobalContext);
 
   const loadSound = async () => {
     const { sound: loadedSound } = await Audio.Sound.createAsync(
@@ -91,6 +94,9 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           });
         } else {
           toast.show(response.data.title, {
@@ -98,6 +104,9 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           });
         }
       }
@@ -108,6 +117,9 @@ export default function LoginWithPinCodeScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
       });
     } finally {
       setLoading(false);
@@ -152,6 +164,9 @@ export default function LoginWithPinCodeScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+                  style: {
+          top: toastHeight,
+        },
         });
       }*/
     } catch (error) {
@@ -165,6 +180,9 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
           }
         );
       } else {
@@ -173,6 +191,9 @@ export default function LoginWithPinCodeScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
       }
     } finally {

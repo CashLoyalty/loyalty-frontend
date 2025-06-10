@@ -30,6 +30,8 @@ import { useLocalSearchParams, router } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
 import * as Notifications from "expo-notifications";
 import { showLocalNotification } from "@/utils/localNotification";
+import { useContext } from "react";
+import { GlobalContext } from "@/components/globalContext";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,6 +52,7 @@ const HomeScreen: React.FC = () => {
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const [notificationContent, setNotificationContent] =
     useState<Notifications.NotificationContent | null>(null);
+  const { toastHeight } = useContext(GlobalContext);
 
   useEffect(() => {
     if (showTerms) setModalVisibleTerms(true);
@@ -152,6 +155,7 @@ const HomeScreen: React.FC = () => {
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.primaryColor,
+          top: toastHeight,
         },
       });
       setButtonSpinner(false);
@@ -183,6 +187,9 @@ const HomeScreen: React.FC = () => {
           placement: "center",
           duration: 1500,
           animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
         });
 
         await fetchPointDetails();
@@ -195,6 +202,7 @@ const HomeScreen: React.FC = () => {
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.red,
+          top: toastHeight,
         },
       });
     } finally {
