@@ -28,7 +28,7 @@ const { width, height } = screenDimensions;
 export default function LoginWithPinCodeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber } = route.params as { phoneNumber?: string };
+  const { phoneNumber = "" } = route.params as { phoneNumber?: string };
   const [pinCode, setPinCode] = useState<string>("");
   const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -143,13 +143,13 @@ export default function LoginWithPinCodeScreen() {
       );
 
       const data = response.data;
-      /*if (data.code === 0) {
+      if (data.code === 0) {
         router.push(
           `/verifyOtp?phoneNumber=${encodeURIComponent(
             phoneNumber
           )}&screenName=${encodeURIComponent("forgotPinCode")}`
         );
-      }*/
+      }
       /*if (data.title === "Success") {
         router.push(
           `/verifyOtp?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`

@@ -91,11 +91,13 @@ export default function CheckPinCodeScreen() {
               newPassCode: enteredCode,
             }
           );
+          console.log(response.data);
 
           if (response.data.code === 0) {
-            const accessToken = response.data.response.access_token;
-            await AsyncStorage.setItem("token", accessToken);
-            playSound();
+            // const accessToken = response.data.response.access_token;
+            // await AsyncStorage.setItem("token", accessToken);
+            // playSound();
+            router.push("/");
           } else {
             toast.show("Баталгаажуулалт амжилтгүй!", {
               type: "danger",

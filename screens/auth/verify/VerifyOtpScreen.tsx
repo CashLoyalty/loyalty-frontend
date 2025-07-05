@@ -74,74 +74,33 @@ export default function VerifyOtpScreen() {
     Keyboard.dismiss();
     setLoading(true);
 
-    if (screenName) {
-      try {
-        const response = await axios.post(
+    try {
+      let response;
+
+      // screenName нь байвал forgotPasscode flow ажиллана, үгүй бол ердийн OTP шалгалт
+      if (screenName === "forgotPinCode") {
+        response = await axios.post(
           `${SERVER_URI}/api/user/checkForgotPasscodeOtp`,
           {
             phoneNumber,
             otp: otpCode,
           }
         );
-
-        if (response.data.code === 0) {
-          router.push(
-            `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}`
-          );
-        } else {
-          router.push(
-            `/createPinCode?phoneNumber=${encodeURIComponent(
-              phoneNumber
-            )}&screenName=${encodeURIComponent("forgotPinCode")}`
-          );
-          // toast.show(`Баталгаажуулах код буруу.`, {
-          //   type: "danger",
-          //   placement: "top",
-          //   duration: 1500,
-          //   animationType: "slide-in",
-          // });
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        toast.show(errorMessage, {
-          type: "danger",
-          placement: "top",
-          duration: 1500,
-          animationType: "slide-in",
-          style: {
-            top: toastHeight,
-          },
-        });
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      try {
-        const response = await axios.post(`${SERVER_URI}/api/user/checkOtp`, {
+      } else {
+        response = await axios.post(`${SERVER_URI}/api/user/checkOtp`, {
           phoneNumber,
           otp: otpCode,
         });
+      }
 
-        if (response.data.code === 0) {
-          router.push(
-            `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}`
-          );
-        } else {
-          toast.show(`Баталгаажуулах код буруу.`, {
-            type: "danger",
-            placement: "top",
-            duration: 1500,
-            animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
-          });
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        toast.show(errorMessage, {
+      if (response.data.code === 0) {
+        router.push(
+          `/createPinCode?phoneNumber=${encodeURIComponent(phoneNumber)}${
+            screenName ? `&screenName=${encodeURIComponent(screenName)}` : ""
+          }`
+        );
+      } else {
+        toast.show(`Баталгаажуулах код буруу байна.`, {
           type: "danger",
           placement: "top",
           duration: 1500,
@@ -150,9 +109,21 @@ export default function VerifyOtpScreen() {
             top: toastHeight,
           },
         });
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Алдаа гарлаа.ftyfyffytty";
+      toast.show(errorMessage, {
+        type: "danger",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
