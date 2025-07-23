@@ -29,7 +29,12 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        gestureEnabled: false,
+        headerShown: false, 
+      }}
+    >
       <Stack.Screen name="(routes)/login/index" />
       <Stack.Screen name="(routes)/verifyOtp/index" />
       <Stack.Screen name="(routes)/profile/index" />

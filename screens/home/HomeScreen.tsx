@@ -85,18 +85,18 @@ const HomeScreen: React.FC = () => {
     fetchToken();
   }, []);
 
-  // useEffect(() => {
-  //   const subscription = Notifications.addNotificationReceivedListener(
-  //     (notification) => {
-  //       console.log("Foreground notification:", notification);
-  //       setNotificationContent(notification.request.content);
-  //       setShowNotification(true);
-  //     }
-  //   );
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, []);
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("Foreground notification:", notification);
+        setNotificationContent(notification.request.content);
+        setShowNotification(true);
+      }
+    );
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (showNotification) {
