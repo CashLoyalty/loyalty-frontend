@@ -137,7 +137,7 @@ const Research: React.FC = () => {
             source={require("@/assets/images/emptyTask.png")}
             style={styles.emptyImage}
           />
-          <Text style={styles.text}>Даалгавар олдсонгүй</Text>
+          <Text style={styles.text}>Судалгаа олдсонгүй</Text>
         </View>
       )}
     </View>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent:"space-evenly",
+    justifyContent: "space-evenly",
     padding: 10,
   },
   card: {

@@ -12,6 +12,21 @@ const NotificationScreen = () => {
   const handleBack = () => {
     navigation.goBack();
   };
+
+  const data = [
+    {
+      id: 1,
+      type: "succes",
+      text: "Таны “W9C1V2E1” бөглөө амжиллтай бүртгэгдлэ",
+      date: "2025/07/21 18:03",
+    },
+    {
+      id: 2,
+      type: "error",
+      text: "Бөглөө “D2C1VRE4” бүртгэл амжилтгүй боллоо",
+      date: "2025/07/21 18:03",
+    },
+  ];
   return (
     <View style={styles.container}>
       <Header />
@@ -36,6 +51,35 @@ const NotificationScreen = () => {
           </View>
           <View style={{ flex: 1 }} />
         </View>
+      </View>
+      <View>
+        {data.map((item, index) => (
+          <View
+            key={item.id}
+            style={[
+              styles.notificationCard,
+              index === data.length - 1 && { borderBottomWidth: 1 }, // Зөвхөн хамгийн сүүлийн item-д
+            ]}
+          >
+            <Text style={styles.dateTopRight}>{item.date}</Text>
+
+            <View style={styles.headerRow}>
+              <Image
+                source={
+                  item.type === "succes"
+                    ? require("@/assets/icons/success.png")
+                    : require("@/assets/icons/error.png")
+                }
+                style={{ width: 20, height: 20 }}
+              />
+              <Text style={styles.notifTitle}>
+                {item.type === "succes" ? "Амжилттай" : "Алдаа Гарлаа"}
+              </Text>
+            </View>
+
+            <Text style={styles.notifMessage}>{item.text}</Text>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -65,23 +109,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginLeft: 15,
     marginBottom: 10,
   },
-  pageTitle: {
-    fontSize: 17,
-    color: "#0E0E96",
-    fontWeight: "600",
+  dateTopRight: {
+    position: "absolute",
+    top: 10,
+    right: 16,
+    fontSize: 12,
+    color: "#666",
   },
   notificationCard: {
     borderTopWidth: 1,
     borderColor: "#B2B2B2",
     padding: 16,
+    position: "relative",
+    marginTop: 10,
   },
   notifTitle: {
     fontSize: 15,
-    fontWeight: "bold",
     marginBottom: 4,
+    fontWeight: "semibold",
   },
   notifMessage: {
     fontSize: 14,

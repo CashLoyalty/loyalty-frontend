@@ -355,8 +355,8 @@ export default function LoginScreen() {
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleQuestLogin}>
-          <Text style={styles.quest}>зочиноор нэвтрэх</Text>
+        <TouchableOpacity style={styles.button} onPress={handleQuestLogin}>
+          <Text style={styles.buttonSignText}>Guest login</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
@@ -534,11 +534,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   quest: {
+    height: 51,
     borderRadius: 10,
+    justifyContent: "center",
     backgroundColor: Colors.primaryColor,
-    color: Colors.white,
-    padding: 10,
-    width: 145,
-    marginTop: 10,
+    marginTop: 20,
+    width: "90%",
+  },
+  questText: {
+    height: 51,
+    borderRadius: 10,
+    justifyContent: "center",
+    backgroundColor: Colors.primaryColor,
+    marginTop: 20,
+    width: "90%",
   },
 });

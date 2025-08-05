@@ -25,7 +25,7 @@
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
-      "versionCode": 4,
+      "versionCode": 7,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
