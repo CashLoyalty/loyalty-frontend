@@ -24,6 +24,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { height } = screenDimensions;
 
@@ -270,6 +271,39 @@ export default function LoginScreen() {
     }
   };
 
+  const handleQuestLogin = async () => {
+    const response = await axios.post(`${SERVER_URI}/api/user/login`, {
+      phoneNumber: "60101215",
+      passCode: "0000",
+    });
+    if (response.data.code === 0) {
+      const accessToken = response.data.response.access_token;
+      router.push("/(tabs)");
+    } else {
+      if (response.data.title === "Passcode is wrong!") {
+        toast.show("Пин код буруу", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
+        });
+      } else {
+        toast.show(response.data.title, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
+        });
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {Platform.OS === "android" && (
@@ -320,6 +354,9 @@ export default function LoginScreen() {
         </TouchableOpacity>
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleQuestLogin}>
+          <Text style={styles.quest}>зочиноор нэвтрэх</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
@@ -491,6 +528,12 @@ const styles = StyleSheet.create({
   },
   underlineText: {
     textDecorationLine: "underline",
+    color: Colors.white,
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginTop: 10,
+  },
+  quest: {
     color: Colors.white,
     fontSize: 14,
     fontFamily: "Inter",

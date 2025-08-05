@@ -85,7 +85,7 @@ export default function Spin() {
   useEffect(() => {
     checkLotto();
   });
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -340,13 +340,17 @@ export default function Spin() {
       <Text style={styles.topLabel}>
         {lottoCount > 0
           ? `Танд ${lottoCount} удаа эргүүлэх эрх байна`
-          : "Эргүүлэх эрхгүй"}
+          : "Та хүрд эргүүлэх эрхгүй байна."}
       </Text>
 
       {showModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalText}>🎉 You won: {giftName}!</Text>
+            <Text style={styles.modalText}>
+              {giftName === "THANK YOU"
+                ? "🎁 Баярлалаа! Та дараа дахин оролдоно уу."
+                : `🎉 Таны бэлэг: ${giftName}!`}
+            </Text>
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => setShowModal(false)}
@@ -457,7 +461,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   modalBox: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F9F9F9",
     padding: 24,
     borderRadius: 12,
     alignItems: "center",

@@ -32,6 +32,7 @@ import * as Notifications from "expo-notifications";
 import { showLocalNotification } from "@/utils/localNotification";
 import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
+import { useDisableGestures } from "@/hooks/useDisableGestures";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -53,6 +54,8 @@ const HomeScreen: React.FC = () => {
   const [notificationContent, setNotificationContent] =
     useState<Notifications.NotificationContent | null>(null);
   const { toastHeight } = useContext(GlobalContext);
+
+  useDisableGestures();
 
   useEffect(() => {
     if (showTerms) setModalVisibleTerms(true);

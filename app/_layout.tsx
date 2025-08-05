@@ -31,8 +31,7 @@ function RootLayoutNav() {
   return (
     <Stack
       screenOptions={{
-        gestureEnabled: false,
-        headerShown: false, 
+        headerShown: false,
       }}
     >
       <Stack.Screen name="(routes)/login/index" />
