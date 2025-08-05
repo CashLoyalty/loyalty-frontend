@@ -534,9 +534,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   quest: {
+    borderRadius: 10,
+    backgroundColor: Colors.primaryColor,
     color: Colors.white,
-    fontSize: 14,
-    fontFamily: "Inter",
+    padding: 10,
+    width: 145,
     marginTop: 10,
   },
 });
