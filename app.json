@@ -2,7 +2,7 @@
   "expo": {
     "name": "Fizz point",
     "slug": "loyalty-app",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.amarasytem.loyalty-app",
-      "buildNumber": "1.0.2",
+      "buildNumber": "1.0.3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes.",
@@ -25,7 +25,7 @@
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

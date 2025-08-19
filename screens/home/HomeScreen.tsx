@@ -33,6 +33,7 @@ import { showLocalNotification } from "@/utils/localNotification";
 import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
 import { useDisableGestures } from "@/hooks/useDisableGestures";
+import IntroOnboarding from "@/components/home/IntroOnboarding";
 
 const HomeScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -573,6 +574,7 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
       </Modal>
+      <IntroOnboarding />
     </View>
   );
 };
@@ -691,9 +693,6 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 15,
   },
-  checkbox: {
-    marginRight: 10,
-  },
   checkboxText: {
     fontSize: 14,
     marginLeft: 10,
@@ -709,14 +708,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 16,
-  },
-  closeButton: {
-    marginTop: 10,
-    paddingVertical: 10,
-    borderRadius: 5,
-    backgroundColor: "lightgray",
-    alignItems: "center",
-    justifyContent: "center",
   },
   modalTitle: {
     fontSize: 18,
@@ -801,11 +792,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Colors.white,
-  },
-  loaderImage: {
-    width: 130,
-    height: 130,
-    transform: [{ scale: 1.2 }],
   },
   section: {
     marginBottom: 20,
