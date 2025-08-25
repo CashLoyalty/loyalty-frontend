@@ -355,9 +355,9 @@ export default function LoginScreen() {
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleQuestLogin}>
+        {/* <TouchableOpacity style={styles.button} onPress={handleQuestLogin}>
           <Text style={styles.buttonSignText}>Guest login</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={styles.footer}>
         <Text style={styles.footerText}>#Илүүд тэмүүл</Text>
