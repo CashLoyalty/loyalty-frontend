@@ -16,7 +16,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "@/constants/Colors";
-import Ionicons from "react-native-vector-icons/Ionicons";
 interface Segment {
   id: string;
   label: string;
