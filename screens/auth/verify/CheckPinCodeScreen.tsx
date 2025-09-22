@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -11,7 +11,9 @@ import { router } from "expo-router";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Audio } from "expo-av";
+// ❌ import { Audio } from "expo-audio";
+// ✅ use expo-audio hooks/APIs
+import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import Colors from "@/constants/Colors";
@@ -20,7 +22,6 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SERVER_URI } from "@/utils/uri";
-import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
@@ -37,33 +38,21 @@ export default function CheckPinCodeScreen() {
   const { toastHeight } = useContext(GlobalContext);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
 
-  const loadSound = async () => {
-    const { sound: loadedSound } = await Audio.Sound.createAsync(
-      require("@/assets/sounds/login.mp3")
-    );
-    setSound(loadedSound);
-  };
+  // ✅ expo-audio: файлаа hook-р ачаалж, тоглуулна
+  const player = useAudioPlayer(require("@/assets/sounds/login.mp3"));
 
   useEffect(() => {
-    loadSound();
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
+    // iOS silent mode-д чимээ гарах тохиргоо
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
   const playSound = async () => {
-    if (sound) {
-      try {
-        await sound.replayAsync();
-      } catch (error) {
-        console.log("Error playing sound:", error);
-      }
-    } else {
-      console.log("Sound is not loaded yet");
+    try {
+      player.seekTo(0);
+      await player.play();
+    } catch (e) {
+      console.log("Error playing sound:", e);
     }
   };
 
@@ -83,6 +72,7 @@ export default function CheckPinCodeScreen() {
     if (enteredCode === pinCode) {
       setLoading(true);
       if (screenName) {
+        // forgot/new PIN урсгал
         try {
           const response = await axios.post(
             `${SERVER_URI}/api/user/setNewPassCode`,
@@ -91,12 +81,8 @@ export default function CheckPinCodeScreen() {
               newPassCode: enteredCode,
             }
           );
-          console.log(response.data);
 
           if (response.data.code === 0) {
-            // const accessToken = response.data.response.access_token;
-            // await AsyncStorage.setItem("token", accessToken);
-            // playSound();
             router.push("/");
           } else {
             toast.show("Баталгаажуулалт амжилтгүй!", {
@@ -104,9 +90,7 @@ export default function CheckPinCodeScreen() {
               placement: "top",
               duration: 1500,
               animationType: "slide-in",
-              style: {
-                top: toastHeight,
-              },
+              style: { top: toastHeight },
             });
           }
         } catch (error) {
@@ -116,14 +100,13 @@ export default function CheckPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
+            style: { top: toastHeight },
           });
         } finally {
           setLoading(false);
         }
       } else {
+        // register урсгал
         try {
           const response = await axios.post(`${SERVER_URI}/api/user/register`, {
             phoneNumber: phoneNumber,
@@ -133,7 +116,7 @@ export default function CheckPinCodeScreen() {
           if (response.data.code === 0) {
             const accessToken = response.data.response.access_token;
             await AsyncStorage.setItem("token", accessToken);
-            playSound();
+            await playSound();
             router.push("/(tabs)?terms=true");
           } else {
             toast.show("Баталгаажуулалт амжилтгүй!", {
@@ -141,9 +124,7 @@ export default function CheckPinCodeScreen() {
               placement: "top",
               duration: 1500,
               animationType: "slide-in",
-              style: {
-                top: toastHeight,
-              },
+              style: { top: toastHeight },
             });
           }
         } catch (error) {
@@ -153,9 +134,7 @@ export default function CheckPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
+            style: { top: toastHeight },
           });
         } finally {
           setLoading(false);
@@ -167,9 +146,7 @@ export default function CheckPinCodeScreen() {
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
-        style: {
-          top: toastHeight,
-        },
+        style: { top: toastHeight },
       });
       return;
     }
@@ -186,6 +163,7 @@ export default function CheckPinCodeScreen() {
           style={styles.backButton}
         />
       </TouchableOpacity>
+
       <View style={styles.confirmPinCodeContainer}>
         <Text style={styles.headerText}>Дахин оруулна уу</Text>
         <View style={styles.inputContainer}>
@@ -201,17 +179,13 @@ export default function CheckPinCodeScreen() {
                 height: height < 650 ? 45 : 55,
                 borderRadius: 10,
                 borderWidth: 2,
-                borderColor: Colors.primaryColor, // this adds the blue border
+                borderColor: Colors.primaryColor,
                 justifyContent: "center",
                 alignItems: "center",
-
-                // Shadow for iOS
                 shadowColor: Colors.primaryColor,
                 shadowOffset: { width: 5, height: 5 },
                 shadowOpacity: 0.9,
                 shadowRadius: 10,
-
-                // Shadow for Android
                 elevation: 10,
               },
               filledPinCodeContainerStyle: {
@@ -224,14 +198,15 @@ export default function CheckPinCodeScreen() {
                 height: height < 650 ? 45 : 55,
               },
               pinCodeTextStyle: {
-                color: Colors.white, // Text color inside the input
-                fontSize: 25, // Font size for the digits
-                textAlign: "center", // Optionally align text
+                color: Colors.white,
+                fontSize: 25,
+                textAlign: "center",
               },
             }}
           />
         </View>
       </View>
+
       {loading && (
         <View style={styles.loaderContainer}>
           <BlurView intensity={0} style={styles.loaderBackground} tint="dark" />
@@ -246,14 +221,8 @@ export default function CheckPinCodeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.black,
-  },
-  backButton: {
-    position: "absolute",
-    left: 20,
-  },
+  container: { flex: 1, backgroundColor: Colors.black },
+  backButton: { position: "absolute", left: 20 },
   confirmPinCodeContainer: {
     top: (height / 100) * 24,
     alignItems: "center",
@@ -290,9 +259,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
     opacity: 1,
   },
-  loaderImage: {
-    width: 300,
-    height: 300,
-    transform: [{ scale: 1.2 }],
-  },
+  loaderImage: { width: 300, height: 300, transform: [{ scale: 1.2 }] },
 });

@@ -55,11 +55,14 @@ export default function HeaderSecond() {
       <View style={styles.rowContainer}>
         <View style={styles.section1}>
           <TouchableOpacity onPress={handleProfile}>
-            <Image
-              source={require("@/assets/icons/profileHeader2.png")}
-              style={styles.icon}
-            />
+            <View style={styles.iconBackground}>
+              <Image
+                source={require("@/assets/icons/profileHeader2.png")}
+                style={styles.iconImage}
+              />
+            </View>
           </TouchableOpacity>
+
           <View style={styles.column}>
             <View style={styles.row}>
               <Text style={styles.helloTextStyle}>Сайн байна уу</Text>
@@ -75,22 +78,30 @@ export default function HeaderSecond() {
         </View>
         <View style={styles.section2}>
           <TouchableOpacity onPress={handleWheel}>
-            <Image
-              source={require("@/assets/icons/spinWheel.png")}
-              style={styles.icon}
-            />
+            <View style={styles.iconBackground}>
+              <Image
+                source={require("@/assets/icons/spinWheel.png")}
+                style={styles.iconImage}
+              />
+            </View>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={handleGift}>
-            <Image
-              source={require("@/assets/icons/gift.png")}
-              style={styles.icon}
-            />
+            <View style={styles.iconBackground}>
+              <Image
+                source={require("@/assets/icons/gift.png")}
+                style={styles.iconImage}
+              />
+            </View>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={handleNotification}>
-            <Image
-              source={require("@/assets/icons/notification.png")}
-              style={styles.icon}
-            />
+            <View style={styles.iconBackground}>
+              <Image
+                source={require("@/assets/icons/notification.png")}
+                style={styles.iconImage}
+              />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -133,10 +144,19 @@ const styles = StyleSheet.create({
     color: Colors.primaryColor,
     fontSize: 13,
   },
-  icon: {
-    width: 25,
-    height: 25,
+  iconBackground: {
+    width: 35,
+    height: 35,
+    borderRadius: 20,
+    backgroundColor: "#eff6ff",
+    justifyContent: "center",
+    alignItems: "center",
     marginHorizontal: 5,
+  },
+  iconImage: {
+    width: 22,
+    height: 22,
+    resizeMode: "contain",
   },
   column: {
     flexDirection: "column",

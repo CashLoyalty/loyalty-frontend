@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -11,7 +11,10 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Audio } from "expo-av";
+
+// ✅ expo-audio зөв импорт
+import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
+
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import { SERVER_URI } from "@/utils/uri";
@@ -20,7 +23,6 @@ import Colors from "@/constants/Colors";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
 
 const { width, height } = screenDimensions;
@@ -29,37 +31,27 @@ export default function LoginWithPinCodeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber = "" } = route.params as { phoneNumber?: string };
+
   const [pinCode, setPinCode] = useState<string>("");
-  const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
-  const loadSound = async () => {
-    const { sound: loadedSound } = await Audio.Sound.createAsync(
-      require("@/assets/sounds/login.mp3")
-    );
-    setSound(loadedSound);
-  };
+  // ✅ expo-audio player — require ашиглахад OK
+  const player = useAudioPlayer(require("@/assets/sounds/login.mp3"));
 
   useEffect(() => {
-    loadSound();
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
+    // iOS-д чимээ дуугаргахын тулд silent mode-д тоглуулахыг зөвшөөрнө
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
   const playSound = async () => {
-    if (sound) {
-      try {
-        await sound.replayAsync();
-      } catch (error) {
-        console.log("Error playing sound:", error);
-      }
-    } else {
-      console.log("Sound is not loaded yet");
+    try {
+      // дахин тоглуулахын тулд эхлэл рүү нь аваад play
+      player.seekTo(0);
+      await player.play();
+    } catch (e) {
+      console.log("Error playing sound:", e);
     }
   };
 
@@ -85,7 +77,7 @@ export default function LoginWithPinCodeScreen() {
       if (response.data.code === 0) {
         const accessToken = response.data.response.access_token;
         await AsyncStorage.setItem("token", accessToken);
-        playSound();
+        await playSound();
         router.push("/(tabs)");
       } else {
         if (response.data.title === "Passcode is wrong!") {
@@ -94,9 +86,7 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
+            style: { top: toastHeight },
           });
         } else {
           toast.show(response.data.title, {
@@ -104,22 +94,18 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
+            style: { top: toastHeight },
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       toast.show("Алдаа гарлаа: " + error, {
         type: "danger",
         placement: "top",
         duration: 1500,
         animationType: "slide-in",
-        style: {
-          top: toastHeight,
-        },
+        style: { top: toastHeight },
       });
     } finally {
       setLoading(false);
@@ -128,18 +114,11 @@ export default function LoginWithPinCodeScreen() {
 
   const handleForgetPinCode = async () => {
     setLoading(true);
-
     try {
       const response = await axios.post(
         `${SERVER_URI}/api/user/getForgotPasscodeOtp`,
-        {
-          phoneNumber: phoneNumber,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { phoneNumber },
+        { headers: { "Content-Type": "application/json" } }
       );
 
       const data = response.data;
@@ -150,26 +129,7 @@ export default function LoginWithPinCodeScreen() {
           )}&screenName=${encodeURIComponent("forgotPinCode")}`
         );
       }
-      /*if (data.title === "Success") {
-        router.push(
-          `/verifyOtp?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
-        );
-      } else if (data.title === "Phone number Duplicated") {
-        router.push(
-          `/loginPinCode?phoneNumber=${encodeURIComponent(verifiedPhoneNumber)}`
-        );
-      } else {
-        toast.show(`Алдаа: ${data.title}`, {
-          type: "danger",
-          placement: "top",
-          duration: 1500,
-          animationType: "slide-in",
-                  style: {
-          top: toastHeight,
-        },
-        });
-      }*/
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         toast.show(
           `Алдаа гарлаа (axios): ${
@@ -180,9 +140,7 @@ export default function LoginWithPinCodeScreen() {
             placement: "top",
             duration: 1500,
             animationType: "slide-in",
-            style: {
-              top: toastHeight,
-            },
+            style: { top: toastHeight },
           }
         );
       } else {
@@ -191,9 +149,7 @@ export default function LoginWithPinCodeScreen() {
           placement: "top",
           duration: 1500,
           animationType: "slide-in",
-          style: {
-            top: toastHeight,
-          },
+          style: { top: toastHeight },
         });
       }
     } finally {
@@ -211,10 +167,12 @@ export default function LoginWithPinCodeScreen() {
           style={styles.backButton}
         />
       </TouchableOpacity>
+
       <View style={styles.pinCodeContainer}>
         <View>
           <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
         </View>
+
         <View style={styles.inputContainer}>
           <OtpInput
             numberOfDigits={4}
@@ -228,17 +186,13 @@ export default function LoginWithPinCodeScreen() {
                 height: height < 650 ? 45 : 55,
                 borderRadius: 10,
                 borderWidth: 2,
-                borderColor: Colors.primaryColor, // this adds the blue border
+                borderColor: Colors.primaryColor,
                 justifyContent: "center",
                 alignItems: "center",
-
-                // Shadow for iOS
                 shadowColor: Colors.primaryColor,
                 shadowOffset: { width: 5, height: 5 },
                 shadowOpacity: 0.9,
                 shadowRadius: 10,
-
-                // Shadow for Android
                 elevation: 12,
               },
               filledPinCodeContainerStyle: {
@@ -251,13 +205,14 @@ export default function LoginWithPinCodeScreen() {
                 height: height < 650 ? 45 : 55,
               },
               pinCodeTextStyle: {
-                color: Colors.white, // Text color inside the input
-                fontSize: 25, // Font size for the digits
-                textAlign: "center", // Optionally align text
+                color: Colors.white,
+                fontSize: 25,
+                textAlign: "center",
               },
             }}
           />
         </View>
+
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
