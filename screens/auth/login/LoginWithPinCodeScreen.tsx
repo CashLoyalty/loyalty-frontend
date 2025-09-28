@@ -11,6 +11,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 // ✅ expo-audio зөв импорт
 import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
@@ -31,11 +33,24 @@ export default function LoginWithPinCodeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber = "" } = route.params as { phoneNumber?: string };
-
+  const [expoPushToken, setExpoPushToken] = useState<string>("");
   const [pinCode, setPinCode] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
+
+  useEffect(() => {
+    (async () => {
+      if (!Device.isDevice) return;
+      try {
+        const tokenData = await Notifications.getExpoPushTokenAsync();
+        if (tokenData?.data) {
+          setExpoPushToken(tokenData.data);
+          await AsyncStorage.setItem("expoPushToken", tokenData.data);
+        }
+      } catch (e) {}
+    })();
+  }, []);
 
   // ✅ expo-audio player — require ашиглахад OK
   const player = useAudioPlayer(require("@/assets/sounds/login.mp3"));
@@ -72,6 +87,7 @@ export default function LoginWithPinCodeScreen() {
       const response = await axios.post(`${SERVER_URI}/api/user/login`, {
         phoneNumber: phoneNumber,
         passCode: pinCode,
+        deviceToken: expoPushToken,
       });
 
       if (response.data.code === 0) {
@@ -99,7 +115,6 @@ export default function LoginWithPinCodeScreen() {
         }
       }
     } catch (error: any) {
-      console.log(error);
       toast.show("Алдаа гарлаа: " + error, {
         type: "danger",
         placement: "top",

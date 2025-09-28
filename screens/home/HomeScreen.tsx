@@ -312,11 +312,11 @@ const HomeScreen: React.FC = () => {
           >
             <Image
               source={require("@/assets/icons/lotteryNumber.png")}
-              style={{ width: 40, height: 40 }}
+              style={{ width: 50, height: 50 }}
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.lotteryNumberQr}>
+        {/* <View style={styles.lotteryNumberQr}>
           <TouchableOpacity
             onPress={handleQRLotteryNum}
             accessibilityLabel="Scan Lottery QR Code"
@@ -326,7 +326,7 @@ const HomeScreen: React.FC = () => {
               style={{ width: 40, height: 40 }}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       {/* {showNotification && notificationContent && (
               <View style={styles.notificationBanner}>
@@ -751,7 +751,7 @@ const styles = StyleSheet.create({
   lotteryNumber: {
     width: 45,
     height: 45,
-    right: 20,
+    right: 40,
     bottom: 20,
     ...Platform.select({
       ios: {

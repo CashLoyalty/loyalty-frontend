@@ -10,6 +10,8 @@ import {
   Platform,
   Alert,
   StatusBar,
+  Modal,
+  ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import axios from "axios";
@@ -20,11 +22,11 @@ import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 const { height } = screenDimensions;
 
@@ -32,38 +34,24 @@ export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [expoPushToken, setExpoPushToken] = useState<string>("");
+  const [showTokenModal, setShowTokenModal] = useState<boolean>(false);
+  const [modalTokenValue, setModalTokenValue] = useState<string>("");
   const requiredLength = 8;
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Notifications.requestPermissionsAsync();
-  //     console.log("Notification permission status:", status);
-  //     if (status !== "granted") {
-  //       alert("Notification permission denied");
-  //     }
-
-  //     if (Platform.OS === "android") {
-  //       await Notifications.setNotificationChannelAsync("default", {
-  //         name: "default",
-  //         importance: Notifications.AndroidImportance.HIGH,
-  //         sound: "default",
-  //       });
-  //     }
-  //   })();
-  // }, []);
-
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync().then((token) => {
-  //     if (token) {
-  //       setExpoPushToken(token);
-  //       console.log("Expo push token registered:", token);
-  //     } else {
-  //       console.log("Token олдсонгүй");
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      if (!Device.isDevice) return;
+      try {
+        const tokenData = await Notifications.getExpoPushTokenAsync();
+        if (tokenData?.data) {
+          setExpoPushToken(tokenData.data);
+          await AsyncStorage.setItem("expoPushToken", tokenData.data);
+        }
+      } catch (e) {}
+    })();
+  }, []);
 
   useEffect(() => {
     if (phoneNumber.length === requiredLength) {
@@ -206,6 +194,10 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
+      const storedExpoToken = await AsyncStorage.getItem("expoPushToken");
+      setModalTokenValue(storedExpoToken || "");
+      setShowTokenModal(true);
+
       const response = await axios.post(
         `${SERVER_URI}/api/user/getOtp`,
         {
@@ -371,6 +363,32 @@ export default function LoginScreen() {
           />
         </View>
       )}
+      {/* <Modal
+        visible={showTokenModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowTokenModal(false)}
+      >
+        <View style={styles.tokenModalOverlay}>
+          <View style={styles.tokenModalCard}>
+            <Text style={styles.tokenModalTitle}>Expo Push Token</Text>
+            <ScrollView
+              style={{ maxHeight: 120 }}
+              contentContainerStyle={{ paddingVertical: 6 }}
+            >
+              <Text style={styles.tokenModalValue}>
+                {modalTokenValue || "Токен олдсонгүй"}
+              </Text>
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.tokenModalButton}
+              onPress={() => setShowTokenModal(false)}
+            >
+              <Text style={styles.tokenModalButtonText}>ОК</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal> */}
     </SafeAreaView>
   );
 }
@@ -533,6 +551,48 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     marginTop: 10,
   },
+  // tokenModalOverlay: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0,
+  //   right: 0,
+  //   bottom: 0,
+  //   backgroundColor: "rgba(0,0,0,0.5)",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   paddingHorizontal: 20,
+  // },
+  // tokenModalCard: {
+  //   width: "100%",
+  //   backgroundColor: "#fff",
+  //   borderRadius: 12,
+  //   padding: 16,
+  // },
+  // tokenModalTitle: {
+  //   fontSize: 18,
+  //   fontWeight: "700",
+  //   marginBottom: 10,
+  //   color: Colors.black,
+  //   textAlign: "center",
+  // },
+  // tokenModalValue: {
+  //   fontSize: 12,
+  //   color: "#333",
+  //   lineHeight: 18,
+  // },
+  // tokenModalButton: {
+  //   marginTop: 12,
+  //   backgroundColor: Colors.primaryColor,
+  //   borderRadius: 8,
+  //   height: 44,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // tokenModalButtonText: {
+  //   color: "#fff",
+  //   fontSize: 16,
+  //   fontWeight: "600",
+  // },
   quest: {
     height: 51,
     borderRadius: 10,
