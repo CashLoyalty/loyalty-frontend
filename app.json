@@ -2,7 +2,7 @@
   "expo": {
     "name": "Fizz point",
     "slug": "loyalty-app",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -37,8 +37,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "googleServicesFile": "./google-services.json"
+      }
     },
     "androidNavigationBar": {
       "barStyle": "dark-content",
@@ -81,7 +80,8 @@
       ],
       "expo-web-browser",
       "expo-audio",
-      "expo-video"
+      "expo-video",
+      "expo-dev-client"
     ],
     "experiments": {
       "typedRoutes": true

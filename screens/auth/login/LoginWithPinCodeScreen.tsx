@@ -6,13 +6,12 @@ import {
   Text,
   Image,
   Keyboard,
+  Platform,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 
 // ✅ expo-audio зөв импорт
 import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
@@ -26,7 +25,10 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalContext } from "@/components/globalContext";
-import { getDeviceToken } from "@/utils/notificationService";
+import {
+  getDeviceToken,
+  getDeviceTokenSimple,
+} from "@/utils/notificationService";
 
 const { width, height } = screenDimensions;
 
@@ -42,14 +44,25 @@ export default function LoginWithPinCodeScreen() {
 
   useEffect(() => {
     (async () => {
-      console.log("🚀 LoginWithPinCodeScreen: Starting token retrieval...");
-      const token = await getDeviceToken();
-      console.log("🚀 LoginWithPinCodeScreen: Token received:", token);
+      console.log("🚀 Starting token retrieval in LoginWithPinCodeScreen...");
+
+      // Try the main method first
+      let token = await getDeviceToken();
+      console.log("🚀 Main method result:", token);
+
+      // If main method fails, try simple method
+      if (!token) {
+        console.log("🚀 Trying simple method...");
+        token = await getDeviceTokenSimple();
+        console.log("🚀 Simple method result:", token);
+      }
+
+      console.log("🚀 Final token:", token);
       if (token) {
         setExpoPushToken(token);
-        console.log("🚀 LoginWithPinCodeScreen: Token set in state");
+        console.log("🚀 Token set in state:", token);
       } else {
-        console.warn("🚀 LoginWithPinCodeScreen: No token received");
+        console.warn("🚀 No token received from any method");
       }
     })();
   }, []);
@@ -87,9 +100,6 @@ export default function LoginWithPinCodeScreen() {
     try {
       setLoading(true);
       console.log("🔐 Login attempt with device token:", expoPushToken);
-      console.log("🔐 Phone number:", phoneNumber);
-      console.log("🔐 PIN code length:", pinCode.length);
-
       const response = await axios.post(`${SERVER_URI}/api/user/login`, {
         phoneNumber: phoneNumber,
         passCode: pinCode,
