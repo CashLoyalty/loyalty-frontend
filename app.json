@@ -25,7 +25,8 @@
     },
     "android": {
       "package": "com.amarasystem.loyaltyapp",
-      "versionCode": 17,
+      "versionCode": 18,
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

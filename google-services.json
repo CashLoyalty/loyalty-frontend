@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "942982523393",
+    "project_id": "loyalty-backend-79d23",
+    "storage_bucket": "loyalty-backend-79d23.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942982523393:android:0b5e4d30d1bcefeee22e00",
+        "android_client_info": {
+          "package_name": "com.amarasystem.loyaltyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhCfCFKRYiWTHILOHqa-EvhxsMmpLvkeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
