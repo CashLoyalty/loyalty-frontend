@@ -267,7 +267,7 @@ export default function LoginWithPinCodeScreen() {
 
       <View style={styles.pinCodeContainer}>
         <View>
-          <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
+          <Text style={styles.title}>Пин кодоор нэвтрэх.</Text>
         </View>
 
         <View style={styles.inputContainer}>
