@@ -15,8 +15,6 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import Header from "@/components/header/header";
-import HeaderSecond from "@/components/headerSecond/headerSecond";
 import HomeBannerSlider from "@/components/home/home.banner.slider";
 import Colors from "@/constants/Colors";
 import { useToast } from "react-native-toast-notifications";
@@ -285,8 +283,6 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
-      <HeaderSecond />
       <View style={styles.homeBannerSlider}>
         <HomeBannerSlider />
       </View>

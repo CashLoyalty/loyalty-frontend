@@ -76,10 +76,10 @@ export default function LoginWithPinCodeScreen() {
         return retrieveDeviceToken(retryCount + 1);
       }
 
-      console.error("🔔 ALL TOKEN RETRIEVAL METHODS FAILED AFTER RETRIES");
+      console.log("🔔 ALL TOKEN RETRIEVAL METHODS FAILED AFTER RETRIES");
       return null;
     } catch (error) {
-      console.error("🔔 Token retrieval error:", error);
+      console.log("🔔 Token retrieval error:", error);
 
       if (retryCount < maxRetries) {
         console.log(`🔔 Error occurred, retrying in ${retryDelay}ms...`);
@@ -254,7 +254,7 @@ export default function LoginWithPinCodeScreen() {
 
       <View style={styles.pinCodeContainer}>
         <View>
-          <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
+          <Text style={styles.title}>Пин кодоор нэвтрэх .</Text>
         </View>
 
         <View style={styles.inputContainer}>

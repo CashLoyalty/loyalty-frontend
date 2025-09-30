@@ -11,8 +11,6 @@ import {
   Keyboard,
 } from "react-native";
 import Colors from "@/constants/Colors";
-import Header from "@/components/header/header";
-import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -188,8 +186,6 @@ const Task: React.FC = () => {
   };
   return (
     <View style={styles.container}>
-      <Header />
-      <HeaderSecond />
       <View style={styles.rowContainer}>
         <View style={{ flex: 1 }}>
           <TouchableOpacity onPress={handleBackPress}>
