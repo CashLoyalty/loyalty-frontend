@@ -12,6 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 
 // ✅ expo-audio зөв импорт
 import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
@@ -44,25 +45,90 @@ export default function LoginWithPinCodeScreen() {
 
   useEffect(() => {
     (async () => {
-      console.log("🚀 Starting token retrieval in LoginWithPinCodeScreen...");
+      console.log("🚀 Starting token retrieval...");
 
-      // Try the main method first
-      let token = await getDeviceToken();
-      console.log("🚀 Main method result:", token);
+      // Try multiple approaches
+      let token = null;
 
-      // If main method fails, try simple method
-      if (!token) {
-        console.log("🚀 Trying simple method...");
-        token = await getDeviceTokenSimple();
-        console.log("🚀 Simple method result:", token);
+      // Approach 1: Direct call
+      try {
+        console.log("🔔 Approach 1: Direct call...");
+        const result = await Notifications.getExpoPushTokenAsync();
+        console.log("🔔 Direct result:", result);
+        if (result?.data) {
+          token = result.data;
+          console.log("🔔 Direct success:", token);
+        }
+      } catch (error) {
+        console.log(
+          "🔔 Direct failed:",
+          error instanceof Error ? error.message : String(error)
+        );
       }
 
-      console.log("🚀 Final token:", token);
+      // Approach 2: With project ID
+      if (!token) {
+        try {
+          console.log("🔔 Approach 2: With project ID...");
+          const result = await Notifications.getExpoPushTokenAsync({
+            projectId: "aa3019f0-33c3-4d89-bfde-e0cef80729b7",
+          });
+          console.log("🔔 Project ID result:", result);
+          if (result?.data) {
+            token = result.data;
+            console.log("🔔 Project ID success:", token);
+          }
+        } catch (error) {
+          console.log(
+            "🔔 Project ID failed:",
+            error instanceof Error ? error.message : String(error)
+          );
+        }
+      }
+
+      // Approach 3: Check permissions first
+      if (!token) {
+        try {
+          console.log("🔔 Approach 3: Check permissions...");
+          const { status } = await Notifications.getPermissionsAsync();
+          console.log("🔔 Permission status:", status);
+
+          if (status === "granted") {
+            const result = await Notifications.getExpoPushTokenAsync();
+            console.log("🔔 Permission granted result:", result);
+            if (result?.data) {
+              token = result.data;
+              console.log("🔔 Permission success:", token);
+            }
+          } else {
+            console.log("🔔 Requesting permissions...");
+            const { status: newStatus } =
+              await Notifications.requestPermissionsAsync();
+            console.log("🔔 New permission status:", newStatus);
+
+            if (newStatus === "granted") {
+              const result = await Notifications.getExpoPushTokenAsync();
+              console.log("🔔 New permission result:", result);
+              if (result?.data) {
+                token = result.data;
+                console.log("🔔 New permission success:", token);
+              }
+            }
+          }
+        } catch (error) {
+          console.log(
+            "🔔 Permission approach failed:",
+            error instanceof Error ? error.message : String(error)
+          );
+        }
+      }
+
+      console.log("🔔 Final token result:", token);
       if (token) {
         setExpoPushToken(token);
-        console.log("🚀 Token set in state:", token);
+        console.log("🔔 Token set successfully:", token);
       } else {
-        console.warn("🚀 No token received from any method");
+        console.warn("🔔 ALL METHODS FAILED - No token received");
       }
     })();
   }, []);

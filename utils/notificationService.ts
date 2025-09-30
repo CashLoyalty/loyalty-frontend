@@ -43,18 +43,26 @@ export async function getDeviceToken(): Promise<string | null> {
     }
 
     // Request permissions
+    console.log("🔔 Requesting permissions...");
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
+    console.log("🔔 Existing permission status:", existingStatus);
+
     let finalStatus = existingStatus;
 
     if (existingStatus !== "granted") {
+      console.log("🔔 Requesting new permissions...");
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
+      console.log("🔔 New permission status:", finalStatus);
     }
 
     if (finalStatus !== "granted") {
+      console.log("🔔 Permissions not granted:", finalStatus);
       return null;
     }
+
+    console.log("🔔 Permissions granted!");
 
     // Configure Android channel
     if (Platform.OS === "android") {
@@ -75,24 +83,34 @@ export async function getDeviceToken(): Promise<string | null> {
     }
 
     // Get push token
+    console.log("🔔 Getting push token...");
     let tokenData;
     try {
       // Try with project ID first
+      console.log("🔔 Trying with project ID...");
       tokenData = await Notifications.getExpoPushTokenAsync({
         projectId: "aa3019f0-33c3-4d89-bfde-e0cef80729b7",
       });
+      console.log("🔔 Token with project ID:", tokenData);
     } catch (projectIdError) {
+      console.log("🔔 Project ID failed:", projectIdError);
       try {
         // Fallback: try without project ID
+        console.log("🔔 Trying without project ID...");
         tokenData = await Notifications.getExpoPushTokenAsync();
+        console.log("🔔 Token without project ID:", tokenData);
       } catch (fallbackError) {
+        console.log("🔔 Both methods failed:", fallbackError);
         throw fallbackError;
       }
     }
 
     if (tokenData?.data) {
+      console.log("🔔 Token data found:", tokenData.data);
       await AsyncStorage.setItem("expoPushToken", tokenData.data);
       return tokenData.data;
+    } else {
+      console.log("🔔 No token data in response:", tokenData);
     }
 
     // Fallback to stored token
