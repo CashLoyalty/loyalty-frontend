@@ -27,6 +27,7 @@ import { GlobalContext } from "@/components/globalContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import { getDeviceToken } from "@/utils/notificationService";
 
 const { height } = screenDimensions;
 
@@ -42,14 +43,10 @@ export default function LoginScreen() {
 
   useEffect(() => {
     (async () => {
-      if (!Device.isDevice) return;
-      try {
-        const tokenData = await Notifications.getExpoPushTokenAsync();
-        if (tokenData?.data) {
-          setExpoPushToken(tokenData.data);
-          await AsyncStorage.setItem("expoPushToken", tokenData.data);
-        }
-      } catch (e) {}
+      const token = await getDeviceToken();
+      if (token) {
+        setExpoPushToken(token);
+      }
     })();
   }, []);
 

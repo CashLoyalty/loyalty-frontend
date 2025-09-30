@@ -26,6 +26,7 @@ import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalContext } from "@/components/globalContext";
+import { getDeviceToken } from "@/utils/notificationService";
 
 const { width, height } = screenDimensions;
 
@@ -41,14 +42,15 @@ export default function LoginWithPinCodeScreen() {
 
   useEffect(() => {
     (async () => {
-      if (!Device.isDevice) return;
-      try {
-        const tokenData = await Notifications.getExpoPushTokenAsync();
-        if (tokenData?.data) {
-          setExpoPushToken(tokenData.data);
-          await AsyncStorage.setItem("expoPushToken", tokenData.data);
-        }
-      } catch (e) {}
+      console.log("🚀 LoginWithPinCodeScreen: Starting token retrieval...");
+      const token = await getDeviceToken();
+      console.log("🚀 LoginWithPinCodeScreen: Token received:", token);
+      if (token) {
+        setExpoPushToken(token);
+        console.log("🚀 LoginWithPinCodeScreen: Token set in state");
+      } else {
+        console.warn("🚀 LoginWithPinCodeScreen: No token received");
+      }
     })();
   }, []);
 
@@ -84,6 +86,10 @@ export default function LoginWithPinCodeScreen() {
     Keyboard.dismiss();
     try {
       setLoading(true);
+      console.log("🔐 Login attempt with device token:", expoPushToken);
+      console.log("🔐 Phone number:", phoneNumber);
+      console.log("🔐 PIN code length:", pinCode.length);
+
       const response = await axios.post(`${SERVER_URI}/api/user/login`, {
         phoneNumber: phoneNumber,
         passCode: pinCode,

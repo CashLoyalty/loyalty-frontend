@@ -30,19 +30,24 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
-        "NOTIFICATIONS"
+        "NOTIFICATIONS",
+        "VIBRATE",
+        "WAKE_LOCK"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "androidNavigationBar": {
       "barStyle": "dark-content",
       "backgroundColor": "#ffffff"
     },
     "notification": {
-      "color": "#FF7A00"
+      "color": "#FF7A00",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Fizz Point"
     },
     "web": {
       "bundler": "metro",
