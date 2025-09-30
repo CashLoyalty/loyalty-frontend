@@ -3,29 +3,53 @@ import * as Device from "expo-device";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// Configure notifications for production
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 // Alternative method for getting device token (simpler approach)
 export async function getDeviceTokenSimple(): Promise<string | null> {
   try {
+    // Check stored token first
+    const storedToken = await AsyncStorage.getItem("expoPushToken");
+    if (storedToken) {
+      console.log("🔔 Simple: Using stored token:", storedToken);
+      return storedToken;
+    }
+
     if (!Device.isDevice) {
+      console.log("🔔 Simple: Not a physical device");
       return null;
     }
 
     // Request permissions
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== "granted") {
+      console.log("🔔 Simple: Permissions not granted:", status);
       return null;
     }
 
     // Get token without project ID
     const token = await Notifications.getExpoPushTokenAsync();
+    console.log("🔔 Simple: Token result:", token);
 
     if (token?.data) {
       await AsyncStorage.setItem("expoPushToken", token.data);
+      console.log("🔔 Simple: Token stored and returned:", token.data);
       return token.data;
     }
 
+    console.log("🔔 Simple: No token data found");
     return null;
   } catch (error) {
+    console.log("🔔 Simple: Error occurred:", error);
     return null;
   }
 }
@@ -37,6 +61,13 @@ export async function getDeviceToken(): Promise<string | null> {
   console.log("🔔 Platform.OS:", Platform.OS);
 
   try {
+    // Check if we have a stored token first
+    const storedToken = await AsyncStorage.getItem("expoPushToken");
+    if (storedToken) {
+      console.log("🔔 Using stored token:", storedToken);
+      return storedToken;
+    }
+
     if (!Device.isDevice) {
       console.log("🔔 Not a physical device, returning null");
       return null;
@@ -101,7 +132,8 @@ export async function getDeviceToken(): Promise<string | null> {
         console.log("🔔 Token without project ID:", tokenData);
       } catch (fallbackError) {
         console.log("🔔 Both methods failed:", fallbackError);
-        throw fallbackError;
+        // Don't throw, just return null
+        return null;
       }
     }
 
@@ -114,17 +146,17 @@ export async function getDeviceToken(): Promise<string | null> {
     }
 
     // Fallback to stored token
-    const storedToken = await AsyncStorage.getItem("expoPushToken");
-    if (storedToken) {
-      return storedToken;
+    const fallbackStoredToken = await AsyncStorage.getItem("expoPushToken");
+    if (fallbackStoredToken) {
+      return fallbackStoredToken;
     }
 
     return null;
   } catch (error) {
     // Try stored token as last resort
     try {
-      const storedToken = await AsyncStorage.getItem("expoPushToken");
-      return storedToken;
+      const lastResortStoredToken = await AsyncStorage.getItem("expoPushToken");
+      return lastResortStoredToken;
     } catch {
       return null;
     }

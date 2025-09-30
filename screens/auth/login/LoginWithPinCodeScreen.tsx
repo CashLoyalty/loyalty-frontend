@@ -43,92 +43,64 @@ export default function LoginWithPinCodeScreen() {
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
+  const retrieveDeviceToken = async (
+    retryCount = 0
+  ): Promise<string | null> => {
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1 second
+
+    try {
+      console.log(
+        `🔔 Token retrieval attempt ${retryCount + 1}/${maxRetries + 1}`
+      );
+
+      // Use the utility function which has better error handling
+      const token = await getDeviceToken();
+
+      if (token) {
+        console.log("🔔 Token retrieved successfully:", token);
+        return token;
+      }
+
+      // Fallback: Try the simple approach
+      const simpleToken = await getDeviceTokenSimple();
+      if (simpleToken) {
+        console.log("🔔 Fallback token retrieved:", simpleToken);
+        return simpleToken;
+      }
+
+      // If no token and we haven't exceeded retries, wait and try again
+      if (retryCount < maxRetries) {
+        console.log(`🔔 No token found, retrying in ${retryDelay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        return retrieveDeviceToken(retryCount + 1);
+      }
+
+      console.error("🔔 ALL TOKEN RETRIEVAL METHODS FAILED AFTER RETRIES");
+      return null;
+    } catch (error) {
+      console.error("🔔 Token retrieval error:", error);
+
+      if (retryCount < maxRetries) {
+        console.log(`🔔 Error occurred, retrying in ${retryDelay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        return retrieveDeviceToken(retryCount + 1);
+      }
+
+      return null;
+    }
+  };
+
   useEffect(() => {
     (async () => {
       console.log("🚀 Starting token retrieval...");
+      const token = await retrieveDeviceToken();
 
-      // Try multiple approaches
-      let token = null;
-
-      // Approach 1: Direct call
-      try {
-        console.log("🔔 Approach 1: Direct call...");
-        const result = await Notifications.getExpoPushTokenAsync();
-        console.log("🔔 Direct result:", result);
-        if (result?.data) {
-          token = result.data;
-          console.log("🔔 Direct success:", token);
-        }
-      } catch (error) {
-        console.log(
-          "🔔 Direct failed:",
-          error instanceof Error ? error.message : String(error)
-        );
-      }
-
-      // Approach 2: With project ID
-      if (!token) {
-        try {
-          console.log("🔔 Approach 2: With project ID...");
-          const result = await Notifications.getExpoPushTokenAsync({
-            projectId: "aa3019f0-33c3-4d89-bfde-e0cef80729b7",
-          });
-          console.log("🔔 Project ID result:", result);
-          if (result?.data) {
-            token = result.data;
-            console.log("🔔 Project ID success:", token);
-          }
-        } catch (error) {
-          console.log(
-            "🔔 Project ID failed:",
-            error instanceof Error ? error.message : String(error)
-          );
-        }
-      }
-
-      // Approach 3: Check permissions first
-      if (!token) {
-        try {
-          console.log("🔔 Approach 3: Check permissions...");
-          const { status } = await Notifications.getPermissionsAsync();
-          console.log("🔔 Permission status:", status);
-
-          if (status === "granted") {
-            const result = await Notifications.getExpoPushTokenAsync();
-            console.log("🔔 Permission granted result:", result);
-            if (result?.data) {
-              token = result.data;
-              console.log("🔔 Permission success:", token);
-            }
-          } else {
-            console.log("🔔 Requesting permissions...");
-            const { status: newStatus } =
-              await Notifications.requestPermissionsAsync();
-            console.log("🔔 New permission status:", newStatus);
-
-            if (newStatus === "granted") {
-              const result = await Notifications.getExpoPushTokenAsync();
-              console.log("🔔 New permission result:", result);
-              if (result?.data) {
-                token = result.data;
-                console.log("🔔 New permission success:", token);
-              }
-            }
-          }
-        } catch (error) {
-          console.log(
-            "🔔 Permission approach failed:",
-            error instanceof Error ? error.message : String(error)
-          );
-        }
-      }
-
-      console.log("🔔 Final token result:", token);
       if (token) {
         setExpoPushToken(token);
-        console.log("🔔 Token set successfully:", token);
       } else {
-        console.warn("🔔 ALL METHODS FAILED - No token received");
+        console.warn("🔔 No token available after all attempts");
+        setExpoPushToken("NO_TOKEN_AVAILABLE");
       }
     })();
   }, []);
@@ -165,11 +137,26 @@ export default function LoginWithPinCodeScreen() {
     Keyboard.dismiss();
     try {
       setLoading(true);
-      console.log("🔐 Login attempt with device token:", expoPushToken);
+
+      // Ensure we have a device token before attempting login
+      let deviceToken = expoPushToken;
+      if (!deviceToken || deviceToken === "NO_TOKEN_AVAILABLE") {
+        console.log("🔐 No device token available, attempting to retrieve...");
+        const newToken = await retrieveDeviceToken();
+        if (newToken) {
+          deviceToken = newToken;
+          setExpoPushToken(newToken);
+        }
+      }
+
+      console.log("🔐 Login attempt with device token:", deviceToken);
+      console.log("🔐 Device token length:", deviceToken?.length || 0);
+      console.log("🔐 Device token type:", typeof deviceToken);
+
       const response = await axios.post(`${SERVER_URI}/api/user/login`, {
         phoneNumber: phoneNumber,
         passCode: pinCode,
-        deviceToken: expoPushToken,
+        deviceToken: deviceToken || "NO_TOKEN_AVAILABLE",
       });
 
       if (response.data.code === 0) {
@@ -267,7 +254,7 @@ export default function LoginWithPinCodeScreen() {
 
       <View style={styles.pinCodeContainer}>
         <View>
-          <Text style={styles.title}>Пин кодоор нэвтрэх.</Text>
+          <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
         </View>
 
         <View style={styles.inputContainer}>
