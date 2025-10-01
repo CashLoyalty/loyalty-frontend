@@ -52,7 +52,7 @@ const NotificationScreen = () => {
           <View style={{ flex: 1 }} />
         </View>
       </View>
-      <View>
+      {/* <View>
         {data.map((item, index) => (
           <View
             key={item.id}
@@ -80,7 +80,7 @@ const NotificationScreen = () => {
             <Text style={styles.notifMessage}>{item.text}</Text>
           </View>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };
