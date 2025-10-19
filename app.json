@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.amarasytem.loyalty-app",
-      "buildNumber": "1.1.7",
+      "buildNumber": "1.1.8",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app requires access to your camera for scanning QR codes.",
