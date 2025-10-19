@@ -15,7 +15,6 @@ import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 import Story from "@/components/global";
 import { GiftItem } from "@/types/global";
-import useFetchGifts from "@/hooks/useFetchGifts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_URI } from "@/utils/uri";
 import { Dimensions } from "react-native";
@@ -165,8 +164,11 @@ const Award: React.FC = () => {
   const screenWidth = Dimensions.get("window").width;
   const isTablet = screenWidth >= 768;
   const numColumns = isTablet ? 4 : 2;
-  const itemSpacing = 10;
-  const itemWidth = (screenWidth - itemSpacing * (numColumns + 1)) / numColumns;
+  const itemSpacing = 15;
+  const horizontalPadding = 20; // Left and right padding
+  const itemWidth =
+    (screenWidth - horizontalPadding * 2 - itemSpacing * (numColumns - 1)) /
+    numColumns;
   const [count, setCount] = useState<number>(1);
   const [selectedGifts, setSelectedGifts] = useState<
     { item: GiftItem; count: number }[]
@@ -175,16 +177,9 @@ const Award: React.FC = () => {
   const toast = useToast();
   const [buttonSpinner, setButtonSpinner] = useState(false);
   const { toastHeight } = useContext(GlobalContext);
-
-  const { data: spinGifts } = useFetchGifts(
-    SERVER_URI + "/api/gift?type=SPIN&status=ACTIVE",
-    token
-  );
-
-  const { data: pointGifts } = useFetchGifts(
-    SERVER_URI + "/api/gift?type=POINT&status=ACTIVE",
-    token
-  );
+  const [spinGifts, setSpinGifts] = useState<GiftItem[] | null>(null);
+  const [pointGifts, setPointGifts] = useState<GiftItem[] | null>(null);
+  const [giftsLoading, setGiftsLoading] = useState(true);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -211,6 +206,44 @@ const Award: React.FC = () => {
       setUserData(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    const fetchGifts = async () => {
+      if (!token) {
+        setGiftsLoading(false);
+        return;
+      }
+
+      try {
+        setGiftsLoading(true);
+
+        // Fetch point gifts
+        const pointResponse = await axios.get(
+          `${SERVER_URI}/api/gift?type=POINT&status=ACTIVE`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (pointResponse.data.code === 0) {
+          setPointGifts(pointResponse.data.response);
+        } else {
+          console.log(
+            "Point gifts API returned error code:",
+            pointResponse.data.code
+          );
+        }
+      } catch (error) {
+        console.log("Failed to fetch gifts: ", error);
+      } finally {
+        setGiftsLoading(false);
+      }
+    };
+
+    fetchGifts();
+  }, [token]);
 
   const handleBackPress = () => {
     router.navigate("/(tabs)");
@@ -239,53 +272,95 @@ const Award: React.FC = () => {
         }
       );
 
-      if (response.status !== 200) {
-        const errorData = response.data;
+      console.log("Purchase response code:", response.data.code);
 
-        toast.show(`Алдаа гарлаа: ${errorData.message || "Алдаа"}`, {
-          type: "danger",
+      // Handle different response codes
+      if (response.data.code === 0) {
+        // Success case
+        toast.show(`Амжилттай худалдаж авлаа!`, {
+          type: "success",
           placement: "top",
-          duration: 1500,
+          duration: 2000,
           animationType: "slide-in",
           style: {
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
             top: toastHeight,
           },
         });
-      }
 
-      // type: "success" | "danger" | "warning" | "info" | "normal"
-
-      console.log("code : ", response.data.code);
-
-      if (response.data.code === 1010) {
+        // Refresh user data to update points
+        const userResponse = await axios.get(`${SERVER_URI}/api/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (userResponse.data.code === 0) {
+          setUserData(userResponse.data.response);
+        }
+      } else if (response.data.code === 1010) {
         toast.show(`Оноо хүрэхгүй байна`, {
           type: "warning",
           placement: "top",
-          duration: 1500,
+          duration: 2000,
           animationType: "slide-in",
           style: {
+            backgroundColor: "#FFA500",
             top: toastHeight,
           },
         });
-      }
-
-      if (response.data.code === 1000) {
+      } else if (response.data.code === 1000) {
         toast.show(`Бэлэг үлдэгдэл хүрэхгүй байна`, {
           type: "warning",
           placement: "top",
-          duration: 1500,
+          duration: 2000,
           animationType: "slide-in",
           style: {
+            backgroundColor: "#FFA500",
             top: toastHeight,
           },
         });
+      } else if (response.data.code === 1014) {
+        toast.show(`Бэлэг үлдэгдэл хүрэхгүй байна`, {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: "#FFA500",
+            top: toastHeight,
+          },
+        });
+      } else {
+        // Other error codes
+        toast.show(
+          `Алдаа гарлаа: ${response.data.message || "Тодорхойгүй алдаа"}`,
+          {
+            type: "danger",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+            style: {
+              backgroundColor: Colors.red,
+              top: toastHeight,
+            },
+          }
+        );
       }
-    } catch (error) {
-      toast.show(`Сүлжээний алдаа`, {
+    } catch (error: any) {
+      console.log("Purchase error:", error);
+
+      let errorMessage = "Сүлжээний алдаа";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.show(errorMessage, {
         type: "danger",
         placement: "top",
-        duration: 1500,
+        duration: 2000,
         animationType: "slide-in",
         style: {
           backgroundColor: Colors.red,
@@ -326,47 +401,54 @@ const Award: React.FC = () => {
       <View style={styles.container2}>
         <Text style={styles.wheelTitle}>Point Market</Text>
       </View>
-      <FlatList
-        data={pointGifts}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        columnWrapperStyle={{
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-        contentContainerStyle={{ padding: itemSpacing }}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleItemPress(item)}>
-            <View style={[styles.prizeContainer, { width: itemWidth }]}>
-              <View style={styles.prizeImgContainer}>
-                <Image
-                  source={{ uri: item.image1 }}
-                  style={styles.prizeImage}
-                  resizeMode="cover"
-                />
-              </View>
-              <View style={styles.prizeInfoContainer}>
-                <Text style={styles.prizeInfoTitle}>{item.name}</Text>
-                <View style={styles.prizeScoreContainer}>
-                  <Text
-                    style={{
-                      color: Colors.white,
-                      paddingTop: 1,
-                      marginRight: 5,
-                    }}
-                  >
-                    {item.point}
-                  </Text>
+      {giftsLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primaryColor} />
+        </View>
+      ) : (
+        <FlatList
+          data={pointGifts}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginBottom: 20,
+            paddingHorizontal: horizontalPadding,
+          }}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleItemPress(item)}>
+              <View style={[styles.prizeContainer, { width: itemWidth }]}>
+                <View style={styles.prizeImgContainer}>
                   <Image
-                    source={require("@/assets/icons/plug.png")}
-                    style={{ width: 14, height: 16 }}
+                    source={{ uri: item.image1 }}
+                    style={styles.prizeImage}
+                    resizeMode="cover"
                   />
                 </View>
+                <View style={styles.prizeInfoContainer}>
+                  <Text style={styles.prizeInfoTitle}>{item.name}</Text>
+                  <View style={styles.prizeScoreContainer}>
+                    <Text
+                      style={{
+                        color: Colors.white,
+                        paddingTop: 1,
+                        marginRight: 5,
+                      }}
+                    >
+                      {item.point}
+                    </Text>
+                    <Image
+                      source={require("@/assets/icons/plug.png")}
+                      style={{ width: 14, height: 16 }}
+                    />
+                  </View>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+            </TouchableOpacity>
+          )}
+        />
+      )}
       <BottomModal
         visible={visible}
         setVisible={setVisible}
@@ -520,13 +602,12 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   prizeContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   prizeImgContainer: {
     zIndex: 2,
-    width: 161,
+    width: "100%",
     height: 103,
     borderWidth: 1,
     borderColor: Colors.primaryColor,
@@ -536,12 +617,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   prizeImage: {
-    width: 150,
+    width: "90%",
     height: 90,
   },
   prizeInfoContainer: {
     flexDirection: "column",
-    width: 161,
+    width: "100%",
     marginTop: -20,
     height: 100,
     backgroundColor: Colors.giftBackgroundColor,
@@ -702,6 +783,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginHorizontal: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 50,
   },
 });
 

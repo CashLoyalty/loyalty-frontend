@@ -63,8 +63,6 @@ const Task: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("response: ", response.data.response);
-      // API returns tasks directly as an array
       const tasksData = response.data.response || [];
       setTask(tasksData);
     } catch (error) {
@@ -115,8 +113,6 @@ const Task: React.FC = () => {
   };
 
   const displayTasks = task;
-
-  console.log("All tasks:", task);
 
   const handleInviteFriend = async () => {
     const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
