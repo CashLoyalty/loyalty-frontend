@@ -255,16 +255,35 @@ const Award: React.FC = () => {
   };
 
   const handleConfirmGift = async (item: GiftItem, count: number) => {
+    // Validate quantity
+    if (count <= 0) {
+      toast.show(`Тоо хэмжээ буруу байна`, {
+        type: "warning",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+        style: {
+          backgroundColor: "#FFA500",
+          top: toastHeight,
+        },
+      });
+      return;
+    }
+
     setButtonSpinner(true);
     setSelectedGifts((prev) => [...prev, { item, count }]);
 
     try {
+      const requestBody = {
+        giftId: item.id,
+        quantity: count,
+      };
+
+      console.log("Purchase request body:", requestBody);
+
       const response = await axios.post(
         `${SERVER_URI}/api/user/gift/buy`,
-        {
-          giftId: item.id,
-          quantity: count,
-        },
+        requestBody,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -277,7 +296,7 @@ const Award: React.FC = () => {
       // Handle different response codes
       if (response.data.code === 0) {
         // Success case
-        toast.show(`Амжилттай худалдаж авлаа!`, {
+        toast.show(`${count}ш бэлэг амжилттай худалдаж авлаа!`, {
           type: "success",
           placement: "top",
           duration: 2000,
