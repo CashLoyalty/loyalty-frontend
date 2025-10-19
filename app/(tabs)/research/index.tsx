@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
 import { router } from "expo-router";
@@ -25,6 +32,29 @@ type Question = {
 const Research: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
+  // Function to clean up text
+  const cleanText = (text: string | undefined): string => {
+    if (!text) return "Судалгаа";
+
+    // Remove any non-printable characters and excessive whitespace
+    let cleaned = text
+      .replace(/[\x00-\x1F\x7F-\x9F]/g, "") // Remove control characters
+      .replace(/\s+/g, " ") // Replace multiple spaces with single space
+      .trim();
+
+    // Android-specific text cleaning
+    if (Platform.OS === "android") {
+      cleaned = cleaned
+        .replace(/[^\u0000-\u007F\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]/g, "") // Keep only Latin and extended Latin
+        .replace(/[^\w\s\u0400-\u04FF]/g, "") // Keep Cyrillic characters for Mongolian text
+        .substring(0, 25); // Shorter limit for Android
+    } else {
+      cleaned = cleaned.substring(0, 30);
+    }
+
+    return cleaned;
+  };
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -36,6 +66,7 @@ const Research: React.FC = () => {
           },
         });
         if (response.data) {
+          console.log("Survey data received:", response.data.response);
           setQuestions(response.data.response);
         }
       } catch (error) {
@@ -101,8 +132,22 @@ const Research: React.FC = () => {
                 source={require("@/assets/loyalty/reserch.png")}
               />
               <View style={styles.cardMini}>
-                <View style={{ flex: 1, flexDirection: "row" }}>
-                  <Text style={styles.cardText}>{item.title}</Text>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    overflow: Platform.OS === "android" ? "hidden" : "visible",
+                    maxHeight: Platform.OS === "android" ? 60 : undefined,
+                  }}
+                >
+                  <Text
+                    style={styles.cardText}
+                    numberOfLines={Platform.OS === "android" ? 2 : 3}
+                    ellipsizeMode="tail"
+                    allowFontScaling={false}
+                  >
+                    {cleanText(item.title)}
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -177,12 +222,18 @@ const styles = StyleSheet.create({
     width: 160,
     height: 140,
     borderRadius: 12,
+    overflow: Platform.OS === "android" ? "hidden" : "visible",
   },
   cardText: {
     fontSize: 14,
     color: "#0025FF",
     fontWeight: "600",
     marginTop: 10,
+    lineHeight: Platform.OS === "android" ? 20 : 18,
+    flex: 1,
+    textAlign: Platform.OS === "android" ? "left" : "left",
+    includeFontPadding: Platform.OS === "android" ? false : true,
+    textAlignVertical: Platform.OS === "android" ? "top" : "center",
   },
   pointContainer: {
     backgroundColor: "#0025FF",

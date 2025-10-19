@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+
     justifyContent: "center",
   },
   checkbox: {
@@ -180,10 +180,11 @@ const styles = StyleSheet.create({
   page: {
     width,
     height,
-    justifyContent: "flex-start",
+    justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "#fff",
     paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   image: {
     width: width * 0.8,
@@ -195,7 +196,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 10,
-    marginBottom: 20,
   },
   dot: {
     width: 8,
@@ -208,22 +208,18 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     color: "#0040FF",
-    marginBottom: 12,
   },
   description: {
     fontSize: 15,
     textAlign: "center",
     color: "#333",
     lineHeight: 22,
-    marginBottom: 40,
   },
   button: {
     backgroundColor: "#0040FF",
     paddingVertical: 15,
     paddingHorizontal: 50,
     borderRadius: 30,
-    position: "absolute",
-    bottom: 160,
     alignSelf: "center",
   },
   buttonText: {
