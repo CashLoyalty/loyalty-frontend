@@ -83,6 +83,7 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/spinWheel.png")}
                 style={styles.iconImage}
               />
+              <View style={styles.redDot} />
             </View>
           </TouchableOpacity>
 
@@ -92,6 +93,7 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/gift.png")}
                 style={styles.iconImage}
               />
+              <View style={styles.redDot} />
             </View>
           </TouchableOpacity>
 
@@ -101,6 +103,7 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/notification.png")}
                 style={styles.iconImage}
               />
+              {/* <View style={styles.redDot} /> */}
             </View>
           </TouchableOpacity>
         </View>
@@ -152,6 +155,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 5,
+    position: "relative",
   },
   iconImage: {
     width: 22,
@@ -167,5 +171,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+  },
+  redDot: {
+    position: "absolute",
+    top: 1,
+    right: 1,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ff0000",
+    borderWidth: 1,
+    borderColor: "#ffffff",
   },
 });
