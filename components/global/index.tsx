@@ -63,7 +63,6 @@ export default function Story({ spinGifts }: StoryProps) {
         }
       );
       setStory(response.data.response);
-      console.log("story: ", response.data.response);
     } catch (error: any) {
       console.log("Failed to fetch story: ", error);
 

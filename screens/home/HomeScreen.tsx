@@ -353,18 +353,18 @@ const HomeScreen: React.FC = () => {
               onChangeText={handleChangeText}
             />
             <View style={styles.modalButtonsContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleModalClose}
+              >
+                <Text style={styles.modalButtonText}>Буцах</Text>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.modalButton} onPress={handleSave}>
                 {buttonSpinner ? (
                   <ActivityIndicator size="small" color={Colors.primaryColor} />
                 ) : (
                   <Text style={styles.modalButtonText}>Илгээх</Text>
                 )}
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleModalClose}
-              >
-                <Text style={styles.modalButtonText}>Буцах</Text>
               </TouchableOpacity>
             </View>
           </View>

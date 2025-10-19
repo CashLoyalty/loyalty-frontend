@@ -274,28 +274,54 @@ const Award: React.FC = () => {
     setSelectedGifts((prev) => [...prev, { item, count }]);
 
     try {
-      const requestBody = {
-        giftId: item.id,
-        quantity: count,
-      };
+      let successCount = 0;
+      let errorMessage = "";
 
-      console.log("Purchase request body:", requestBody);
+      // Send multiple requests for each quantity
+      for (let i = 0; i < count; i++) {
+        const requestBody = {
+          giftId: item.id,
+          quantity: 1, // Always send quantity as 1
+        };
 
-      const response = await axios.post(
-        `${SERVER_URI}/api/user/gift/buy`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        console.log(`Purchase request ${i + 1}/${count}:`, requestBody);
+
+        const response = await axios.post(
+          `${SERVER_URI}/api/user/gift/buy`,
+          requestBody,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(
+          `Purchase response ${i + 1}/${count} code:`,
+          response.data.code
+        );
+
+        // Handle different response codes
+        if (response.data.code === 0) {
+          successCount++;
+        } else if (response.data.code === 1010) {
+          errorMessage = "Оноо хүрэхгүй байна";
+          break; // Stop processing if insufficient points
+        } else if (response.data.code === 1000) {
+          errorMessage = "Бэлэг үлдэгдэл хүрэхгүй байна";
+          break; // Stop processing if out of stock
+        } else if (response.data.code === 1014) {
+          errorMessage = "Бэлэг хязгаар хүрэхгүй байна";
+          break; // Stop processing if gift limit reached
+        } else {
+          errorMessage = response.data.message || "Тодорхойгүй алдаа";
+          break; // Stop processing on other errors
         }
-      );
+      }
 
-      console.log("Purchase response code:", response.data.code);
-
-      // Handle different response codes
-      if (response.data.code === 0) {
-        // Success case
+      // Show appropriate toast based on results
+      if (successCount === count) {
+        // All purchases successful
         toast.show(`${count}ш бэлэг амжилттай худалдаж авлаа!`, {
           type: "success",
           placement: "top",
@@ -316,54 +342,33 @@ const Award: React.FC = () => {
         if (userResponse.data.code === 0) {
           setUserData(userResponse.data.response);
         }
-      } else if (response.data.code === 1010) {
-        toast.show(`Оноо хүрэхгүй байна`, {
-          type: "warning",
-          placement: "top",
-          duration: 2000,
-          animationType: "slide-in",
-          style: {
-            backgroundColor: "#FFA500",
-            top: toastHeight,
-          },
-        });
-      } else if (response.data.code === 1000) {
-        toast.show(`Бэлэг үлдэгдэл хүрэхгүй байна`, {
-          type: "warning",
-          placement: "top",
-          duration: 2000,
-          animationType: "slide-in",
-          style: {
-            backgroundColor: "#FFA500",
-            top: toastHeight,
-          },
-        });
-      } else if (response.data.code === 1014) {
-        toast.show(`Бэлэг үлдэгдэл хүрэхгүй байна`, {
-          type: "warning",
-          placement: "top",
-          duration: 2000,
-          animationType: "slide-in",
-          style: {
-            backgroundColor: "#FFA500",
-            top: toastHeight,
-          },
-        });
-      } else {
-        // Other error codes
+      } else if (successCount > 0) {
+        // Partial success
         toast.show(
-          `Алдаа гарлаа: ${response.data.message || "Тодорхойгүй алдаа"}`,
+          `${successCount}ш бэлэг амжилттай худалдаж авлаа. ${errorMessage}`,
           {
-            type: "danger",
+            type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 3000,
             animationType: "slide-in",
             style: {
-              backgroundColor: Colors.red,
+              backgroundColor: "#FFA500",
               top: toastHeight,
             },
           }
         );
+      } else {
+        // All failed
+        toast.show(errorMessage, {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: Colors.red,
+            top: toastHeight,
+          },
+        });
       }
     } catch (error: any) {
       console.log("Purchase error:", error);
