@@ -9,6 +9,8 @@ import {
   TextInput,
   Pressable,
   Keyboard,
+  ScrollView,
+  FlatList,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
@@ -19,6 +21,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "react-native-toast-notifications";
 import { useContext } from "react";
 import { GlobalContext } from "@/components/globalContext";
+import axios from "axios";
+import TaskCard from "@/components/task/TaskCard";
+import TaskDetailsModal from "@/components/task/TaskDetailsModal";
 
 const { width, height } = screenDimensions;
 
@@ -27,6 +32,8 @@ const Task: React.FC = () => {
   const [visibleSec, setVisibleSec] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [token, setToken] = useState<string>("");
+  const [task, setTask] = useState<any[]>([]);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const requiredLength = 8;
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
@@ -49,6 +56,27 @@ const Task: React.FC = () => {
   }, [token]);
   ``;
 
+  const getTask = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URI}/api/user/task`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("response: ", response.data.response);
+      // API returns tasks directly as an array
+      const tasksData = response.data.response || [];
+      setTask(tasksData);
+    } catch (error) {
+      console.log("Failed to fetch task: ", error);
+    }
+  };
+  useEffect(() => {
+    if (token) {
+      getTask();
+    }
+  }, [token]);
+
   useEffect(() => {
     if (phoneNumber.length === requiredLength) {
       Keyboard.dismiss();
@@ -63,9 +91,32 @@ const Task: React.FC = () => {
     setVisible(true);
   };
 
-  const handleItemPress2 = () => {
+  const handleItemPress2 = (taskItem: any) => {
+    setSelectedTask(taskItem);
     setVisibleSec(true);
   };
+
+  const handleTaskCardPress = (taskItem: any) => {
+    setSelectedTask(taskItem);
+    setVisibleSec(true);
+  };
+
+  // Function to parse task name and extract count and points
+  const parseTaskName = (taskName: string) => {
+    // Extract number before "ширхэг" (count)
+    const countMatch = taskName.match(/(\d+)\s*ширхэг/);
+    const count = countMatch ? parseInt(countMatch[1]) : 5;
+
+    // Extract number before "оноо" (points)
+    const pointsMatch = taskName.match(/(\d+)\s*оноо/);
+    const points = pointsMatch ? parseInt(pointsMatch[1]) : 50;
+
+    return { count, points };
+  };
+
+  const displayTasks = task;
+
+  console.log("All tasks:", task);
 
   const handleInviteFriend = async () => {
     const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
@@ -239,40 +290,42 @@ const Task: React.FC = () => {
           </View>
         </View>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => handleItemPress2()}>
-        <View style={styles.taskRowContainer2}>
-          <View style={styles.taskInfoContainer}>
-            <View style={{ paddingLeft: 20, marginTop: 10 }}>
-              <Text
-                style={{ fontSize: 15, fontWeight: "600", color: Colors.white }}
-              >
-                Pepsi
-              </Text>
-            </View>
-            <View style={{ paddingLeft: 20, marginTop: 10 }}>
-              <Text style={{ fontSize: 12, color: Colors.white }}>
-                Lipton ice Tea -Pepsi Lime -Pepsi vanila -Pepsi zero 4-ийг
-                хэрэглэх
-              </Text>
-            </View>
-            <StepIndicator currentStep={2} totalSteps={4} />
-          </View>
-          <View style={styles.taskImgWrapper}>
-            <View style={styles.taskImgContainer}>
-              <Image
-                source={require("@/assets/icons/taskImage2.png")}
-                style={{ alignSelf: "center" }}
-              />
-            </View>
-            <View style={styles.overlayView}>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.overlayText}>500</Text>
-                <Image source={require("@/assets/icons/plug3.png")} />
-              </View>
-            </View>
-          </View>
+
+      {/* Task Cards Grid - 2 columns */}
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.cardsContainer}>
+          {displayTasks.length > 0 &&
+            displayTasks.map((item, index) => {
+              // Parse task name to extract points
+              const { points } = parseTaskName(item.taskName || "");
+              // Use taskCount from API for totalSteps
+              const totalSteps = item.taskCount || 5;
+
+              return (
+                <TaskCard
+                  key={index}
+                  task={{
+                    id: index.toString(),
+                    taskName: item.taskName || "Даалгавар",
+                    description: item.description,
+                    points: points,
+                    progress: item.finishedCount || 0,
+                    totalSteps: totalSteps,
+                    expiryDate: item.endDate
+                      ? new Date(item.endDate).toLocaleDateString("en-CA")
+                      : "2025/10/31",
+                    relatedProducts: item.relatedProducts || [],
+                    image: item.taskImage,
+                  }}
+                  onPress={() => handleTaskCardPress(item)}
+                />
+              );
+            })}
         </View>
-      </TouchableOpacity> */}
+      </ScrollView>
       <Modal
         transparent
         visible={visible}
@@ -319,48 +372,34 @@ const Task: React.FC = () => {
           </Pressable>
         </Pressable>
       </Modal>
-      <Modal
-        //animationType="slide"
-        transparent
+      <TaskDetailsModal
         visible={visibleSec}
-        onRequestClose={() => setVisibleSec(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setVisibleSec(false)}
-        >
-          <Pressable style={styles.bottomSheet} onPress={() => {}}>
-            <View style={{ alignItems: "center", marginBottom: 20 }}>
-              <Image source={require("@/assets/icons/rectangle.png")} />
-            </View>
-            <View style={{ alignItems: "center", marginBottom: 10 }}>
-              <Image source={require("@/assets/icons/pepsi.png")} />
-            </View>
-            <Text style={styles.modalTitle}>Pepsi / Илүүд тэмүүл /</Text>
-            <Text style={styles.modalDesc}>
-              Pepsi Lime, Pepsi Vanila, Pepsi black, Pepsi 4 төрлийн Pepsi
-              сонгон хэрэглэж оноогоо цуглуулаарай
-            </Text>
-            <Text style={styles.modalTitle}>Хамаарагдах бүтээгдэхүүн</Text>
-            <Text style={styles.modalDesc}>-Pepsi</Text>
-            <Text style={styles.modalDesc}>-Pepsi black</Text>
-            <Text style={styles.modalDesc}>-Pepsi Lime</Text>
-            <Text style={styles.modalDesc}>-Pepsi Vanila</Text>
-            <Text style={styles.modalTitle}>Хөтөлбөрийн хугацаа</Text>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.modalDescRow}>
-                2025.04.12-2025.05.12 дуустал
-              </Text>
-              <View style={styles.overlayViewSec}>
-                <View style={{ flexDirection: "row" }}>
-                  <Text style={styles.overlayText}>500</Text>
-                  <Image source={require("@/assets/icons/plug3.png")} />
-                </View>
-              </View>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        onClose={() => setVisibleSec(false)}
+        task={
+          selectedTask
+            ? (() => {
+                const { points } = parseTaskName(selectedTask.taskName || "");
+                const totalSteps = selectedTask.taskCount || 5;
+                return {
+                  id: selectedTask.id || "1",
+                  taskName: selectedTask.taskName || "Даалгавар",
+                  description: selectedTask.description,
+                  points: points,
+                  progress: selectedTask.finishedCount || 0,
+                  totalSteps: totalSteps,
+                  expiryDate: selectedTask.endDate
+                    ? new Date(selectedTask.endDate).toLocaleDateString("en-CA")
+                    : "2025/10/31",
+                  relatedProducts: selectedTask.relatedProducts || [],
+                  offerDescription:
+                    selectedTask.offerDescription ||
+                    `Та уг бүтээгдэхүүнээс ${totalSteps} ширхэгийг худалдан аваад ${points} оноо аваарай`,
+                  image: selectedTask.taskImage,
+                };
+              })()
+            : null
+        }
+      />
       {/* <View style={styles.emptyImageContainer}>
         <Image
           source={require("@/assets/images/emptyTask.png")}
@@ -457,8 +496,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   taskInfoContainer: {
-    width: (width / 100) * 52.2,
-    marginLeft: 10,
+    flex: 1,
+    marginLeft: 4,
+    marginRight: 4,
     height: 175,
     backgroundColor: Colors.giftBackgroundColor,
     borderRadius: 10,
@@ -466,21 +506,23 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryColor,
     zIndex: 1,
     paddingTop: 10,
+    maxWidth: width * 0.6,
   },
   taskImgWrapper: {
     position: "relative",
   },
   taskImgContainer: {
     zIndex: 2,
-    width: (width / 100) * 46,
+    width: width * 0.35,
     height: 185,
     borderWidth: 1,
     borderColor: Colors.primaryColor,
     borderRadius: 10,
     backgroundColor: Colors.white,
-    marginLeft: -10,
+    marginLeft: -4,
     alignContent: "center",
     justifyContent: "center",
+    maxWidth: 150,
   },
   overlayView: {
     position: "absolute",
@@ -514,6 +556,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 10,
+    marginHorizontal: 8,
+    paddingHorizontal: 8,
   },
   taskRowContainer2: {
     flexDirection: "row",
@@ -617,7 +661,6 @@ const styles = StyleSheet.create({
   stepContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "blue",
     padding: 10,
     marginBottom: 10,
   },
@@ -640,6 +683,58 @@ const styles = StyleSheet.create({
     height: 4,
     flex: 1,
     backgroundColor: "white",
+  },
+  filterContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+    paddingHorizontal: 20,
+  },
+  filterButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 8,
+    borderRadius: 20,
+    backgroundColor: "#E0E0E0",
+    borderWidth: 1,
+    borderColor: "#C0C0C0",
+  },
+  activeFilterButton: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.primaryColor,
+  },
+  filterText: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "500",
+  },
+  activeFilterText: {
+    color: Colors.primaryColor,
+    fontWeight: "600",
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    marginTop: 20,
+  },
+  cardsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingBottom: 20,
+    paddingHorizontal: 0,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
   },
 });
 
