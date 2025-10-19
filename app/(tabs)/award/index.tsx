@@ -165,7 +165,7 @@ const Award: React.FC = () => {
   const isTablet = screenWidth >= 768;
   const numColumns = isTablet ? 4 : 2;
   const itemSpacing = 15;
-  const horizontalPadding = 20; // Left and right padding
+  const horizontalPadding = 10; // Left and right padding
   const itemWidth =
     (screenWidth - horizontalPadding * 2 - itemSpacing * (numColumns - 1)) /
     numColumns;
@@ -456,7 +456,6 @@ const Award: React.FC = () => {
                     <Text
                       style={{
                         color: Colors.white,
-                        paddingTop: 1,
                         marginRight: 5,
                       }}
                     >
@@ -648,13 +647,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     width: "100%",
     marginTop: -20,
-    height: 100,
+    height: 85,
     backgroundColor: Colors.giftBackgroundColor,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: Colors.primaryColor,
     zIndex: 1,
     paddingTop: 10,
+    paddingBottom: 10,
   },
   giftInfoTitle: {
     fontSize: 13,

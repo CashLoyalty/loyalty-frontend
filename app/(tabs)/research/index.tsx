@@ -52,6 +52,12 @@ const Research: React.FC = () => {
       cleaned = cleaned.substring(0, 30);
     }
 
+    // Add ellipsis if text was truncated
+    const maxLength = Platform.OS === "android" ? 25 : 30;
+    if (text && text.length > maxLength) {
+      cleaned = cleaned + "...";
+    }
+
     return cleaned;
   };
 
