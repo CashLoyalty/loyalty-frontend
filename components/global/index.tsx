@@ -1,3 +1,6 @@
+import { SERVER_URI } from "@/utils/uri";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -11,25 +14,17 @@ import {
   Animated,
 } from "react-native";
 
-type GiftItem = {
+type StoryItem = {
   id: string;
-  name: string;
-  probability: number;
-  limit: number;
-  text: string;
-  type: string;
-  expiresAt?: string | null;
-  image1?: string;
-  image2?: string;
-  point?: number;
-  isCoupon?: boolean;
+  title: string;
+  image: string;
+  status: string;
+  expiresAt: string;
 };
 
 type StoryProps = {
-  spinGifts: GiftItem[];
+  spinGifts?: any[]; // Keep for backward compatibility but not used
 };
-
-const StoryBackground = require("@/assets/loyalty/storyBackground.png");
 
 export default function Story({ spinGifts }: StoryProps) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,12 +32,68 @@ export default function Story({ spinGifts }: StoryProps) {
   const progress = useRef(new Animated.Value(0)).current;
   const animation = useRef<Animated.CompositeAnimation | null>(null);
   const isAnimating = useRef(false);
+  const [token, setToken] = useState<string>("");
+  const [story, setStory] = useState<StoryItem[]>([]);
+
+  const fetchToken = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken);
+      } else {
+        console.warn("No token found in AsyncStorage");
+      }
+    } catch (error) {
+      console.log("Failed to fetch token: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchToken();
+  }, []);
+
+  const getStory = async (retryCount = 0) => {
+    try {
+      const response = await axios.get(
+        `${SERVER_URI}/api/user/story?status=ACTIVE`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setStory(response.data.response);
+      console.log("story: ", response.data.response);
+    } catch (error: any) {
+      console.log("Failed to fetch story: ", error);
+
+      // Handle 429 (Too Many Requests) with exponential backoff
+      if (error.response?.status === 429 && retryCount < 3) {
+        const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+        console.log(`Rate limited. Retrying in ${delay}ms...`);
+        setTimeout(() => {
+          getStory(retryCount + 1);
+        }, delay);
+      } else if (error.response?.status === 429) {
+        console.log(
+          "Max retries reached for story fetch. Please try again later."
+        );
+        // You could show a user-friendly message here
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      getStory();
+    }
+  }, [token]);
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-  const filteredSpinGifts = spinGifts.filter(
-    (item) => !!item.image1?.trim() && !!item.image2?.trim()
+  const filteredStories = story.filter(
+    (item) => !!item.image?.trim() && item.status === "ACTIVE"
   );
 
   const openModal = (itemId: string) => {
@@ -59,12 +110,12 @@ export default function Story({ spinGifts }: StoryProps) {
   };
 
   const goToNextStory = () => {
-    const currentIndex = filteredSpinGifts.findIndex(
+    const currentIndex = filteredStories.findIndex(
       (item) => item.id === currentItemId
     );
 
-    if (currentIndex < filteredSpinGifts.length - 1) {
-      setCurrentItemId(filteredSpinGifts[currentIndex + 1].id);
+    if (currentIndex < filteredStories.length - 1) {
+      setCurrentItemId(filteredStories[currentIndex + 1].id);
       progress.setValue(0);
       startProgress();
     } else {
@@ -118,18 +169,15 @@ export default function Story({ spinGifts }: StoryProps) {
   return (
     <View style={{ marginTop: 10 }}>
       <FlatList
-        data={filteredSpinGifts}
+        data={filteredStories}
         horizontal
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => openModal(item.id)}>
             <View style={styles.storyItem}>
-              {item.image1 ? (
-                <Image
-                  source={{ uri: item.image1 }}
-                  style={styles.storyImage}
-                />
+              {item.image ? (
+                <Image source={{ uri: item.image }} style={styles.storyImage} />
               ) : null}
             </View>
           </TouchableOpacity>
@@ -165,23 +213,15 @@ export default function Story({ spinGifts }: StoryProps) {
           </View>
 
           <View style={styles.storyContainer}>
-            <Image
-              source={StoryBackground}
-              style={[
-                StyleSheet.absoluteFillObject,
-                { zIndex: 0, width: screenWidth, height: screenHeight },
-              ]}
-              resizeMode="cover"
-            />
             {currentItemId && (
               <Image
                 source={{
                   uri:
-                    filteredSpinGifts.find((item) => item.id === currentItemId)
-                      ?.image2 ?? "",
+                    filteredStories.find((item) => item.id === currentItemId)
+                      ?.image ?? "",
                 }}
-                style={styles.storyImageOverlay}
-                resizeMode="contain"
+                style={styles.storyImageFullScreen}
+                resizeMode="cover"
               />
             )}
           </View>
@@ -222,9 +262,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
-  storyImageOverlay: {
-    width: "80%",
-    height: "80%",
+  storyImageFullScreen: {
+    width: "100%",
+    height: "100%",
     zIndex: 1,
   },
   progressBarContainer: {
