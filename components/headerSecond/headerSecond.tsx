@@ -83,7 +83,7 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/spinWheel.png")}
                 style={styles.iconImage}
               />
-              <View style={styles.redDot} />
+              {/* <View style={styles.redDot} /> */}
             </View>
           </TouchableOpacity>
 
@@ -93,7 +93,7 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/gift.png")}
                 style={styles.iconImage}
               />
-              <View style={styles.redDot} />
+              {/* <View style={styles.redDot} /> */}
             </View>
           </TouchableOpacity>
 

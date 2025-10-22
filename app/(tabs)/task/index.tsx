@@ -196,10 +196,13 @@ const Task: React.FC = () => {
             });
             break;
           default:
-            toast.show(`Танигдаагүй код: ${data.code}`, {
-              type: "warning",
+            toast.show(`Энэ дугаар бүртгэгдсэн байна....`, {
+              type: "danger",
+              placement: "top",
               duration: 1500,
+              animationType: "slide-in",
               style: {
+                backgroundColor: Colors.red,
                 top: toastHeight,
               },
             });
@@ -265,24 +268,13 @@ const Task: React.FC = () => {
             </View>
             <View style={{ paddingLeft: 20, marginTop: 10 }}>
               <Text style={{ fontSize: 12, color: Colors.white }}>
-                Та хайртай хүмүүсээ урьж оноо цуглуулаарай
+                Та хайртай хүмүүсээ урьж
+              </Text>
+              <Text style={{ fontSize: 12, color: Colors.white }}>
+                оноо цуглуулаарай
               </Text>
             </View>
             <StepIndicator currentStep={1} totalSteps={4} />
-          </View>
-          <View style={styles.taskImgWrapper}>
-            <View style={styles.taskImgContainer}>
-              <Image
-                source={require("@/assets/icons/taskImage1.png")}
-                style={{ alignSelf: "center" }}
-              />
-            </View>
-            <View style={styles.overlayView}>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.overlayText}>500</Text>
-                <Image source={require("@/assets/icons/plug3.png")} />
-              </View>
-            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -502,7 +494,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryColor,
     zIndex: 1,
     paddingTop: 10,
-    maxWidth: width * 0.6,
   },
   taskImgWrapper: {
     position: "relative",

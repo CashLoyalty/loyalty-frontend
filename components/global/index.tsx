@@ -241,12 +241,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 5,
     backgroundColor: "#fff",
+    overflow: "hidden",
   },
   storyImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 100,
+    height: 100,
+    borderRadius: 60,
     resizeMode: "contain",
+    transform: [{ scale: 1.5 }],
+    overflow: "hidden",
   },
   fullScreenModal: {
     flex: 1,

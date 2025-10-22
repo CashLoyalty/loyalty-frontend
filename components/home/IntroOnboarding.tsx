@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
@@ -93,13 +94,11 @@ const IntroOnboarding = () => {
         <TouchableOpacity
           style={styles.checkboxContainer}
           onPress={() => setIsChecked(!isChecked)}
+          activeOpacity={0.7}
         >
-          <View
-            style={[
-              styles.checkbox,
-              isChecked && { backgroundColor: "#0040FF" },
-            ]}
-          />
+          <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
+            {isChecked && <Ionicons name="checkmark" size={14} color="#fff" />}
+          </View>
           <Text style={styles.checkboxLabel}>Дахиж үзүүлэхгүй</Text>
         </TouchableOpacity>
       )}
@@ -157,11 +156,16 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 4,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#0040FF",
     marginRight: 10,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  checkboxChecked: {
+    backgroundColor: "#0040FF",
+    borderColor: "#0040FF",
   },
   checkboxLabel: {
     fontSize: 14,

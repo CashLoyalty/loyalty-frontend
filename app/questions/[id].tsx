@@ -464,9 +464,16 @@ export default function QuestionDetailPage() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={{ padding: 12 }}>
+          <View style={{ flex: 1, backgroundColor: Colors.primaryColor }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+                padding: 12,
+              }}
+            >
               <TouchableOpacity
                 style={{
                   backgroundColor: Colors.white,
@@ -485,10 +492,59 @@ export default function QuestionDetailPage() {
               </Text>
             </View>
 
-            {/* Render Question */}
-            {question && renderQuestion(question[step - 1])}
+            {/* === Зөвхөн энэ хэсэг scroll хийнэ === */}
+            <View
+              style={{
+                flex: 1,
+                marginHorizontal: 12,
+                marginTop: 12,
+                marginBottom: 12,
+                backgroundColor: Colors.backgroundColor,
+                borderRadius: 15,
+                overflow: "hidden", // Scrollview-г хүрээн дотор барина
+              }}
+            >
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{
+                  padding: 12,
+                }}
+                showsVerticalScrollIndicator={true}
+              >
+                {/* Таны асуулт эсвэл урт контент */}
+                {question && renderQuestion(question[step - 1])}
+              </ScrollView>
+            </View>
 
-            {/* Modal */}
+            {/* Bottom Navigation */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+                padding: 12,
+                marginBottom: 10,
+              }}
+            >
+              {step > 1 && (
+                <TouchableOpacity
+                  style={{
+                    width: 55,
+                    height: 50,
+                    borderRadius: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: Colors.backgroundColor,
+                  }}
+                  onPress={handlePrevStep}
+                >
+                  <Image
+                    source={require("@/assets/icons/arrow-left.png")}
+                    style={{ width: 23, height: 23 }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </ScrollView>
 
