@@ -13,8 +13,6 @@ import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
-
-// ✅ expo-audio зөв импорт
 import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
 
 import { OtpInput } from "react-native-otp-entry";
@@ -43,6 +41,9 @@ export default function LoginWithPinCodeScreen() {
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
+  // ✅ expo-audio player — require ашиглахад OK
+  const player = useAudioPlayer(require("@/assets/sounds/bells.mp3"));
+
   const retrieveDeviceToken = async (
     retryCount = 0
   ): Promise<string | null> => {
@@ -50,11 +51,6 @@ export default function LoginWithPinCodeScreen() {
     const retryDelay = 1000; // 1 second
 
     try {
-      console.log(
-        `🔔 Token retrieval attempt ${retryCount + 1}/${maxRetries + 1}`
-      );
-
-      // Use the utility function which has better error handling
       const token = await getDeviceToken();
 
       if (token) {
@@ -75,8 +71,6 @@ export default function LoginWithPinCodeScreen() {
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
         return retrieveDeviceToken(retryCount + 1);
       }
-
-      console.log("🔔 ALL TOKEN RETRIEVAL METHODS FAILED AFTER RETRIES");
       return null;
     } catch (error) {
       console.log("🔔 Token retrieval error:", error);
@@ -105,21 +99,20 @@ export default function LoginWithPinCodeScreen() {
     })();
   }, []);
 
-  // ✅ expo-audio player — require ашиглахад OK
-  const player = useAudioPlayer(require("@/assets/sounds/login.mp3"));
-
   useEffect(() => {
-    // iOS-д чимээ дуугаргахын тулд silent mode-д тоглуулахыг зөвшөөрнө
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    // iOS production build-д дуугарахын тулд AudioMode тохируулна
+    setAudioModeAsync({
+      playsInSilentMode: true,
+    }).catch(() => {});
   }, []);
 
   const playSound = async () => {
     try {
-      // дахин тоглуулахын тулд эхлэл рүү нь аваад play
-      player.seekTo(0);
+      // iOS production build-д дуугарахын тулд seekTo хийгээд play
+      await player.seekTo(0);
       await player.play();
     } catch (e) {
-      console.log("Error playing sound:", e);
+      // Error playing sound - silent fail
     }
   };
 
@@ -148,11 +141,6 @@ export default function LoginWithPinCodeScreen() {
           setExpoPushToken(newToken);
         }
       }
-
-      console.log("🔐 Login attempt with device token:", deviceToken);
-      console.log("🔐 Device token length:", deviceToken?.length || 0);
-      console.log("🔐 Device token type:", typeof deviceToken);
-
       const response = await axios.post(`${SERVER_URI}/api/user/login`, {
         phoneNumber: phoneNumber,
         passCode: pinCode,
