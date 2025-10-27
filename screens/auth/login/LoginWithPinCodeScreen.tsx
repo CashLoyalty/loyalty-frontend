@@ -12,9 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Notifications from "expo-notifications";
-import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
-
+import { useAudioPlayer, setAudioModeAsync, AudioSource } from "expo-audio";
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import { SERVER_URI } from "@/utils/uri";
@@ -41,8 +39,11 @@ export default function LoginWithPinCodeScreen() {
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
-  // ✅ expo-audio player — require ашиглахад OK
-  const player = useAudioPlayer(require("@/assets/sounds/bells.mp3"));
+  // ✅ expo-audio player — production build-д ажиллахын тулд
+  const [audioSource, setAudioSource] = useState<AudioSource | undefined>(
+    undefined
+  );
+  const player = useAudioPlayer(audioSource);
 
   const retrieveDeviceToken = async (
     retryCount = 0
@@ -104,15 +105,34 @@ export default function LoginWithPinCodeScreen() {
     setAudioModeAsync({
       playsInSilentMode: true,
     }).catch(() => {});
+
+    // Production build-д audio source-ийг async-р ачаална
+    const loadAudio = async () => {
+      try {
+        const source = require("@/assets/sounds/bells.mp3");
+        setAudioSource(source);
+        console.log("Audio loaded successfully");
+      } catch (error) {
+        console.log("Error loading audio:", error);
+      }
+    };
+    loadAudio();
   }, []);
 
   const playSound = async () => {
     try {
-      // iOS production build-д дуугарахын тулд seekTo хийгээд play
-      await player.seekTo(0);
-      await player.play();
+      // Production build-д зөв ажиллахын тулд
+      if (player && audioSource) {
+        console.log("Playing sound...");
+        await player.seekTo(0);
+        await player.play();
+        console.log("Sound played successfully");
+      } else {
+        console.log("Player or audio source not ready");
+      }
     } catch (e) {
-      // Error playing sound - silent fail
+      // Error playing sound
+      console.log("Error playing sound:", e);
     }
   };
 
@@ -242,7 +262,7 @@ export default function LoginWithPinCodeScreen() {
 
       <View style={styles.pinCodeContainer}>
         <View>
-          <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
+          <Text style={styles.title}>Пин кодоор нэвтрэх .</Text>
         </View>
 
         <View style={styles.inputContainer}>

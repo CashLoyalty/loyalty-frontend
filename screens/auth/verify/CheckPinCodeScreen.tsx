@@ -13,7 +13,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // ❌ import { Audio } from "expo-audio";
 // ✅ use expo-audio hooks/APIs
-import { useAudioPlayer, setAudioModeAsync } from "expo-audio";
+import { useAudioPlayer, setAudioModeAsync, AudioSource } from "expo-audio";
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import Colors from "@/constants/Colors";
@@ -39,18 +39,40 @@ export default function CheckPinCodeScreen() {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
-  // ✅ expo-audio: файлаа hook-р ачаалж, тоглуулна
-  const player = useAudioPlayer(require("@/assets/sounds/login.mp3"));
+  // ✅ expo-audio: production build-д ажиллахын тулд
+  const [audioSource, setAudioSource] = useState<AudioSource | undefined>(
+    undefined
+  );
+  const player = useAudioPlayer(audioSource);
 
   useEffect(() => {
     // iOS silent mode-д чимээ гарах тохиргоо
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+
+    // Production build-д audio source-ийг async-р ачаална
+    const loadAudio = async () => {
+      try {
+        const source = require("@/assets/sounds/login.mp3");
+        setAudioSource(source);
+        console.log("Audio loaded successfully");
+      } catch (error) {
+        console.log("Error loading audio:", error);
+      }
+    };
+    loadAudio();
   }, []);
 
   const playSound = async () => {
     try {
-      player.seekTo(0);
-      await player.play();
+      // Production build-д зөв ажиллахын тулд
+      if (player && audioSource) {
+        console.log("Playing sound...");
+        await player.seekTo(0);
+        await player.play();
+        console.log("Sound played successfully");
+      } else {
+        console.log("Player or audio source not ready");
+      }
     } catch (e) {
       console.log("Error playing sound:", e);
     }

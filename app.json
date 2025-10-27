@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
+    "assetBundlePatterns": ["**/*", "assets/sounds/*"],
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash_icon_small.png",
