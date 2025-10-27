@@ -13,7 +13,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // ❌ import { Audio } from "expo-audio";
 // ✅ use expo-audio hooks/APIs
-import { useAudioPlayer, setAudioModeAsync, AudioSource } from "expo-audio";
+import { useVideoPlayer } from "expo-video";
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import Colors from "@/constants/Colors";
@@ -39,40 +39,36 @@ export default function CheckPinCodeScreen() {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
-  // ✅ expo-audio: production build-д ажиллахын тулд
-  const [audioSource, setAudioSource] = useState<AudioSource | undefined>(
-    undefined
-  );
-  const player = useAudioPlayer(audioSource);
+  // ✅ expo-video: production build-д audio тоглуулахын тулд
+  const player = useVideoPlayer(require("@/assets/sounds/login.mp3"));
 
   useEffect(() => {
-    // iOS silent mode-д чимээ гарах тохиргоо
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    // Video player is initialized with the audio file
+    console.log("Audio player initialized");
 
-    // Production build-д audio source-ийг async-р ачаална
-    const loadAudio = async () => {
-      try {
-        const source = require("@/assets/sounds/login.mp3");
-        setAudioSource(source);
-        console.log("Audio loaded successfully");
-      } catch (error) {
-        console.log("Error loading audio:", error);
-      }
-    };
-    loadAudio();
+    // Initialize player
+    try {
+      player.pause();
+      player.currentTime = 0;
+    } catch (e) {
+      // Ignore if not ready yet
+    }
   }, []);
 
   const playSound = async () => {
     try {
-      // Production build-д зөв ажиллахын тулд
-      if (player && audioSource) {
-        console.log("Playing sound...");
-        await player.seekTo(0);
-        await player.play();
-        console.log("Sound played successfully");
-      } else {
-        console.log("Player or audio source not ready");
-      }
+      console.log("Playing sound, status:", player.status);
+
+      // Pause and reset first
+      player.pause();
+      player.currentTime = 0;
+
+      // Small delay to ensure reset
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Play the sound
+      player.play();
+      console.log("Sound played successfully");
     } catch (e) {
       console.log("Error playing sound:", e);
     }

@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAudioPlayer, setAudioModeAsync, AudioSource } from "expo-audio";
+import { useVideoPlayer } from "expo-video";
 import { OtpInput } from "react-native-otp-entry";
 import { useToast } from "react-native-toast-notifications";
 import { SERVER_URI } from "@/utils/uri";
@@ -39,11 +39,8 @@ export default function LoginWithPinCodeScreen() {
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
 
-  // ✅ expo-audio player — production build-д ажиллахын тулд
-  const [audioSource, setAudioSource] = useState<AudioSource | undefined>(
-    undefined
-  );
-  const player = useAudioPlayer(audioSource);
+  // ✅ expo-video player — production build-д audio тоглуулахын тулд
+  const player = useVideoPlayer(require("@/assets/sounds/bells.mp3"));
 
   const retrieveDeviceToken = async (
     retryCount = 0
@@ -101,37 +98,33 @@ export default function LoginWithPinCodeScreen() {
   }, []);
 
   useEffect(() => {
-    // iOS production build-д дуугарахын тулд AudioMode тохируулна
-    setAudioModeAsync({
-      playsInSilentMode: true,
-    }).catch(() => {});
+    // Video player is initialized with the audio file
+    console.log("Audio player initialized");
 
-    // Production build-д audio source-ийг async-р ачаална
-    const loadAudio = async () => {
-      try {
-        const source = require("@/assets/sounds/bells.mp3");
-        setAudioSource(source);
-        console.log("Audio loaded successfully");
-      } catch (error) {
-        console.log("Error loading audio:", error);
-      }
-    };
-    loadAudio();
+    // Initialize player
+    try {
+      player.pause();
+      player.currentTime = 0;
+    } catch (e) {
+      // Ignore if not ready yet
+    }
   }, []);
 
   const playSound = async () => {
     try {
-      // Production build-д зөв ажиллахын тулд
-      if (player && audioSource) {
-        console.log("Playing sound...");
-        await player.seekTo(0);
-        await player.play();
-        console.log("Sound played successfully");
-      } else {
-        console.log("Player or audio source not ready");
-      }
+      console.log("Playing sound, status:", player.status);
+
+      // Pause and reset first
+      player.pause();
+      player.currentTime = 0;
+
+      // Small delay to ensure reset
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Play the sound
+      player.play();
+      console.log("Sound played successfully");
     } catch (e) {
-      // Error playing sound
       console.log("Error playing sound:", e);
     }
   };
@@ -262,7 +255,7 @@ export default function LoginWithPinCodeScreen() {
 
       <View style={styles.pinCodeContainer}>
         <View>
-          <Text style={styles.title}>Пин кодоор нэвтрэх .</Text>
+          <Text style={styles.title}>Пин кодоор нэвтрэх</Text>
         </View>
 
         <View style={styles.inputContainer}>
