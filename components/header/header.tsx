@@ -83,8 +83,8 @@ export default function Header() {
       height: 180,
       resizeMode: "contain",
       position: "absolute",
-      top: -20,
-      right: -50,
+      top: 20,
+      right: -40,
     },
   });
 
