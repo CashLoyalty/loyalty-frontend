@@ -19,7 +19,10 @@ import { useToast } from "react-native-toast-notifications";
 import { SERVER_URI } from "@/utils/uri";
 import { Feather } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { screenDimensions } from "@/constants/constans";
 import { useContext } from "react";
@@ -29,7 +32,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { getDeviceToken } from "@/utils/notificationService";
 
-const { height } = screenDimensions;
+const { height, width } = screenDimensions;
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -295,6 +298,12 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.snowContainer}>
+        <Image
+          style={styles.snowImage}
+          source={require("@/assets/newYear/snow.png")}
+        />
+      </View>
       {Platform.OS === "android" && (
         <View
           style={{
@@ -308,6 +317,16 @@ export default function LoginScreen() {
         translucent
         backgroundColor="transparent"
       />
+      <View style={styles.topLeftContainer}>
+        <Image
+          style={styles.topLeft}
+          source={require("@/assets/newYear/topLeft.png")}
+        />
+        <Image
+          style={styles.lightLeft}
+          source={require("@/assets/newYear/lightLeft.png")}
+        />
+      </View>
       <View
         style={{
           marginTop: (height / 100) * 13.7,
@@ -344,12 +363,35 @@ export default function LoginScreen() {
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.button} onPress={handleQuestLogin}>
-          <Text style={styles.buttonSignText}>Guest login</Text>
-        </TouchableOpacity> */}
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>#Илүүд тэмүүл</Text>
+      <View
+        style={[
+          styles.BotContainer,
+          { bottom: Platform.OS === "ios" ? 15 : 50 },
+        ]}
+      >
+        <Image
+          style={styles.leftBot}
+          source={require("@/assets/newYear/leftBot.png")}
+        />
+        <View>
+          <View style={styles.midTextContainer}>
+            <Image
+              style={styles.midText}
+              source={require("@/assets/newYear/midText.png")}
+            />
+          </View>
+          <View style={styles.botTextContainer}>
+            <Image
+              style={styles.botText}
+              source={require("@/assets/newYear/botText.png")}
+            />
+          </View>
+        </View>
+        <Image
+          style={styles.rightBot}
+          source={require("@/assets/newYear/rightBot.png")}
+        />
       </View>
       {loading && (
         <View style={styles.loaderContainer}>
@@ -360,32 +402,6 @@ export default function LoginScreen() {
           />
         </View>
       )}
-      {/* <Modal
-        visible={showTokenModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowTokenModal(false)}
-      >
-        <View style={styles.tokenModalOverlay}>
-          <View style={styles.tokenModalCard}>
-            <Text style={styles.tokenModalTitle}>Expo Push Token</Text>
-            <ScrollView
-              style={{ maxHeight: 120 }}
-              contentContainerStyle={{ paddingVertical: 6 }}
-            >
-              <Text style={styles.tokenModalValue}>
-                {modalTokenValue || "Токен олдсонгүй"}
-              </Text>
-            </ScrollView>
-            <TouchableOpacity
-              style={styles.tokenModalButton}
-              onPress={() => setShowTokenModal(false)}
-            >
-              <Text style={styles.tokenModalButtonText}>ОК</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal> */}
     </SafeAreaView>
   );
 }
@@ -548,48 +564,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     marginTop: 10,
   },
-  // tokenModalOverlay: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   right: 0,
-  //   bottom: 0,
-  //   backgroundColor: "rgba(0,0,0,0.5)",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   paddingHorizontal: 20,
-  // },
-  // tokenModalCard: {
-  //   width: "100%",
-  //   backgroundColor: "#fff",
-  //   borderRadius: 12,
-  //   padding: 16,
-  // },
-  // tokenModalTitle: {
-  //   fontSize: 18,
-  //   fontWeight: "700",
-  //   marginBottom: 10,
-  //   color: Colors.black,
-  //   textAlign: "center",
-  // },
-  // tokenModalValue: {
-  //   fontSize: 12,
-  //   color: "#333",
-  //   lineHeight: 18,
-  // },
-  // tokenModalButton: {
-  //   marginTop: 12,
-  //   backgroundColor: Colors.primaryColor,
-  //   borderRadius: 8,
-  //   height: 44,
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  // },
-  // tokenModalButtonText: {
-  //   color: "#fff",
-  //   fontSize: 16,
-  //   fontWeight: "600",
-  // },
   quest: {
     height: 51,
     borderRadius: 10,
@@ -605,5 +579,82 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryColor,
     marginTop: 20,
     width: "90%",
+  },
+  midTextContainer: {
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  midText: {
+    width: 160,
+    height: 60,
+    resizeMode: "contain",
+  },
+  botTextContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  botText: {
+    width: 110,
+    height: 50,
+    resizeMode: "contain",
+  },
+  leftBot: {
+    width: 100,
+    height: 140,
+    resizeMode: "contain",
+  },
+  rightBot: {
+    width: 100,
+    height: 140,
+    resizeMode: "contain",
+  },
+  leftBotContainer: {
+    marginTop: 20,
+    width: 200,
+    height: 100,
+    resizeMode: "contain",
+  },
+  BotContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    pointerEvents: "none",
+    zIndex: 1000,
+  },
+  topLeft: {
+    width: 110,
+    height: 90,
+    resizeMode: "contain",
+  },
+  lightLeft: {
+    width: 220,
+    height: 250,
+    resizeMode: "contain",
+  },
+  topLeftContainer: {
+    pointerEvents: "none",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+  snowContainer: {
+    position: "absolute",
+    bottom: -100,
+    zIndex: 1000,
+    pointerEvents: "none",
+  },
+  snowImage: {
+    width: width,
+    resizeMode: "contain",
   },
 });
