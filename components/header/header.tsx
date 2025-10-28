@@ -39,6 +39,7 @@ export default function Header() {
       height: 110,
       position: "absolute",
       top: -12,
+      pointerEvents: "none",
     },
     container: {
       width: "100%",
@@ -46,6 +47,7 @@ export default function Header() {
       backgroundColor: Colors.black,
       height: headerHeight + 26,
       zIndex: 1,
+      pointerEvents: "none",
     },
     logoContainerStyle: {
       position: "absolute",
@@ -77,6 +79,7 @@ export default function Header() {
       top: 20,
       left: -65,
       resizeMode: "contain",
+      pointerEvents: "none",
     },
     lightRight: {
       width: 180,
@@ -85,6 +88,7 @@ export default function Header() {
       position: "absolute",
       top: 20,
       right: -40,
+      pointerEvents: "none",
     },
   });
 
@@ -115,7 +119,7 @@ export default function Header() {
       </View>
       <Image
         style={styles.lightRight}
-        source={require("@/assets/newYear/lightLeft.png")}
+        source={require("@/assets/newYear/lightRight.png")}
       />
     </SafeAreaView>
   );

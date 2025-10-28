@@ -343,11 +343,7 @@ export default function Spin() {
       {showModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalText}>
-              {giftName === "THANK YOU"
-                ? "🎁 Баярлалаа! Та дараа дахин оролдоно уу."
-                : `🎉 Таны бэлэг: ${giftName}!`}
-            </Text>
+            <Text style={styles.modalText}>{giftName}</Text>
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => setShowModal(false)}

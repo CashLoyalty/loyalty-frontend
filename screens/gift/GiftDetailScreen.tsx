@@ -43,23 +43,35 @@ export default function GiftDetailScreen() {
     };
 
     fetchToken();
-  }, [token]);
+  }, []);
 
   const handleBackPress = () => {
     router.back();
   };
 
-  const { data: giftDetailSpin } = useFetchGiftDetailSpin(
-    SERVER_URI + "/api/user/gift/history/" + id,
+  const {
+    data: giftDetailSpin,
+    loading: loadingSpin,
+    error: errorSpin,
+  } = useFetchGiftDetailSpin(
+    id ? SERVER_URI + "/api/user/gift/history/" + id : "",
     token
   );
 
-  const { data: giftDetailPoint } = useFetchGiftDetail(
-    SERVER_URI + "/api/user/gift/history/" + id,
+  const {
+    data: giftDetailPoint,
+    loading: loadingPoint,
+    error: errorPoint,
+  } = useFetchGiftDetail(
+    id ? SERVER_URI + "/api/user/gift/history/" + id : "",
     token
   );
 
-  const { data } = useFetchUser(SERVER_URI + "/api/user", token);
+  const {
+    data,
+    loading: loadingUser,
+    error: errorUser,
+  } = useFetchUser(SERVER_URI + "/api/user", token);
 
   useEffect(() => {
     if (data) {
@@ -88,10 +100,37 @@ export default function GiftDetailScreen() {
 
   const currentGift = giftDetailPoint || giftDetailSpin;
   const isPoint = giftType === "POINT";
+  const isSpin = giftType === "SPIN";
+  const isLoading = loadingSpin || loadingPoint || loadingUser;
+  const hasError = errorSpin || errorPoint || errorUser;
 
   // Check if currentGift is POINT type for image display
   const hasImage =
     giftDetailPoint && typeof giftDetailPoint.image1 === "string";
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <StatusBar barStyle="dark-content" backgroundColor="black" />
+        <ExpoStatusBar style="dark" />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <StatusBar barStyle="dark-content" backgroundColor="black" />
+        <ExpoStatusBar style="dark" />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error loading gift details</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -105,7 +144,7 @@ export default function GiftDetailScreen() {
               style={{ width: 30, height: 30 }}
             />
           </TouchableOpacity>
-          <Text style={styles.titleText}>{currentGift?.name}</Text>
+          <Text style={styles.titleText}>{currentGift?.type}</Text>
         </View>
         <View style={styles.card}>
           {hasImage ? (
@@ -138,7 +177,7 @@ export default function GiftDetailScreen() {
           <View style={styles.row}>
             <Text style={styles.label}>Шагналын төрөл</Text>
             <Text style={styles.rightAligned}>
-              {isPoint ? "Урамшуулал" : "Азын хүрд"}
+              {isPoint ? "Point market" : "Азын хүрд"}
             </Text>
           </View>
           <View style={styles.row}>
@@ -275,5 +314,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginHorizontal: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
   },
 });

@@ -8,20 +8,25 @@ import {
   FlatList,
   ListRenderItem,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
 import { router } from "expo-router";
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GiftHistoryItem } from "@/types/global";
-import useFetchGiftsHistory from "@/hooks/userFetchGiftsHistory";
 import { format } from "date-fns";
+import axios from "axios";
 
 export default function GiftScreen() {
   const [token, setToken] = useState<string>("");
+  const [giftHistory, setGiftHistory] = useState<GiftHistoryItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -37,71 +42,118 @@ export default function GiftScreen() {
     };
 
     fetchToken();
-  }, [token]);
+  }, []);
 
-  const { data: giftHistory } = useFetchGiftsHistory(
-    SERVER_URI + "/api/user/gift/history",
-    token
-  );
+  const getGiftHistory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await axios.get(`${SERVER_URI}/api/user/gift/history`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("history response: PKOMP ", response.data);
+
+      if (response.data.code === 0) {
+        const filteredData = response.data.response.filter(
+          (item: GiftHistoryItem) => item.giftName !== "THANK YOU"
+        );
+
+        // Sort by date (latest first)
+        const sortedData = filteredData.sort(
+          (a: GiftHistoryItem, b: GiftHistoryItem) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA; // Descending order (newest first)
+          }
+        );
+
+        setGiftHistory(sortedData);
+      } else {
+        setError(response.data.title || "API returned error");
+      }
+    } catch (error) {
+      console.log("Failed to fetch gift history: ", error);
+      setError("Failed to fetch gift history");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (token) {
+      getGiftHistory();
+    }
+  }, [token]);
 
   const handleBackPress = () => {
     router.back();
   };
 
-  const renderItem: ListRenderItem<GiftHistoryItem> = ({ item }) => (
-    <TouchableOpacity
-      style={styles.giftItem}
-      onPress={() => handleItemPress(item)}
-    >
-      <View style={styles.giftRowContainer}>
-        <View style={styles.giftImgContainer}>
-          <Image source={{ uri: item.giftImage }} style={styles.image} />
-        </View>
-        <View style={styles.giftInfoContainer}>
-          <View>
-            <Text style={styles.giftInfoTitle}>{item.giftName}</Text>
-            <View style={styles.scoreContainer}>
-              <Image
-                source={require("@/assets/icons/git-merge.png")}
-                style={{ width: 16, height: 16 }}
-                resizeMode="contain"
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: Colors.white,
-                  marginLeft: 10,
-                }}
-              >
-                {item.giftType == "POINT" ? "Point market" : "Азын хүрд"}
-              </Text>
-            </View>
-            <View style={styles.questionContainer}>
-              <Image
-                source={require("@/assets/icons/clock.png")}
-                style={{ width: 16, height: 16 }}
-                resizeMode="contain"
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: Colors.white,
-                  marginLeft: 10,
-                }}
-              >
-                {item.createdAt
-                  ? format(new Date(item.createdAt), "yyyy-MM-dd")
-                  : "N/A"}{" "}
-                хүчинтэй
-              </Text>
+  const renderItem: ListRenderItem<GiftHistoryItem> = ({ item }) => {
+    const isPoint = item.giftType === "POINT";
+    const isSpin = item.giftType === "SPIN";
+
+    return (
+      <TouchableOpacity
+        style={styles.giftItem}
+        onPress={() => handleItemPress(item)}
+      >
+        <View style={styles.giftRowContainer}>
+          <View style={styles.giftImgContainer}>
+            <Image source={{ uri: item.giftImage }} style={styles.image} />
+          </View>
+          <View style={styles.giftInfoContainer}>
+            <View>
+              <Text style={styles.giftInfoTitle}>{item.giftName}</Text>
+              <View style={styles.scoreContainer}>
+                <Image
+                  source={require("@/assets/icons/git-merge.png")}
+                  style={{ width: 16, height: 16 }}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: Colors.white,
+                    marginLeft: 10,
+                  }}
+                >
+                  {isPoint
+                    ? "Point market"
+                    : isSpin
+                    ? "Азын хүрд"
+                    : "Point market"}
+                </Text>
+              </View>
+              <View style={styles.questionContainer}>
+                <Image
+                  source={require("@/assets/icons/clock.png")}
+                  style={{ width: 16, height: 16 }}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: Colors.white,
+                    marginLeft: 10,
+                  }}
+                >
+                  {item.createdAt
+                    ? format(new Date(item.createdAt), "yyyy-MM-dd")
+                    : "N/A"}{" "}
+                  хүчинтэй
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
   const handleItemPress = (item: GiftHistoryItem) => {
-    router.push(`/giftDetail2?id=${item.id}`);
+    router.push(`/giftDetail?id=${item.id}`);
   };
   return (
     <View style={styles.container}>
@@ -127,13 +179,52 @@ export default function GiftScreen() {
         </View>
         <View style={{ flex: 1 }} />
       </View>
-      {giftHistory && (
-        <FlatList
-          data={giftHistory}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      )}
+      <ScrollView style={styles.scrollContainer}>
+        {giftHistory.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.giftCard}
+            onPress={() => handleItemPress(item)}
+          >
+            <View style={styles.cardRowContainer}>
+              <View style={styles.imageSection}>
+                <Image
+                  source={{ uri: item.giftImage }}
+                  style={styles.cardImage}
+                />
+              </View>
+              <View style={styles.infoSection}>
+                <Text style={styles.giftTitle}>{item.giftName}</Text>
+                <View style={styles.iconRow}>
+                  <Image
+                    source={require("@/assets/icons/git-merge.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.iconText}>
+                    {item.giftType === "POINT"
+                      ? "Point market"
+                      : item.giftType === "SPIN"
+                      ? "Азын хүрд"
+                      : "Point market"}
+                  </Text>
+                </View>
+                <View style={styles.iconRow}>
+                  <Image
+                    source={require("@/assets/icons/clock.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.iconText}>
+                    {item.createdAt
+                      ? format(new Date(item.createdAt), "yyyy-MM-dd")
+                      : "N/A"}{" "}
+                    хүчинтэй
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -212,5 +303,88 @@ const styles = StyleSheet.create({
     width: (width / 100) * 44.8,
     height: 100,
     resizeMode: "contain",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingTop: 20,
+  },
+  giftCard: {
+    marginBottom: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.primaryColor,
+    overflow: "hidden",
+    backgroundColor: Colors.white,
+  },
+  cardRowContainer: {
+    flexDirection: "row",
+    height: 120,
+  },
+  imageSection: {
+    width: "50%",
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    resizeMode: "contain",
+  },
+  infoSection: {
+    width: "50%",
+    backgroundColor: Colors.primaryColor,
+    padding: 15,
+    justifyContent: "center",
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
+  giftTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: Colors.white,
+    marginBottom: 8,
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  icon: {
+    width: 16,
+    height: 16,
+    marginRight: 8,
+  },
+  iconText: {
+    fontSize: 12,
+    color: Colors.white,
   },
 });
