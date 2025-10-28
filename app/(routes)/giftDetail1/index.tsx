@@ -1,6 +1,6 @@
 import React from "react";
-import GiftDetail1Screen from "@/screens/gift/GiftDetail1Screen";
+import GiftDetailScreen from "@/screens/gift/GiftDetailScreen";
 
 export default function GiftDetail1() {
-  return <GiftDetail1Screen />;
+  return <GiftDetailScreen />;
 }

@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 4,
     marginRight: 4,
-    height: 175,
+    height: 135,
     backgroundColor: Colors.giftBackgroundColor,
     borderRadius: 10,
     borderWidth: 1,

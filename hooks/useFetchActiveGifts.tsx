@@ -31,7 +31,20 @@ const useFetchActiveGifts = (url: string, token: string) => {
         const result: ApiResponseGifts = await response.json();
 
         if (result.code === 0) {
-          setData(result.response);
+          // Sort by expiration date (sooner expiring first) or by name if no expiration date
+          const sortedData = result.response.sort((a, b) => {
+            if (a.expiresAt && b.expiresAt) {
+              return (
+                new Date(a.expiresAt).getTime() -
+                new Date(b.expiresAt).getTime()
+              );
+            }
+            if (a.expiresAt && !b.expiresAt) return -1;
+            if (!a.expiresAt && b.expiresAt) return 1;
+            return 0;
+          });
+
+          setData(sortedData);
         } else {
           console.log("API returned error code:", result.code);
           throw new Error(result.title);

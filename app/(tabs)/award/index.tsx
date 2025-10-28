@@ -308,10 +308,10 @@ const Award: React.FC = () => {
           errorMessage = "Оноо хүрэхгүй байна";
           break; // Stop processing if insufficient points
         } else if (response.data.code === 1000) {
-          errorMessage = "Бэлэг үлдэгдэл хүрэхгүй байна";
+          errorMessage = "Бүтээгдэхүүн үлдэгдэл хүрэхгүй байна";
           break; // Stop processing if out of stock
         } else if (response.data.code === 1014) {
-          errorMessage = "Бэлэг хязгаар хүрэхгүй байна";
+          errorMessage = "Бүтээгдэхүүн үлдэгдэл хүрэхгүй байна";
           break; // Stop processing if gift limit reached
         } else {
           errorMessage = response.data.message || "Тодорхойгүй алдаа";
@@ -322,7 +322,7 @@ const Award: React.FC = () => {
       // Show appropriate toast based on results
       if (successCount === count) {
         // All purchases successful
-        toast.show(`${count}ш бэлэг амжилттай худалдаж авлаа!`, {
+        toast.show(`Бүтээгдэхүүнийг амжилттай худалдаж авлаа`, {
           type: "success",
           placement: "top",
           duration: 2000,
@@ -345,7 +345,7 @@ const Award: React.FC = () => {
       } else if (successCount > 0) {
         // Partial success
         toast.show(
-          `${successCount}ш бэлэг амжилттай худалдаж авлаа. ${errorMessage}`,
+          `${successCount}ш бүтээгдэхүүн амжилттай худалдаж авлаа. ${errorMessage}`,
           {
             type: "warning",
             placement: "top",

@@ -34,7 +34,15 @@ const useFetchGiftsHistory = (url: string, token: string) => {
           const filteredData = result.response.filter(
             (item) => item.giftName !== "THANK YOU"
           );
-          setData(filteredData);
+
+          // Sort by date (latest first)
+          const sortedData = filteredData.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA; // Descending order (newest first)
+          });
+
+          setData(sortedData);
         } else {
           console.log("API returned error code:", result.code);
           throw new Error(result.title);

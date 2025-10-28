@@ -337,9 +337,7 @@ export default function Spin() {
       </TouchableOpacity>
 
       <Text style={styles.topLabel}>
-        {lottoCount > 0
-          ? `Танд ${lottoCount} удаа эргүүлэх эрх байна`
-          : "Та хүрд эргүүлэх эрхгүй байна."}
+        {`Танд ${lottoCount} хүрд эргүүлэх эрх байна`}
       </Text>
 
       {showModal && (

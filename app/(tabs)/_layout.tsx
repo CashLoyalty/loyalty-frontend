@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 import Header from "@/components/header/header";
 import HeaderSecond from "@/components/headerSecond/headerSecond";
+import SnowEffect from "@/components/snow/SnowEffect";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
@@ -19,6 +20,7 @@ export default function TabsLayout() {
 
   return (
     <View style={styles.container}>
+      <SnowEffect />
       <Header />
       <HeaderSecond />
       <Tabs

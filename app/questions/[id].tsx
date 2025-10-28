@@ -517,34 +517,6 @@ export default function QuestionDetailPage() {
             </View>
 
             {/* Bottom Navigation */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                padding: 12,
-                marginBottom: 10,
-              }}
-            >
-              {step > 1 && (
-                <TouchableOpacity
-                  style={{
-                    width: 55,
-                    height: 50,
-                    borderRadius: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: Colors.backgroundColor,
-                  }}
-                  onPress={handlePrevStep}
-                >
-                  <Image
-                    source={require("@/assets/icons/arrow-left.png")}
-                    style={{ width: 23, height: 23 }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
           </View>
         </ScrollView>
 

@@ -101,11 +101,7 @@ export default function GiftScreen() {
     </TouchableOpacity>
   );
   const handleItemPress = (item: GiftItem) => {
-    if (item.type === "POINT") {
-      router.push(`/giftDetail1?id=${item.id}`);
-    } else {
-      router.push(`/giftDetail2?id=${item.id}`);
-    }
+    router.push(`/giftDetail2?id=${item.id}`);
   };
   return (
     <View style={styles.container}>

@@ -14,17 +14,19 @@ import { router } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useFetchGiftDetailSpin from "@/hooks/useFetchGiftDetailSpin";
+import useFetchGiftDetail from "@/hooks/useFetchGiftDetail";
 import { SERVER_URI } from "@/utils/uri";
 import { format } from "date-fns";
 import { UserResponse } from "@/types/global";
 import useFetchUser from "@/hooks/useFetchUser";
 
-export default function GiftDetail2Screen() {
+export default function GiftDetailScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { id } = route.params as { id?: string };
   const [token, setToken] = useState<string>("");
   const [userData, setUserData] = useState<UserResponse | null>(null);
+  const [giftType, setGiftType] = useState<string>("SPIN");
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -52,6 +54,11 @@ export default function GiftDetail2Screen() {
     token
   );
 
+  const { data: giftDetailPoint } = useFetchGiftDetail(
+    SERVER_URI + "/api/user/gift/history/" + id,
+    token
+  );
+
   const { data } = useFetchUser(SERVER_URI + "/api/user", token);
 
   useEffect(() => {
@@ -59,6 +66,32 @@ export default function GiftDetail2Screen() {
       setUserData(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    // Determine gift type based on which data is available and type field
+    const gift = giftDetailPoint || giftDetailSpin;
+    if (gift) {
+      if (gift.type === "POINT") {
+        setGiftType("POINT");
+      } else if (gift.type === "SPIN") {
+        setGiftType("SPIN");
+      } else {
+        // Fallback: check which data exists
+        if (giftDetailPoint) {
+          setGiftType("POINT");
+        } else if (giftDetailSpin) {
+          setGiftType("SPIN");
+        }
+      }
+    }
+  }, [giftDetailPoint, giftDetailSpin]);
+
+  const currentGift = giftDetailPoint || giftDetailSpin;
+  const isPoint = giftType === "POINT";
+
+  // Check if currentGift is POINT type for image display
+  const hasImage =
+    giftDetailPoint && typeof giftDetailPoint.image1 === "string";
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -72,10 +105,20 @@ export default function GiftDetail2Screen() {
               style={{ width: 30, height: 30 }}
             />
           </TouchableOpacity>
-          <Text style={styles.titleText}>{giftDetailSpin?.name}</Text>
+          <Text style={styles.titleText}>{currentGift?.name}</Text>
         </View>
         <View style={styles.card}>
-          {/* <Image source={require("@/assets/icons/display2.png")} /> */}
+          {hasImage ? (
+            <Image
+              source={{ uri: giftDetailPoint.image1 }}
+              style={{
+                width: 220,
+                height: 220,
+                resizeMode: "contain",
+                borderRadius: 10,
+              }}
+            />
+          ) : null}
         </View>
         <View style={styles.container2}>
           <View style={styles.row}>
@@ -86,22 +129,24 @@ export default function GiftDetail2Screen() {
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Шагналын ID</Text>
-            <Text style={styles.rightAligned}>LA20250121</Text>
+            <Text style={styles.rightAligned}>{currentGift?.id || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Шагналын нэр</Text>
-            <Text style={styles.rightAligned}>{giftDetailSpin?.name}</Text>
+            <Text style={styles.rightAligned}>{currentGift?.name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Шагналын төрөл</Text>
-            <Text style={styles.rightAligned}>Азын хүрд</Text>
+            <Text style={styles.rightAligned}>
+              {isPoint ? "Урамшуулал" : "Азын хүрд"}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Шагналын огноо</Text>
             <Text style={styles.rightAligned}>
-              {giftDetailSpin?.historyDate
-                ? format(new Date(giftDetailSpin?.historyDate), "yyyy-MM-dd")
-                : "N/A"}{" "}
+              {currentGift?.historyDate
+                ? format(new Date(currentGift.historyDate), "yyyy-MM-dd")
+                : "N/A"}
             </Text>
           </View>
           <View style={styles.row}>

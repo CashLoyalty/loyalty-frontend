@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  ScrollView,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import { screenDimensions } from "@/constants/constans";
@@ -72,7 +73,6 @@ const Research: React.FC = () => {
           },
         });
         if (response.data) {
-          console.log("Survey data received:", response.data.response);
           setQuestions(response.data.response);
         }
       } catch (error) {
@@ -111,8 +111,9 @@ const Research: React.FC = () => {
       </View>
 
       {questions.length > 0 ? (
-        <View
-          style={[
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={[
             styles.cardContainer,
             {
               justifyContent:
@@ -177,7 +178,7 @@ const Research: React.FC = () => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       ) : (
         <View style={styles.notFoundModal}>
           <Image
@@ -202,21 +203,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     marginTop: 10,
     marginHorizontal: 10,
+    marginBottom: 20,
   },
   titleText: {
     fontSize: 20,
     color: "#0E0E96",
     fontWeight: "600",
   },
+  scrollContainer: {
+    flex: 1,
+    padding: 10,
+  },
   cardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
-    padding: 10,
   },
   card: {
     backgroundColor: "#0025FF",
-    width: 160,
+    width: 170,
     height: 167,
     borderRadius: 12,
     justifyContent: "flex-end",
@@ -225,7 +230,7 @@ const styles = StyleSheet.create({
   cardMini: {
     padding: 12,
     backgroundColor: "#FFFFFF",
-    width: 160,
+    width: 170,
     height: 140,
     borderRadius: 12,
     overflow: Platform.OS === "android" ? "hidden" : "visible",
