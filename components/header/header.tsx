@@ -34,24 +34,23 @@ export default function Header() {
   }, [insets.top]);
 
   const styles = StyleSheet.create({
-    statusBarBackground: {
-      backgroundColor: Colors.primaryColor,
-      width: "100%",
-    },
     logo: {
-      width: 90,
-      height: 90,
+      width: 60,
+      height: 110,
+      position: "absolute",
+      top: -12,
     },
     container: {
       width: "100%",
       alignItems: "center",
-      marginBottom: 16,
-      backgroundColor: Colors.primaryColor,
-      height: headerHeight,
+      backgroundColor: Colors.black,
+      height: headerHeight + 26,
       zIndex: 1,
     },
     logoContainerStyle: {
       position: "absolute",
+      pointerEvents: "none",
+      resizeMode: "contain",
       top: topOffset,
       alignItems: "center",
       justifyContent: "center",
@@ -71,6 +70,22 @@ export default function Header() {
         },
       }),
     },
+    lightLeft: {
+      width: 130,
+      height: 250,
+      position: "absolute",
+      top: 20,
+      left: -65,
+      resizeMode: "contain",
+    },
+    lightRight: {
+      width: 180,
+      height: 180,
+      resizeMode: "contain",
+      position: "absolute",
+      top: -20,
+      right: -50,
+    },
   });
 
   return (
@@ -88,12 +103,20 @@ export default function Header() {
         translucent
         backgroundColor="transparent"
       />
+      <Image
+        style={styles.lightLeft}
+        source={require("@/assets/newYear/leftLight.png")}
+      />
       <View style={styles.logoContainerStyle}>
         <Image
-          source={require("@/assets/images/header-pepsi-logo.png")}
+          source={require("@/assets/newYear/centerIcon.png")}
           style={styles.logo}
         />
       </View>
+      <Image
+        style={styles.lightRight}
+        source={require("@/assets/newYear/lightLeft.png")}
+      />
     </SafeAreaView>
   );
 }
