@@ -197,7 +197,7 @@ export default function GiftDetailScreen() {
           <Text numberOfLines={4}>
             Та бэлэгээ төв оффис дээр хүрэлцэн ирж авна уу. Ирэхдээ өөрийн бичиг
             баримттайгаа ирээрэй таньд амжилт хүсье. Холбоо барих дугаар 7575
-            0000, 89829933
+            0000,
           </Text>
         </View>
         <TouchableOpacity

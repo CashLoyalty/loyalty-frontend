@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     marginTop: 10,
     marginHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   titleText: {
     fontSize: 20,
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    padding: 10,
   },
   cardContainer: {
     flexDirection: "row",
