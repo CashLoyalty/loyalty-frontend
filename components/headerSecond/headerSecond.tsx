@@ -83,7 +83,9 @@ export default function HeaderSecond() {
                 source={require("@/assets/icons/spinWheel.png")}
                 style={styles.iconImage}
               />
-              {/* <View style={styles.redDot} /> */}
+              {(userData?.lottoCount ?? 0) >= 1 ? (
+                <View style={styles.redDot} />
+              ) : null}
             </View>
           </TouchableOpacity>
 
