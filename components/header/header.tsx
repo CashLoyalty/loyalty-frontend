@@ -76,10 +76,11 @@ export default function Header() {
       width: 130,
       height: 250,
       position: "absolute",
-      top: 20,
-      left: -65,
+      top: -10,
+      left: -70,
       resizeMode: "contain",
       pointerEvents: "none",
+      transform: [{ rotate: "190deg" }, { scaleX: -1 }],
     },
     lightRight: {
       width: 180,
@@ -109,7 +110,7 @@ export default function Header() {
       />
       <Image
         style={styles.lightLeft}
-        source={require("@/assets/newYear/leftLight.png")}
+        source={require("@/assets/newYear/light.gif")}
       />
       <View style={styles.logoContainerStyle}>
         <Image
@@ -119,7 +120,7 @@ export default function Header() {
       </View>
       <Image
         style={styles.lightRight}
-        source={require("@/assets/newYear/lightRight.png")}
+        source={require("@/assets/newYear/light.gif")}
       />
     </SafeAreaView>
   );

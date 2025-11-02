@@ -268,12 +268,6 @@ const HomeScreen: React.FC = () => {
             </View>
             <Text style={{ fontSize: 12 }}>ОНОО</Text>
           </View>
-          <View style={styles.dotsContainer}>
-            <Image
-              source={require("@/assets/icons/dots.png")}
-              style={styles.dotsImage}
-            />
-          </View>
         </View>
         <View style={styles.line} />
       </View>
