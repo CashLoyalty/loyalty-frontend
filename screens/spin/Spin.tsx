@@ -336,9 +336,30 @@ export default function Spin() {
         />
       </TouchableOpacity>
 
-      <Text style={styles.topLabel}>
-        {`Танд ${lottoCount} хүрд эргүүлэх эрх байна`}
-      </Text>
+      <View style={styles.topLabel}>
+        <Text
+          style={{ color: Colors.white, fontSize: 15, fontWeight: "bold" }}
+        >{`Танд `}</Text>
+        <View
+          style={{
+            borderRadius: 15,
+            backgroundColor: Colors.white,
+          }}
+        >
+          <Text
+            style={{
+              padding: 5,
+              fontSize: 15,
+              fontWeight: "bold",
+            }}
+          >
+            {`${lottoCount}`}
+          </Text>
+        </View>
+        <Text
+          style={{ color: Colors.white, fontSize: 15, fontWeight: "bold" }}
+        >{` хүрд эргүүлэх эрх байна`}</Text>
+      </View>
 
       {showModal && (
         <View style={styles.modalOverlay}>
@@ -414,11 +435,12 @@ const styles = StyleSheet.create({
   },
   topLabel: {
     position: "absolute",
-    fontSize: 12,
-    color: Colors.white,
-    fontWeight: "bold",
     top: "73%",
     zIndex: 5,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   bg: {
     width: 700,
