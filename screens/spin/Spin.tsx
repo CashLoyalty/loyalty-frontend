@@ -227,9 +227,11 @@ export default function Spin() {
 
       <TouchableOpacity
         onPress={handleBack}
-        style={{ position: "absolute", top: 60, right: 20, zIndex: 10 }}
+        style={{ position: "absolute", top: 70, right: 20, zIndex: 10 }}
       >
-        <Text style={{ color: "white" }}>Хаах</Text>
+        <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+          Хаах
+        </Text>
       </TouchableOpacity>
 
       <Image source={require("@/assets/spin/bg.png")} style={styles.bg} />
