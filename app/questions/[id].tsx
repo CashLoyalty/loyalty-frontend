@@ -186,6 +186,22 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
               {q.text}
             </Text>
+            {q.image && (
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 20,
+
+                  overflow: "hidden",
+                }}
+              >
+                <Image
+                  source={{ uri: q.image }}
+                  style={{ width: "100%", aspectRatio: 5 / 4 }}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
             <RadioButtonRN
               data={q.options.map((item) => ({
                 value: item,
@@ -231,6 +247,22 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
               {q.text}
             </Text>
+            {q.image && (
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 20,
+
+                  overflow: "hidden",
+                }}
+              >
+                <Image
+                  source={{ uri: q.image }}
+                  style={{ width: "100%", aspectRatio: 5 / 4 }}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
             {q.options.map((option) => {
               const selected = formData[q.id]?.includes(option);
               return (
@@ -308,6 +340,22 @@ export default function QuestionDetailPage() {
             <Text style={{ fontSize: 20, fontWeight: "600", marginTop: 20 }}>
               {q.text}
             </Text>
+            {q.image && (
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 20,
+
+                  overflow: "hidden",
+                }}
+              >
+                <Image
+                  source={{ uri: q.image }}
+                  style={{ width: "100%", aspectRatio: 5 / 4 }}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
             <TextInput
               multiline
               numberOfLines={4}
@@ -318,7 +366,6 @@ export default function QuestionDetailPage() {
               placeholder="Та сэтгэгдэл ээ бичнэ үү"
               placeholderTextColor="rgba(0, 0, 0, 0.5)"
               style={{
-                marginTop: 30,
                 borderWidth: 1,
                 borderColor: "rgba(0, 0, 0, 0.1)",
                 backgroundColor: Colors.white,
@@ -384,28 +431,17 @@ export default function QuestionDetailPage() {
             {q.image && (
               <View
                 style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  width: "100%",
+                  marginTop: 20,
+
+                  overflow: "hidden",
                 }}
               >
-                <View
-                  style={{
-                    backgroundColor: Colors.white,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1,
-                    width: 300,
-                    maxHeight: 200,
-                    borderRadius: 8,
-                  }}
-                >
-                  <Image
-                    source={{ uri: q.image }}
-                    style={{ width: 100, height: 150 }}
-                    resizeMode="contain"
-                  />
-                </View>
+                <Image
+                  source={{ uri: q.image }}
+                  style={{ width: "100%", aspectRatio: 5 / 4 }}
+                  resizeMode="contain"
+                />
               </View>
             )}
 

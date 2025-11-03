@@ -103,8 +103,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <View style={styles.placeholder} />
             </View>
 
-            <Text style={styles.subtitleText}>УНШУУЛ • ЦУГЛУУЛ • ЗАРЦУУЛ</Text>
-
             {/* Main Image */}
             <View style={styles.imageContainer}>
               <Image
@@ -138,7 +136,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
               {renderProgressSteps()}
 
-              <Text style={styles.offerDescription}>{offerDescription}</Text>
+              <Text style={styles.offerDescription}>{description}</Text>
 
               {relatedProducts.length > 0 && (
                 <View style={styles.relatedProductsContainer}>

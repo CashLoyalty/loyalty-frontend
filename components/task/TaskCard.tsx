@@ -74,8 +74,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress }) => {
           </View>
         </View>
       </View>
-
-      <Text style={styles.subtitleText}>УНШУУЛ • ЦУГЛУУЛ • ЗАРЦУУЛ</Text>
+      <Text style={styles.subtitleText}>{task.taskName}</Text>
 
       <View style={styles.imageContainer}>
         <Image

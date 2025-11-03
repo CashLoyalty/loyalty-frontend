@@ -298,7 +298,7 @@ const Task: React.FC = () => {
                   task={{
                     id: index.toString(),
                     taskName: item.taskName || "Даалгавар",
-                    description: item.description,
+                    description: item.taskDescription,
                     points: points,
                     progress: item.finishedCount || 0,
                     totalSteps: totalSteps,
@@ -371,7 +371,7 @@ const Task: React.FC = () => {
                 return {
                   id: selectedTask.id || "1",
                   taskName: selectedTask.taskName || "Даалгавар",
-                  description: selectedTask.description,
+                  description: selectedTask.taskDescription,
                   points: points,
                   progress: selectedTask.finishedCount || 0,
                   totalSteps: totalSteps,
