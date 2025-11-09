@@ -156,7 +156,6 @@ const HomeScreen: React.FC = () => {
         duration: 1500,
         animationType: "slide-in",
         style: {
-          backgroundColor: Colors.primaryColor,
           top: toastHeight,
         },
       });
@@ -175,18 +174,10 @@ const HomeScreen: React.FC = () => {
         }
       );
 
-      if (response.data.title === "This code already registered.") {
-        console.log("Бөглөөний код : ", inputValue);
-        showLocalNotification(
-          "Fizz Point!",
-          `Таны ${inputValue} бүртгэгдсэн бөглөө код байна`
-        );
-      }
-
       if (response.data.code === 0) {
         toast.show(`Бөглөө код амжилттай бүртгэгдлээ`, {
           type: "success",
-          placement: "center",
+          placement: "top",
           duration: 1500,
           animationType: "slide-in",
           style: {
@@ -195,6 +186,29 @@ const HomeScreen: React.FC = () => {
         });
 
         await fetchPointDetails();
+      } else if (response.data.code !== 0) {
+        let errorMessage = "Код буруу байна";
+        
+        if (response.data.title === "This code already registered.") {
+          errorMessage = `Бүртгэгдсэн бөглөөний код байна`;
+        } else if (response.data.title) {
+          if (response.data.title.includes("Code is wrong") || response.data.title.includes("Error: Code is wrong")) {
+            errorMessage = "Код буруу байна";
+          } else {
+            errorMessage = response.data.title;
+          }
+        }
+        
+        toast.show(errorMessage, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            backgroundColor: Colors.red,
+            top: toastHeight,
+          },
+        });
       }
     } catch (error) {
       toast.show(`Код илгээхэд алдаа гарлаа`, {
@@ -305,31 +319,7 @@ const HomeScreen: React.FC = () => {
             />
           </TouchableOpacity>
         </View>
-        {/* <View style={styles.lotteryNumberQr}>
-          <TouchableOpacity
-            onPress={handleQRLotteryNum}
-            accessibilityLabel="Scan Lottery QR Code"
-          >
-            <Image
-              source={require("@/assets/icons/lotteryNumberQR.png")}
-              style={{ width: 40, height: 40 }}
-            />
-          </TouchableOpacity>
-        </View> */}
       </View>
-      {/* {showNotification && notificationContent && (
-              <View style={styles.notificationBanner}>
-                <Text style={styles.notificationTitle}>
-                  {notificationContent.title}
-                </Text>
-                <Text style={styles.notificationBody}>
-                  {notificationContent.body}
-                </Text>
-                <TouchableOpacity onPress={() => setShowNotification(false)}>
-                  <Text style={styles.notificationClose}>Хаах</Text>
-                </TouchableOpacity>
-              </View>
-            )} */}
       <Modal
         transparent={true}
         visible={modalVisible}
