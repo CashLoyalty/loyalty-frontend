@@ -188,7 +188,6 @@ const HomeScreen: React.FC = () => {
         await fetchPointDetails();
       } else if (response.data.code !== 0) {
         let errorMessage = "Код буруу байна";
-        
         if (response.data.title === "This code already registered.") {
           errorMessage = `Бүртгэгдсэн бөглөөний код байна`;
         } else if (response.data.title) {
