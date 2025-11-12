@@ -24,9 +24,15 @@ export async function getDeviceTokenSimple(): Promise<string | null> {
       return storedToken;
     }
 
-    if (!Device.isDevice) {
-      console.log("🔔 Simple: Not a physical device");
+    // Allow simulator for iOS (Expo can generate test tokens for simulator)
+    const isSimulator = !Device.isDevice;
+    if (isSimulator && Platform.OS === "android") {
+      console.log("🔔 Simple: Android simulator doesn't support push tokens");
       return null;
+    }
+
+    if (isSimulator) {
+      console.log("🔔 Simple: Running on iOS simulator - will attempt to get test token");
     }
 
     // Request permissions
@@ -37,12 +43,16 @@ export async function getDeviceTokenSimple(): Promise<string | null> {
     }
 
     // Get token without project ID
+    // For iOS simulator, Expo will return a test token
     const token = await Notifications.getExpoPushTokenAsync();
     console.log("🔔 Simple: Token result:", token);
 
     if (token?.data) {
       await AsyncStorage.setItem("expoPushToken", token.data);
       console.log("🔔 Simple: Token stored and returned:", token.data);
+      if (isSimulator) {
+        console.log("🔔 Simple: ⚠️ This is a simulator test token - real push notifications won't work");
+      }
       return token.data;
     }
 
@@ -68,9 +78,15 @@ export async function getDeviceToken(): Promise<string | null> {
       return storedToken;
     }
 
-    if (!Device.isDevice) {
-      console.log("🔔 Not a physical device, returning null");
+    // Allow iOS simulator to get test token
+    const isSimulator = !Device.isDevice;
+    if (isSimulator && Platform.OS === "android") {
+      console.log("🔔 Android simulator doesn't support push tokens");
       return null;
+    }
+
+    if (isSimulator) {
+      console.log("🔔 Running on iOS simulator - will attempt to get test token");
     }
 
     // Request permissions
@@ -140,6 +156,9 @@ export async function getDeviceToken(): Promise<string | null> {
     if (tokenData?.data) {
       console.log("🔔 Token data found:", tokenData.data);
       await AsyncStorage.setItem("expoPushToken", tokenData.data);
+      if (isSimulator) {
+        console.log("🔔 ⚠️ This is a simulator test token - real push notifications won't work");
+      }
       return tokenData.data;
     } else {
       console.log("🔔 No token data in response:", tokenData);

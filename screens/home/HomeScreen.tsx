@@ -43,6 +43,7 @@ const HomeScreen: React.FC = () => {
     pointDetails,
     loading: loadingPoints,
     fetchPointDetails,
+    error: pointDetailsError,
   } = usePointDetails(SERVER_URI);
   const { terms } = useLocalSearchParams();
   const [modalVisibleTerms, setModalVisibleTerms] = useState(false);
@@ -287,6 +288,18 @@ const HomeScreen: React.FC = () => {
     );
   };
 
+  const renderEmptyComponent = () => {
+    if (loadingPoints) {
+      return null;
+    }
+
+    return (
+      <View style={styles.emptyStateContainer}>
+        <Text style={styles.emptyStateTitle}>Одоогоор танд бүртгүүлсэн бөглөөний код байхгүй байна.</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.homeBannerSlider}>
@@ -302,6 +315,10 @@ const HomeScreen: React.FC = () => {
             data={pointDetails}
             renderItem={renderPointDetail}
             keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={
+              pointDetails.length === 0 ? styles.emptyListContainer : undefined
+            }
+            ListEmptyComponent={renderEmptyComponent}
           />
         )}
       </View>
@@ -770,6 +787,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Colors.white,
+  },
+  emptyListContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  emptyStateContainer: {
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: Colors.primaryColor,
+    marginBottom: 8,
+    textAlign: "center",
   },
   section: {
     marginBottom: 20,

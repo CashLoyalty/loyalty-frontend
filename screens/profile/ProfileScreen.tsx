@@ -235,7 +235,7 @@ export default function ProfileScreen() {
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          {/* <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemContent}>
               <Image
                 source={require("@/assets/icons/profQuestionMenu.png")}
@@ -244,7 +244,7 @@ export default function ProfileScreen() {
               <Text style={styles.menuItemText}>Асуулт, хариулт</Text>
             </View>
             <AntDesign name="right" size={20} color={Colors.primaryColor} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.menuItem} onPress={handleTermsScreen}>
             <View style={styles.menuItemContent}>
               <Image

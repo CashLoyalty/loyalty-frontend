@@ -27,6 +27,26 @@ const WHEEL_SIZE = 350;
 const CENTER = WHEEL_SIZE / 2;
 const RADIUS = WHEEL_SIZE / 2;
 const colorPalette = ["#001571", "#1443FF"];
+const THANK_YOU_LABEL = "";
+const DUMMY_LABELS = [
+  THANK_YOU_LABEL,
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+];
+
+const createDummySegments = (): Segment[] =>
+  DUMMY_LABELS.map((label, index) => ({
+    id: `dummy-${index}`,
+    label,
+    color: colorPalette[index % colorPalette.length],
+  }));
 
 function polarToCartesian(
   centerX: number,
@@ -56,6 +76,7 @@ function createSegmentPath(startAngle: number, endAngle: number): string {
 
 export default function Spin() {
   const [segments, setSegments] = useState<Segment[]>([]);
+  const [isDummy, setIsDummy] = useState(false);
   const [lottoCount, setLottoCount] = useState<number>(0);
   const [giftName, setGiftName] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -92,6 +113,14 @@ export default function Spin() {
           `${SERVER_URI}/api/gift?type=SPIN&status=ACTIVE`
         );
         const items = response.data.response;
+        const shouldUseDummy = !Array.isArray(items) || items.length <= 1;
+
+        if (shouldUseDummy) {
+          setSegments(createDummySegments());
+          setIsDummy(true);
+          return;
+        }
+
         const extendedColorPalette: string[] = [];
         for (let i = 0; i < items.length; i++) {
           extendedColorPalette.push(colorPalette[i % colorPalette.length]);
@@ -106,8 +135,11 @@ export default function Spin() {
         );
 
         setSegments(formattedData);
+        setIsDummy(false);
       } catch (error) {
         console.log("Error fetching data:", error);
+        setSegments(createDummySegments());
+        setIsDummy(true);
       }
     };
     fetchData();
@@ -124,21 +156,43 @@ export default function Spin() {
     const token = await AsyncStorage.getItem("token");
 
     try {
-      const spinResponse = await axios.post(
-        `${SERVER_URI}/api/user/spin`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const winningGift = spinResponse.data.response.name;
+      let winningGift = THANK_YOU_LABEL;
+
+      if (!isDummy) {
+        const spinResponse = await axios.post(
+          `${SERVER_URI}/api/user/spin`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const prize = spinResponse?.data?.response;
+        const prizeName =
+          typeof prize?.name === "string" && prize.name.trim().length > 0
+            ? prize.name
+            : null;
+
+        if (!prizeName) {
+          setSegments(createDummySegments());
+          setIsDummy(true);
+        } else {
+          winningGift = prizeName;
+        }
+      }
+
       setGiftName(winningGift);
 
       const winningIndex = segments.findIndex((s) => s.label === winningGift);
-      if (winningIndex === -1) {
+      const resolvedIndex =
+        winningIndex !== -1
+          ? winningIndex
+          : segments.findIndex((s) => s.label === THANK_YOU_LABEL);
+
+      if (resolvedIndex === -1) {
         setIsSpinning(false);
         return;
       }
 
-      const targetAngle = 360 - angleStep * winningIndex - angleStep / 2;
+      const targetAngle = 360 - angleStep * resolvedIndex - angleStep / 2;
       const totalRotation = 360 * 3 + targetAngle;
 
       Animated.timing(rotateAnim, {

@@ -409,9 +409,17 @@ export default function LoginScreen() {
 async function registerForPushNotificationsAsync(): Promise<
   string | undefined
 > {
-  if (!Device.isDevice) {
-    Alert.alert("Push мэдэгдэл зөвхөн бодит төхөөрөмж дээр ажиллана.");
+  const isSimulator = !Device.isDevice;
+  
+  // Android simulator doesn't support push tokens
+  if (isSimulator && Platform.OS === "android") {
+    Alert.alert("Push мэдэгдэл зөвхөн бодит төхөөрөмж эсвэл iOS simulator дээр ажиллана.");
     return;
+  }
+
+  // iOS simulator can get test token
+  if (isSimulator) {
+    console.log("🔔 iOS simulator дээр test token авах гэж байна...");
   }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -428,6 +436,12 @@ async function registerForPushNotificationsAsync(): Promise<
   }
 
   const tokenData = await Notifications.getExpoPushTokenAsync();
+  
+  if (isSimulator && tokenData?.data) {
+    console.log("🔔 ⚠️ Simulator test token:", tokenData.data);
+    console.log("🔔 ⚠️ Жинхэнэ push мэдэгдэл ажиллахгүй, зөвхөн тест хийхэд ашиглана уу");
+  }
+  
   return tokenData.data;
 }
 
@@ -649,7 +663,7 @@ const styles = StyleSheet.create({
   },
   snowContainer: {
     position: "absolute",
-    bottom: -100,
+    bottom: -85,
     zIndex: 1000,
     pointerEvents: "none",
   },

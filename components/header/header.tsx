@@ -23,10 +23,10 @@ export default function Header() {
     let calculatedTop = 20;
     let calculatedHeight = (screenHeight / 100) * 9;
 
-    if (insets.top >= 44) {
-      calculatedTop = insets.top - 8;
-    } else if (insets.top > 20) {
-      calculatedTop = insets.top;
+    if (screenHeight >= 800) {
+      calculatedTop = 30;
+    } else if (screenHeight <= 680) {
+      calculatedTop = 26;
     }
 
     setTopOffset(calculatedTop);
