@@ -192,13 +192,16 @@ const HomeScreen: React.FC = () => {
         if (response.data.title === "This code already registered.") {
           errorMessage = `Бүртгэгдсэн бөглөөний код байна`;
         } else if (response.data.title) {
-          if (response.data.title.includes("Code is wrong") || response.data.title.includes("Error: Code is wrong")) {
+          if (
+            response.data.title.includes("Code is wrong") ||
+            response.data.title.includes("Error: Code is wrong")
+          ) {
             errorMessage = "Код буруу байна";
           } else {
             errorMessage = response.data.title;
           }
         }
-        
+
         toast.show(errorMessage, {
           type: "danger",
           placement: "top",
@@ -295,7 +298,9 @@ const HomeScreen: React.FC = () => {
 
     return (
       <View style={styles.emptyStateContainer}>
-        <Text style={styles.emptyStateTitle}>Одоогоор танд бүртгүүлсэн бөглөөний код байхгүй байна.</Text>
+        <Text style={styles.emptyStateTitle}>
+          Одоогоор танд бүртгүүлсэн бөглөөний код байхгүй байна.
+        </Text>
       </View>
     );
   };
