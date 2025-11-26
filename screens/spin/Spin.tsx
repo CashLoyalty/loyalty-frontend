@@ -16,6 +16,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { SERVER_URI } from "@/utils/uri";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "@/constants/Colors";
+import { useToast } from "react-native-toast-notifications";
 interface Segment {
   id: string;
   label: string;
@@ -63,6 +64,7 @@ export default function Spin() {
   const [isSpinning, setIsSpinning] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const scaleLoopRef = useRef<Animated.CompositeAnimation | null>(null); // 👈 Store loop animation
+  const toast = useToast();
 
   const navigation = useNavigation();
 
@@ -114,6 +116,15 @@ export default function Spin() {
   }, []);
 
   const handleSpin = async () => {
+    if (lottoCount === 0) {
+      toast.show(`Хүрд эргүүлэх эрх байхгүй байна`, {
+        type: "danger",
+        placement: "top",
+        duration: 1500,
+        animationType: "slide-in",
+      });
+      return;
+    }
     if (isSpinning || segments.length === 0) return;
 
     setIsSpinning(true);
@@ -462,7 +473,7 @@ const styles = StyleSheet.create({
     height: 25,
     position: "absolute",
     top: "27%",
-    left: "58.8%",
+    left: "60.5%",
     transform: "translateX(-50%)",
     zIndex: 10,
   },

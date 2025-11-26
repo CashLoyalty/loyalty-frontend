@@ -213,12 +213,7 @@ export default function GiftScreen() {
                     source={require("@/assets/icons/clock.png")}
                     style={styles.icon}
                   />
-                  <Text style={styles.iconText}>
-                    {item.createdAt
-                      ? format(new Date(item.createdAt), "yyyy-MM-dd")
-                      : "N/A"}{" "}
-                    хүчинтэй
-                  </Text>
+                  <Text style={styles.iconText}>2026.01.23 хүртэлх</Text>
                 </View>
               </View>
             </View>

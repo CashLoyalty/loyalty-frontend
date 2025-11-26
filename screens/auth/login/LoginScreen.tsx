@@ -12,6 +12,7 @@ import {
   StatusBar,
   Modal,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import axios from "axios";
@@ -31,6 +32,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { getDeviceToken } from "@/utils/notificationService";
+import * as Updates from "expo-updates";
 
 const { height, width } = screenDimensions;
 
@@ -40,6 +42,10 @@ export default function LoginScreen() {
   const [expoPushToken, setExpoPushToken] = useState<string>("");
   const [showTokenModal, setShowTokenModal] = useState<boolean>(false);
   const [modalTokenValue, setModalTokenValue] = useState<string>("");
+  const [checkingUpdate, setCheckingUpdate] = useState<boolean>(true);
+  const [downloadingUpdate, setDownloadingUpdate] = useState<boolean>(false);
+  const [updateMessage, setUpdateMessage] = useState<string>("");
+  const [updateReady, setUpdateReady] = useState<boolean>(false);
   const requiredLength = 8;
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
@@ -52,6 +58,59 @@ export default function LoginScreen() {
       }
     })();
   }, []);
+
+  // EAS Update шалгалт
+  useEffect(() => {
+    checkForUpdates();
+  }, []);
+
+  const checkForUpdates = async () => {
+    try {
+      setCheckingUpdate(true);
+
+      // Зөвхөн production build дээр update шалгах
+      if (!Updates.isEnabled) {
+        setCheckingUpdate(false);
+        return;
+      }
+
+      const update = await Updates.checkForUpdateAsync();
+
+      if (update.isAvailable) {
+        setUpdateMessage("Шинэ хувилбар Татаж байна...");
+        setDownloadingUpdate(true);
+
+        // Update татах
+        await Updates.fetchUpdateAsync();
+
+        setUpdateMessage("Шинэ хувилбар татагдлаа. Шинэчлэж байна...");
+        setUpdateReady(true);
+
+        toast.show("Шинэ хувилбар татагдлаа. Шинэчлэж байна...", {
+          type: "success",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
+        });
+
+        // Update шууд ашиглах - app reload хийх
+        setTimeout(() => {
+          Updates.reloadAsync();
+        }, 1500);
+      } else {
+        setUpdateMessage("");
+        setCheckingUpdate(false);
+      }
+    } catch (error) {
+      console.log("Update шалгах явцад алдаа гарлаа:", error);
+      setUpdateMessage("");
+    } finally {
+      setCheckingUpdate(false);
+    }
+  };
 
   useEffect(() => {
     if (phoneNumber.length === requiredLength) {
@@ -163,6 +222,20 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
+    // Update татаж байгаа бол login хийхийг хориглох
+    if (downloadingUpdate) {
+      toast.show("Шинэ хувилбар татаж байна. Түр хүлээнэ үү...", {
+        type: "info",
+        placement: "top",
+        duration: 2000,
+        animationType: "slide-in",
+        style: {
+          top: toastHeight,
+        },
+      });
+      return;
+    }
+
     const verifiedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
 
     if (verifiedPhoneNumber.length === 0) {
@@ -357,12 +430,35 @@ export default function LoginScreen() {
             }}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonSignText}>Нэвтрэх</Text>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            (downloadingUpdate || checkingUpdate) && styles.buttonDisabled,
+          ]}
+          onPress={handleLogin}
+          disabled={downloadingUpdate || checkingUpdate}
+        >
+          <Text style={styles.buttonSignText}>
+            {downloadingUpdate
+              ? "Татаж байна..."
+              : checkingUpdate
+              ? "Шалгаж байна..."
+              : "Нэвтрэх"}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
+        {(downloadingUpdate || checkingUpdate) && (
+          <View style={styles.updateMessageContainer}>
+            <ActivityIndicator size="small" color={Colors.primaryColor} />
+            <Text style={styles.updateMessageTextInline}>
+              {downloadingUpdate
+                ? "Шинэ хувилбар татаж байна..."
+                : "Хувилбар шалгаж байна..."}
+            </Text>
+          </View>
+        )}
       </View>
       <View
         style={[
@@ -410,10 +506,12 @@ async function registerForPushNotificationsAsync(): Promise<
   string | undefined
 > {
   const isSimulator = !Device.isDevice;
-  
+
   // Android simulator doesn't support push tokens
   if (isSimulator && Platform.OS === "android") {
-    Alert.alert("Push мэдэгдэл зөвхөн бодит төхөөрөмж эсвэл iOS simulator дээр ажиллана.");
+    Alert.alert(
+      "Push мэдэгдэл зөвхөн бодит төхөөрөмж эсвэл iOS simulator дээр ажиллана."
+    );
     return;
   }
 
@@ -436,12 +534,14 @@ async function registerForPushNotificationsAsync(): Promise<
   }
 
   const tokenData = await Notifications.getExpoPushTokenAsync();
-  
+
   if (isSimulator && tokenData?.data) {
     console.log("🔔 ⚠️ Simulator test token:", tokenData.data);
-    console.log("🔔 ⚠️ Жинхэнэ push мэдэгдэл ажиллахгүй, зөвхөн тест хийхэд ашиглана уу");
+    console.log(
+      "🔔 ⚠️ Жинхэнэ push мэдэгдэл ажиллахгүй, зөвхөн тест хийхэд ашиглана уу"
+    );
   }
-  
+
   return tokenData.data;
 }
 
@@ -670,5 +770,48 @@ const styles = StyleSheet.create({
   snowImage: {
     width: width,
     resizeMode: "contain",
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  updateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  updateText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontFamily: "Inter",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  updateMessageText: {
+    color: Colors.primaryColor,
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  updateMessageContainer: {
+    width: "90%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(77, 166, 255, 0.1)",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: Colors.primaryColor,
+    marginTop: 20,
+  },
+  updateMessageTextInline: {
+    color: Colors.primaryColor,
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginLeft: 10,
+    textAlign: "center",
   },
 });
