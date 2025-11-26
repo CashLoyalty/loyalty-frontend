@@ -80,21 +80,20 @@ export default function LoginScreen() {
         setUpdateMessage("Шинэ хувилбар Татаж байна...");
         setDownloadingUpdate(true);
 
-        // Update татах
         await Updates.fetchUpdateAsync();
 
         setUpdateMessage("Шинэ хувилбар татагдлаа. Шинэчлэж байна...");
         setUpdateReady(true);
 
-        toast.show("Шинэ хувилбар татагдлаа. Шинэчлэж байна...", {
-          type: "success",
-          placement: "top",
-          duration: 2000,
-          animationType: "slide-in",
-          style: {
-            top: toastHeight,
-          },
-        });
+        // toast.show("Шинэ хувилбар татагдлаа. Шинэчлэж байна...", {
+        //   type: "success",
+        //   placement: "top",
+        //   duration: 2000,
+        //   animationType: "slide-in",
+        //   style: {
+        //     top: toastHeight,
+        //   },
+        // });
 
         // Update шууд ашиглах - app reload хийх
         setTimeout(() => {
@@ -438,24 +437,16 @@ export default function LoginScreen() {
           onPress={handleLogin}
           disabled={downloadingUpdate || checkingUpdate}
         >
-          <Text style={styles.buttonSignText}>
-            {downloadingUpdate
-              ? "Татаж байна..."
-              : checkingUpdate
-              ? "Шалгаж байна..."
-              : "Нэвтрэх"}
-          </Text>
+          <Text style={styles.buttonSignText}>Нэвтрэх</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleForgetPinCode}>
           <Text style={styles.underlineText}>Пин код сэргээх</Text>
         </TouchableOpacity>
-        {(downloadingUpdate || checkingUpdate) && (
+        {downloadingUpdate && (
           <View style={styles.updateMessageContainer}>
             <ActivityIndicator size="small" color={Colors.primaryColor} />
             <Text style={styles.updateMessageTextInline}>
-              {downloadingUpdate
-                ? "Шинэ хувилбар татаж байна..."
-                : "Хувилбар шалгаж байна..."}
+              Шинэ хувилбар татаж байна...
             </Text>
           </View>
         )}
