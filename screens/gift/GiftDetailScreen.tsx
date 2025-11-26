@@ -194,7 +194,7 @@ export default function GiftDetailScreen() {
           </View>
         </View>
         <View style={styles.container3}>
-          <Text numberOfLines={4}>
+          <Text>
             Та бэлгээ хан-уул дүүрэг, 3-р хороо, үйлдвэр гудамж "Жи Эн Бевережис
             ХХК"-ий оффис хүрэлцэн ирж авна уу. Ирэхдээ өөрийн бичиг
             баримттайгаа ирээрэй танд амжилт хүсье. Утас: 7575 0000, 9168 4698
@@ -262,13 +262,12 @@ const styles = StyleSheet.create({
   },
   container3: {
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: Colors.white,
     marginTop: 10,
     marginHorizontal: 10,
-    paddingLeft: 10,
+    padding: 16,
     borderRadius: 10,
-    height: 88,
   },
   card2: {
     width: "100%",
