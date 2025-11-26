@@ -82,33 +82,38 @@ const BottomModal = ({
           </View>
 
           <View style={styles.videoContainer}>
-            <View style={styles.modalColumncontainer}>
-              <Image
-                source={{ uri: item?.image1 }}
-                resizeMode="contain"
-                style={{ width: 300, height: 156 }}
-              />
-              <Text style={{ fontSize: 15, fontWeight: "600" }}>
-                {item?.name}
-              </Text>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text
-                  style={{ fontSize: 12, fontWeight: "800", color: "#808080" }}
-                >
-                  үлд: {item?.limit}ш
-                </Text>
-              </View>
-            </View>
+            <Image
+              source={{ uri: item?.image1 }}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%", borderRadius: 10 }}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "600" }}>
+              {item?.name}
+            </Text>
+
+            <Text style={{ fontSize: 14, fontWeight: "800", color: "#808080" }}>
+              үлд: {item?.limit}ш
+            </Text>
           </View>
 
-          <View style={styles.modalColumncontainer2}>
-            <Text style={{ fontSize: 18, fontWeight: "500" }}>Дэлгэрэнгүй</Text>
-            <View style={{ marginTop: 20 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                {item?.text}
-              </Text>
-            </View>
-          </View>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "400",
+              marginTop: 14,
+            }}
+          >
+            {item?.text}
+          </Text>
 
           <View style={styles.modalTotalScore}>
             <Text style={styles.totalText}>НИЙТ</Text>
@@ -584,10 +589,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 222,
     marginTop: 10,
-    borderWidth: 2,
-    borderColor: "#E5E4E2",
     borderRadius: 10,
-    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -635,13 +637,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primaryColor,
     borderRadius: 10,
-    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
   prizeImage: {
-    width: "90%",
-    height: 90,
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
   },
   prizeInfoContainer: {
     flexDirection: "column",

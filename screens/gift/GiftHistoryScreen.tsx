@@ -213,7 +213,7 @@ export default function GiftScreen() {
                     source={require("@/assets/icons/clock.png")}
                     style={styles.icon}
                   />
-                  <Text style={styles.iconText}>2026.01.23 хүртэлх</Text>
+                  <Text style={styles.iconText}>2026.01.23 хүчинтэй</Text>
                 </View>
               </View>
             </View>
@@ -348,7 +348,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
     resizeMode: "contain",
   },
   infoSection: {
@@ -360,7 +359,6 @@ const styles = StyleSheet.create({
   cardImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 8,
   },
   giftTitle: {
     fontSize: 16,

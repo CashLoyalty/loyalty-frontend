@@ -32,6 +32,8 @@ export default function VerifyOtpScreen() {
   };
   const [pinCode, setPinCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
   const navigation = useNavigation();
   const toast = useToast();
   const { toastHeight } = useContext(GlobalContext);
@@ -41,6 +43,26 @@ export default function VerifyOtpScreen() {
       handleConfirm(pinCode);
     }
   }, [phoneNumber, pinCode]);
+
+  // Initialize timer when screen loads for forgotPinCode flow
+  useEffect(() => {
+    if (screenName === "forgotPinCode") {
+      setResendTimer(30);
+      setCanResend(false);
+    }
+  }, [screenName]);
+
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    if (screenName === "forgotPinCode" && resendTimer > 0) {
+      const timer = setTimeout(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (screenName === "forgotPinCode" && resendTimer === 0) {
+      setCanResend(true);
+    }
+  }, [resendTimer, screenName]);
 
   if (!phoneNumber) {
     return null;
@@ -55,6 +77,83 @@ export default function VerifyOtpScreen() {
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const handleResendOtp = async () => {
+    if (!canResend || !phoneNumber) return;
+
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${SERVER_URI}/api/user/getForgotPasscodeOtp`,
+        {
+          phoneNumber: phoneNumber,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
+      if (data.code === 0) {
+        setResendTimer(30);
+        setCanResend(false);
+        setPinCode("");
+        toast.show("Код дахин илгээлээ.", {
+          type: "success",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
+        });
+      } else {
+        toast.show(
+          `Алдаа: ${data.title || "Код дахин илгээхэд алдаа гарлаа"}`,
+          {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
+          }
+        );
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.show(
+          `Алдаа гарлаа (axios): ${
+            error.response?.data?.message || error.message
+          }`,
+          {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+            style: {
+              top: toastHeight,
+            },
+          }
+        );
+      } else {
+        toast.show(`Алдаа гарлаа: ${String(error)}`, {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+          style: {
+            top: toastHeight,
+          },
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleConfirm = async (otpCode: string) => {
@@ -190,6 +289,26 @@ export default function VerifyOtpScreen() {
           }}
         />
       </View>
+      {screenName === "forgotPinCode" && (
+        <View style={styles.resendContainer}>
+          {!canResend ? (
+            <Text style={styles.resendTimerText}>
+              Дахин код авах: {resendTimer} сек
+            </Text>
+          ) : (
+            <TouchableOpacity
+              onPress={handleResendOtp}
+              disabled={loading}
+              style={[
+                styles.resendButton,
+                loading && styles.resendButtonDisabled,
+              ]}
+            >
+              <Text style={styles.resendButtonText}>Дахин код авах</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
       {loading && (
         <View style={styles.loaderContainer}>
           <BlurView intensity={0} style={styles.loaderBackground} tint="dark" />
@@ -264,5 +383,32 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     transform: [{ scale: 1.2 }],
+  },
+  resendContainer: {
+    top: (height / 100) * 24,
+    marginTop: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  resendTimerText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontFamily: "Inter",
+    textAlign: "center",
+  },
+  resendButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    backgroundColor: Colors.primaryColor,
+  },
+  resendButtonDisabled: {
+    opacity: 0.6,
+  },
+  resendButtonText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontFamily: "Inter",
+    fontWeight: "600",
   },
 });

@@ -151,9 +151,9 @@ export default function GiftDetailScreen() {
             <Image
               source={{ uri: giftDetailPoint.image1 }}
               style={{
-                width: 220,
-                height: 220,
-                resizeMode: "contain",
+                width: "100%",
+                height: "100%",
+                resizeMode: "cover",
                 borderRadius: 10,
               }}
             />
@@ -237,7 +237,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   card: {
-    backgroundColor: Colors.giftBackgroundColor,
     borderRadius: 10,
     height: 250,
     marginTop: 10,
